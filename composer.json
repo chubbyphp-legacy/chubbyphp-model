@@ -1,7 +1,7 @@
 {
     "name": "chubbyphp/chubbyphp-model",
     "description": "Chubbyphp Model",
-    "keywords": ["chubbyphp", "model"],
+    "keywords": ["chubbyphp", "model", "slim"],
     "license": "MIT",
     "authors": [
         {
