@@ -5,6 +5,9 @@ namespace Chubbyphp\Tests\Model\Exception;
 use Chubbyphp\Model\Exception\NotUniqueException;
 use Chubbyphp\Tests\Model\Resources\User;
 
+/**
+ * @covers Chubbyphp\Model\Exception\NotUniqueException
+ */
 class NotUniqueExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()

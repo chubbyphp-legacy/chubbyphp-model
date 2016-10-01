@@ -6,6 +6,9 @@ use Chubbyphp\Model\Exception\AlreadyKnownException;
 use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @covers Chubbyphp\Model\Exception\AlreadyKnownException
+ */
 class AlreadyKnownExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()

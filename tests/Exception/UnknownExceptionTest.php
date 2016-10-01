@@ -6,6 +6,9 @@ use Chubbyphp\Model\Exception\UnknownException;
 use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @covers Chubbyphp\Model\Exception\UnknownException
+ */
 class UnknownExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
