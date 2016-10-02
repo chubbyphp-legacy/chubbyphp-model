@@ -5,7 +5,7 @@ namespace Chubbyphp\Tests\Model;
 use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
-class ModelTest extends \PHPUnit_Framework_TestCase
+final class ModelTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetId()
     {

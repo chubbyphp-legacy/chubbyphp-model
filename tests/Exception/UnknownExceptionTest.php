@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * @covers Chubbyphp\Model\Exception\UnknownException
  */
-class UnknownExceptionTest extends \PHPUnit_Framework_TestCase
+final class UnknownExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {

@@ -9,7 +9,7 @@ use Chubbyphp\Tests\Model\Resources\User;
 use Chubbyphp\Tests\Model\Resources\UserRepository;
 use Ramsey\Uuid\Uuid;
 
-class RepositoryTest extends \PHPUnit_Framework_TestCase
+final class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetModelClass()
     {

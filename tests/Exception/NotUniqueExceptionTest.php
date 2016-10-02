@@ -8,7 +8,7 @@ use Chubbyphp\Tests\Model\Resources\User;
 /**
  * @covers Chubbyphp\Model\Exception\NotUniqueException
  */
-class NotUniqueExceptionTest extends \PHPUnit_Framework_TestCase
+final class NotUniqueExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
