@@ -13,6 +13,10 @@ Model and repository made simple.
 
  * php: ~7.0
 
+## Suggest
+
+ * doctrine/dbal: ^2.5.5
+
 ## Installation
 
 Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
