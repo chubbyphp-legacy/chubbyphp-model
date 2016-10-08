@@ -18,7 +18,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -26,37 +26,37 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertNull($repository->find('id1'));
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'where' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'where' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'id',
-                                1 => ':id',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'id',
-                        1 => 'id1',
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'id',
+                                ':id',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'id',
+                        'id1',
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
     }
@@ -73,7 +73,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -89,37 +89,37 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($user->isActive());
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'where' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'where' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'id',
-                                1 => ':id',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'id',
-                        1 => 'id1',
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'id',
+                                ':id',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'id',
+                        'id1',
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
     }
@@ -131,7 +131,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -139,42 +139,42 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertNull($repository->findOneBy(['username' => 'user1']));
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'setMaxResults' => array(
-                    0 => array(
-                        0 => 1,
-                    ),
-                ),
-                'andWhere' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'setMaxResults' => [
+                    [
+                        1,
+                    ],
+                ],
+                'andWhere' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'username',
-                                1 => ':username',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'username',
-                        1 => 'user1',
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'username',
+                                ':username',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'username',
+                        'user1',
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
     }
@@ -191,7 +191,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -207,42 +207,42 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($user->isActive());
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'setMaxResults' => array(
-                    0 => array(
-                        0 => 1,
-                    ),
-                ),
-                'andWhere' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'setMaxResults' => [
+                    [
+                        1,
+                    ],
+                ],
+                'andWhere' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'username',
-                                1 => ':username',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'username',
-                        1 => 'user1',
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'username',
+                                ':username',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'username',
+                        'user1',
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
     }
@@ -254,7 +254,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -262,37 +262,37 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame([], $repository->findBy(['active' => true]));
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'andWhere' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'andWhere' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'active',
-                                1 => ':active',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'active',
-                        1 => true,
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'active',
+                                ':active',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'active',
+                        true,
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
     }
@@ -317,7 +317,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $repository = $this->getDoctrineRepository(
-            $this->getConnection([$queryBuilder]),
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
             User::class,
             'users'
         );
@@ -341,39 +341,141 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($users[1]->isActive());
 
         self::assertEquals(
-            array(
-                'select' => array(
-                    0 => array(
-                        0 => '*',
-                    ),
-                ),
-                'from' => array(
-                    0 => array(
-                        0 => 'users',
-                        1 => null,
-                    ),
-                ),
-                'andWhere' => array(
-                    0 => array(
-                        0 => array(
+            [
+                'select' => [
+                    [
+                        '*',
+                    ],
+                ],
+                'from' => [
+                    [
+                        'users',
+                        null,
+                    ],
+                ],
+                'andWhere' => [
+                    [
+                        [
                             'method' => 'eq',
-                            'arguments' => array(
-                                0 => 'active',
-                                1 => ':active',
-                            ),
-                        ),
-                    ),
-                ),
-                'setParameter' => array(
-                    0 => array(
-                        0 => 'active',
-                        1 => true,
-                        2 => null,
-                    ),
-                ),
-            ),
+                            'arguments' => [
+                                'active',
+                                ':active',
+                            ],
+                        ],
+                    ],
+                ],
+                'setParameter' => [
+                    [
+                        'active',
+                        true,
+                        null,
+                    ],
+                ],
+            ],
             $queryBuilder->__calls
         );
+    }
+
+    public function testInsert()
+    {
+        $repository = $this->getDoctrineRepository(
+            $this->getConnection(
+                [
+                    'insert' => [
+                        [
+                            'arguments' => [
+                                'users',
+                                [
+                                    'id' => 'id1',
+                                    'username' => 'user1',
+                                    'password' => 'password',
+                                    'active' => true,
+                                ],
+                                [],
+                            ],
+                            'return' => 1,
+                        ],
+                    ],
+                ]
+            ),
+            User::class,
+            'users'
+        );
+
+        $user = new User('id1');
+        $user->setUsername('user1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $repository->insert($user);
+    }
+
+    public function testUpdate()
+    {
+        $repository = $this->getDoctrineRepository(
+            $this->getConnection(
+                [
+                    'update' => [
+                        [
+                            'arguments' => [
+                                'users',
+                                [
+                                    'id' => 'id1',
+                                    'username' => 'user1',
+                                    'password' => 'password',
+                                    'active' => true,
+                                ],
+                                [
+                                    'id' => 'id1',
+                                ],
+                                [],
+                            ],
+                            'return' => 1,
+                        ],
+                    ],
+                ]
+            ),
+            User::class,
+            'users'
+        );
+
+        $user = new User('id1');
+        $user->setUsername('user1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $repository->update($user);
+    }
+
+    public function testDelete()
+    {
+        $repository = $this->getDoctrineRepository(
+            $this->getConnection(
+                [
+                    'delete' => [
+                        [
+                            'arguments' => [
+                                'users',
+                                [
+                                    'id' => 'id1',
+                                ],
+                                [],
+                            ],
+                            'return' => 1,
+                        ],
+                    ],
+                ]
+            ),
+            User::class,
+            'users'
+        );
+
+        $user = new User('id1');
+        $user->setUsername('user1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $repository->delete($user);
     }
 
     /**
@@ -402,18 +504,23 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param QueryBuilder[]|array $queryBuilderStack
+     * @param array $stacks
      *
      * @return Connection
      */
-    private function getConnection(array $queryBuilderStack): Connection
+    private function getConnection(array $stacks = []): Connection
     {
         /* @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $repository = $this
             ->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
-            ->setMethods(['createQueryBuilder'])
+            ->setMethods(['createQueryBuilder', 'insert', 'update', 'delete'])
             ->getMockForAbstractClass();
+
+        $queryBuilderStack = $stacks['queryBuilder'] ?? [];
+        $insertStack = $stacks['insert'] ?? [];
+        $updateStack = $stacks['update'] ?? [];
+        $deleteStack = $stacks['delete'] ?? [];
 
         $queryBuilderCounter = 0;
 
@@ -434,6 +541,98 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
                 return $queryBuilder;
             });
+
+        $insertStackCounter = 0;
+
+        $repository
+            ->expects(self::any())
+            ->method('insert')
+            ->willReturnCallback(
+                function (
+                    $tableExpression,
+                    array $data,
+                    array $types = []
+                ) use (&$insertStack, &$insertStackCounter) {
+                    ++$insertStackCounter;
+
+                    $insert = array_shift($insertStack);
+
+                    self::assertNotNull($insert,
+                        sprintf(
+                            'insert failed, cause there was no data within $insertStack at call %d',
+                            $insertStack
+                        )
+                    );
+
+                    self::assertSame($insert['arguments'][0], $tableExpression);
+                    self::assertSame($insert['arguments'][1], $data);
+                    self::assertSame($insert['arguments'][2], $types);
+
+                    return $insert['return'];
+                }
+            );
+
+        $updateStackCounter = 0;
+
+        $repository
+            ->expects(self::any())
+            ->method('update')
+            ->willReturnCallback(
+                function (
+                    $tableExpression,
+                    array $data,
+                    array $identifier,
+                    array $types = []
+                ) use (&$updateStack, &$updateStackCounter) {
+                    ++$updateStackCounter;
+
+                    $update = array_shift($updateStack);
+
+                    self::assertNotNull($update,
+                        sprintf(
+                            'update failed, cause there was no data within $updateStack at call %d',
+                            $updateStack
+                        )
+                    );
+
+                    self::assertSame($update['arguments'][0], $tableExpression);
+                    self::assertSame($update['arguments'][1], $data);
+                    self::assertSame($update['arguments'][2], $identifier);
+                    self::assertSame($update['arguments'][3], $types);
+
+                    return $update['return'];
+                }
+            );
+
+        $deleteStackCounter = 0;
+
+        $repository
+            ->expects(self::any())
+            ->method('delete')
+            ->willReturnCallback(
+                function (
+                    $tableExpression,
+                    array $identifier,
+                    array $types = []
+                ) use (&$deleteStack, &$deleteStackCounter) {
+                    ++$deleteStackCounter;
+
+                    $delete = array_shift($deleteStack);
+
+                    self::assertNotNull($delete,
+                        sprintf(
+                            'delete failed, cause there was no data within $deleteStack at call %d',
+                            $deleteStack
+                        )
+                    );
+
+                    self::assertSame($delete['arguments'][0], $tableExpression);
+                    self::assertSame($delete['arguments'][1], $identifier);
+                    self::assertSame($delete['arguments'][2], $types);
+
+                    return $delete['return'];
+                }
+            );
 
         return $repository;
     }
