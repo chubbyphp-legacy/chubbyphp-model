@@ -27,7 +27,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function find(string $id)
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('*')->from($this->getTablename())->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
+        $qb->select('*')->from($this->getTable())->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
 
         $row = $qb->execute()->fetch(\PDO::FETCH_ASSOC);
         if (false === $row) {
@@ -48,7 +48,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function findOneBy(array $criteria = [])
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('*')->from($this->getTablename())->setMaxResults(1);
+        $qb->select('*')->from($this->getTable())->setMaxResults(1);
 
         foreach ($criteria as $field => $value) {
             $qb->andWhere($qb->expr()->eq($field, ':'.$field));
@@ -74,7 +74,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function findBy(array $criteria = []): array
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('*')->from($this->getTablename());
+        $qb->select('*')->from($this->getTable());
 
         foreach ($criteria as $field => $value) {
             $qb->andWhere($qb->expr()->eq($field, ':'.$field));
@@ -103,7 +103,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function insert(ModelInterface $model)
     {
-        $this->connection->insert($this->getTablename(), $model->toRow());
+        $this->connection->insert($this->getTable(), $model->toRow());
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function update(ModelInterface $model)
     {
-        $this->connection->update($this->getTablename(), $model->toRow(), ['id' => $model->getId()]);
+        $this->connection->update($this->getTable(), $model->toRow(), ['id' => $model->getId()]);
     }
 
     /**
@@ -119,11 +119,11 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function delete(ModelInterface $model)
     {
-        $this->connection->delete($this->getTablename(), ['id' => $model->getId()]);
+        $this->connection->delete($this->getTable(), ['id' => $model->getId()]);
     }
 
     /**
      * @return string
      */
-    abstract protected function getTablename(): string;
+    abstract protected function getTable(): string;
 }
