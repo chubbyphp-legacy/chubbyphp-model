@@ -151,11 +151,6 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                         null,
                     ],
                 ],
-                'setMaxResults' => [
-                    [
-                        1,
-                    ],
-                ],
                 'andWhere' => [
                     [
                         [
@@ -172,6 +167,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                         'username',
                         'user1',
                         null,
+                    ],
+                ],
+                'setMaxResults' => [
+                    [
+                        1,
                     ],
                 ],
             ],
@@ -219,11 +219,6 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                         null,
                     ],
                 ],
-                'setMaxResults' => [
-                    [
-                        1,
-                    ],
-                ],
                 'andWhere' => [
                     [
                         [
@@ -240,6 +235,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                         'username',
                         'user1',
                         null,
+                    ],
+                ],
+                'setMaxResults' => [
+                    [
+                        1,
                     ],
                 ],
             ],

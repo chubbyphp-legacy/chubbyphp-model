@@ -3,6 +3,7 @@
 namespace Chubbyphp\Model;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class AbstractDoctrineRepository implements RepositoryInterface
 {
@@ -47,13 +48,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function findOneBy(array $criteria = [])
     {
-        $qb = $this->connection->createQueryBuilder();
-        $qb->select('*')->from($this->getTable())->setMaxResults(1);
-
-        foreach ($criteria as $field => $value) {
-            $qb->andWhere($qb->expr()->eq($field, ':'.$field));
-            $qb->setParameter($field, $value);
-        }
+        $qb = $this->getFindByQueryBuilder($criteria)->setMaxResults(1);
 
         $row = $qb->execute()->fetch(\PDO::FETCH_ASSOC);
         if (false === $row) {
@@ -73,15 +68,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function findBy(array $criteria = []): array
     {
-        $qb = $this->connection->createQueryBuilder();
-        $qb->select('*')->from($this->getTable());
-
-        foreach ($criteria as $field => $value) {
-            $qb->andWhere($qb->expr()->eq($field, ':'.$field));
-            $qb->setParameter($field, $value);
-        }
-
-        $rows = $qb->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $this->getFindByQueryBuilder($criteria)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         if ([] === $rows) {
             return [];
@@ -96,6 +83,24 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         }
 
         return $models;
+    }
+
+    /**
+     * @param array $criteria
+     *
+     * @return QueryBuilder
+     */
+    private function getFindByQueryBuilder(array $criteria = []): QueryBuilder
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('*')->from($this->getTable());
+
+        foreach ($criteria as $field => $value) {
+            $qb->andWhere($qb->expr()->eq($field, ':'.$field));
+            $qb->setParameter($field, $value);
+        }
+
+        return $qb;
     }
 
     /**
