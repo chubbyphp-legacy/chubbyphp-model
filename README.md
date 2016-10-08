@@ -30,9 +30,10 @@ Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
 ```{.php}
 <?php
 
-namespace Chubbyphp\Tests\Model\Resources;
+namespace MyProject\Model;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RepositoryInterface;
 use Ramsey\Uuid\Uuid;
 
 final class User implements ModelInterface
@@ -45,7 +46,7 @@ final class User implements ModelInterface
     /**
      * @var string
      */
-    private $email;
+    private $username;
 
     /**
      * @var string
@@ -68,12 +69,12 @@ final class User implements ModelInterface
     /**
      * @param array $data
      *
-     * @return ModelInterface
+     * @return User|ModelInterface
      */
     public static function fromRow(array $data): ModelInterface
     {
         $object = new self($data['id']);
-        $object->email = $data['email'];
+        $object->username = $data['username'];
         $object->password = $data['password'];
         $object->active = $data['active'];
 
@@ -91,17 +92,17 @@ final class User implements ModelInterface
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getUsername(): string
     {
-        return $this->email;
+        return $this->username;
     }
 
     /**
-     * @param string $email
+     * @param string $username
      */
-    public function setEmail(string $email)
+    public function setUsername(string $username)
     {
-        $this->email = $email;
+        $this->username = $username;
     }
 
     /**
@@ -143,7 +144,7 @@ final class User implements ModelInterface
     {
         return [
             'id' => $this->id,
-            'email' => $this->email,
+            'username' => $this->username,
             'password' => $this->password,
             'active' => $this->active,
         ];
@@ -156,6 +157,14 @@ final class User implements ModelInterface
 #### Sample UserRepository
 
 ```{.php}
+<?php
+
+namespace MyProject\Repository;
+
+use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RepositoryInterface;
+use Myproject\Model\User;
+
 final class UserRepository implements RepositoryInterface
 {
     /**
@@ -185,7 +194,7 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param string $id
      *
-     * @return ModelInterface|null
+     * @return User|ModelInterface|null
      */
     public function find(string $id)
     {
@@ -200,7 +209,7 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $criteria
+     * @param User[]|ModelInterface[]|array $criteria
      *
      * @return array
      */
@@ -226,7 +235,7 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param array $criteria
      *
-     * @return ModelInterface|null
+     * @return User|ModelInterface|null
      */
     public function findOneBy(array $criteria = [])
     {
@@ -246,7 +255,7 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface $model
+     * @param User|ModelInterface $model
      *
      * @throws \Exception
      */
@@ -261,7 +270,7 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface $model
+     * @param User|ModelInterface $model
      *
      * @throws \Exception
      */
@@ -276,7 +285,7 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface $model
+     * @param User|ModelInterface $model
      *
      * @throws \Exception
      */
@@ -288,6 +297,36 @@ final class UserRepository implements RepositoryInterface
         }
 
         unset($this->modelRows[$id]);
+    }
+}
+```
+
+#### Sample UserRepository with Doctrine
+
+```{.php}
+<?php
+
+namespace MyProject\Repository;
+
+use Chubbyphp\Model\AbstractDoctrineRepository;
+use Myproject\Model\User;
+
+final class UserRepository extends AbstractDoctrineRepository
+{
+    /**
+     * @return string
+     */
+    public function getModelClass(): string
+    {
+        return User::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTable(): string
+    {
+        return 'users';
     }
 }
 ```
