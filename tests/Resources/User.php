@@ -15,7 +15,7 @@ final class User implements ModelInterface
     /**
      * @var string
      */
-    private $email;
+    private $username;
 
     /**
      * @var string
@@ -43,7 +43,7 @@ final class User implements ModelInterface
     public static function fromRow(array $data): ModelInterface
     {
         $object = new self($data['id']);
-        $object->email = $data['email'];
+        $object->username = $data['username'];
         $object->password = $data['password'];
         $object->active = $data['active'];
 
@@ -61,17 +61,17 @@ final class User implements ModelInterface
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getUsername(): string
     {
-        return $this->email;
+        return $this->username;
     }
 
     /**
-     * @param string $email
+     * @param string $username
      */
-    public function setEmail(string $email)
+    public function setUsername(string $username)
     {
-        $this->email = $email;
+        $this->username = $username;
     }
 
     /**
@@ -113,7 +113,7 @@ final class User implements ModelInterface
     {
         return [
             'id' => $this->id,
-            'email' => $this->email,
+            'username' => $this->username,
             'password' => $this->password,
             'active' => $this->active,
         ];

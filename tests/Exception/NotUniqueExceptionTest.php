@@ -12,10 +12,10 @@ final class NotUniqueExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
-        $exception = NotUniqueException::create(User::class, ['email' => 'firstname.lastname@domain.tld'], 3);
+        $exception = NotUniqueException::create(User::class, ['username' => 'user1d'], 3);
 
         self::assertSame(
-            'There are 3 models of class '.User::class.' for criteria email: firstname.lastname@domain.tld',
+            'There are 3 models of class '.User::class.' for criteria username: user1d',
             $exception->getMessage()
         );
     }

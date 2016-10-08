@@ -23,7 +23,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -38,7 +38,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $user);
         self::assertSame($modelRows[0]['id'], $user->getId());
-        self::assertSame($modelRows[0]['email'], $user->getEmail());
+        self::assertSame($modelRows[0]['username'], $user->getUsername());
         self::assertSame($modelRows[0]['password'], $user->getPassword());
         self::assertSame($modelRows[0]['active'], $user->isActive());
     }
@@ -48,19 +48,19 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => false,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -77,7 +77,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $activeUser);
         self::assertSame($modelRows[0]['id'], $activeUser->getId());
-        self::assertSame($modelRows[0]['email'], $activeUser->getEmail());
+        self::assertSame($modelRows[0]['username'], $activeUser->getUsername());
         self::assertSame($modelRows[0]['password'], $activeUser->getPassword());
         self::assertSame($modelRows[0]['active'], $activeUser->isActive());
 
@@ -86,7 +86,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $activeUser);
         self::assertSame($modelRows[2]['id'], $activeUser->getId());
-        self::assertSame($modelRows[2]['email'], $activeUser->getEmail());
+        self::assertSame($modelRows[2]['username'], $activeUser->getUsername());
         self::assertSame($modelRows[2]['password'], $activeUser->getPassword());
         self::assertSame($modelRows[2]['active'], $activeUser->isActive());
 
@@ -99,7 +99,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $inactiveUser);
         self::assertSame($modelRows[1]['id'], $inactiveUser->getId());
-        self::assertSame($modelRows[1]['email'], $inactiveUser->getEmail());
+        self::assertSame($modelRows[1]['username'], $inactiveUser->getUsername());
         self::assertSame($modelRows[1]['password'], $inactiveUser->getPassword());
         self::assertSame($modelRows[1]['active'], $inactiveUser->isActive());
     }
@@ -109,19 +109,19 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => false,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -130,11 +130,11 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repo = new UserRepository($modelRows);
 
         /** @var User $user */
-        $user = $repo->findOneBy(['email' => 'firstname.lastname@domain.tld']);
+        $user = $repo->findOneBy(['username' => 'user1d']);
 
         self::assertInstanceOf(User::class, $user);
         self::assertSame($modelRows[0]['id'], $user->getId());
-        self::assertSame($modelRows[0]['email'], $user->getEmail());
+        self::assertSame($modelRows[0]['username'], $user->getUsername());
         self::assertSame($modelRows[0]['password'], $user->getPassword());
         self::assertSame($modelRows[0]['active'], $user->isActive());
     }
@@ -143,32 +143,32 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         self::expectException(NotUniqueException::class);
         self::expectExceptionMessage(
-            'There are 2 models of class '.User::class.' for criteria email: nickname@domain.tld'
+            'There are 2 models of class '.User::class.' for criteria username: nickname@domain.tld'
         );
 
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => false,
             ],
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'nickname@domain.tld',
+                'username' => 'nickname@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
         ];
 
         $repo = new UserRepository($modelRows);
-        $repo->findOneBy(['email' => 'nickname@domain.tld']);
+        $repo->findOneBy(['username' => 'nickname@domain.tld']);
     }
 
     public function testInsert()
@@ -178,7 +178,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $id = (string) Uuid::uuid4();
 
         $user = new User($id);
-        $user->setEmail('firstname.lastname@domain.tld');
+        $user->setUsername('user1d');
         $user->setPassword('verysecurepassword');
         $user->setActive(true);
 
@@ -199,7 +199,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repo = new UserRepository();
 
         $user = new User($id);
-        $user->setEmail('firstname.lastname@domain.tld');
+        $user->setUsername('user1d');
         $user->setPassword('verysecurepassword');
         $user->setActive(true);
 
@@ -214,7 +214,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -227,7 +227,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $user);
 
-        $user->setEmail('nickname@domain.tld');
+        $user->setUsername('nickname@domain.tld');
 
         $repo->update($user);
 
@@ -236,7 +236,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $user);
 
-        self::assertSame('nickname@domain.tld', $user->getEmail());
+        self::assertSame('nickname@domain.tld', $user->getUsername());
     }
 
     public function testUpdateAnUnknownExpectException()
@@ -249,7 +249,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repo = new UserRepository();
 
         $user = new User($id);
-        $user->setEmail('firstname.lastname@domain.tld');
+        $user->setUsername('user1d');
         $user->setPassword('verysecurepassword');
         $user->setActive(true);
 
@@ -263,7 +263,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelRows = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'email' => 'firstname.lastname@domain.tld',
+                'username' => 'user1d',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -287,7 +287,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repo = new UserRepository();
 
         $user = new User($id);
-        $user->setEmail('firstname.lastname@domain.tld');
+        $user->setUsername('user1d');
         $user->setPassword('verysecurepassword');
         $user->setActive(true);
 

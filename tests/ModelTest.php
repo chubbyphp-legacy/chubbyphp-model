@@ -18,16 +18,16 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
     public function testFromRow()
     {
         $id = (string) Uuid::uuid4();
-        $email = 'firstname.lastname@domain.tld';
+        $username = 'user1d';
         $password = 'verysecurepassword';
         $active = true;
 
         /** @var User $user */
-        $user = User::fromRow(['id' => $id, 'email' => $email, 'password' => $password, 'active' => $active]);
+        $user = User::fromRow(['id' => $id, 'username' => $username, 'password' => $password, 'active' => $active]);
 
         self::assertInstanceOf(User::class, $user);
         self::assertSame($id, $user->getId());
-        self::assertSame($email, $user->getEmail());
+        self::assertSame($username, $user->getUsername());
         self::assertSame($password, $user->getPassword());
         self::assertSame($active, $user->isActive());
     }
@@ -35,17 +35,17 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
     public function testToRow()
     {
         $id = (string) Uuid::uuid4();
-        $email = 'firstname.lastname@domain.tld';
+        $username = 'user1d';
         $password = 'verysecurepassword';
         $active = true;
 
         $user = new User($id);
-        $user->setEmail($email);
+        $user->setUsername($username);
         $user->setPassword($password);
         $user->setActive($active);
 
         self::assertSame(
-            ['id' => $id, 'email' => $email, 'password' => $password, 'active' => $active],
+            ['id' => $id, 'username' => $username, 'password' => $password, 'active' => $active],
             $user->toRow()
         );
     }
