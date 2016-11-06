@@ -3,6 +3,8 @@
 namespace Chubbyphp\Tests\Model;
 
 use Chubbyphp\Model\AbstractDoctrineRepository;
+use Chubbyphp\Model\Cache\ModelCacheInterface;
+use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Tests\Model\Resources\User;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
@@ -19,10 +21,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, false),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -65,6 +69,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(2, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with id {id}', $logger->__logs[0]['message']);
@@ -85,10 +91,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -139,6 +147,55 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(1, $cache->__cache);
+        self::assertArrayHasKey('id1', $cache->__cache);
+        self::assertInstanceOf(ModelInterface::class, $cache->__cache['id1']);
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('model: find model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
+    }
+
+    public function testFindFoundWithinCache()
+    {
+        $data = [
+            'id' => 'id1',
+            'username' => 'username',
+            'password' => 'password',
+            'active' => true,
+        ];
+
+        $queryBuilder = $this->getQueryBuilder([
+            $this->getStatement(\PDO::FETCH_ASSOC, $data),
+        ]);
+
+        $cache = $this->getCache(['id1' => User::fromRow($data)]);
+        $logger = $this->getLogger();
+
+        $repository = $this->getDoctrineRepository(
+            $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
+            $logger,
+            User::class,
+            'users'
+        );
+
+        /** @var User $user */
+        $user = $repository->find('id1');
+
+        self::assertInstanceOf(User::class, $user);
+
+        self::assertSame('id1', $user->getId());
+        self::assertSame('username', $user->getUsername());
+        self::assertSame('password', $user->getPassword());
+        self::assertTrue($user->isActive());
+
+        self::assertCount(0, $queryBuilder->__calls);
+
+        self::assertCount(1, $cache->__cache);
+        self::assertInstanceOf(ModelInterface::class, $cache->__cache['id1']);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with id {id}', $logger->__logs[0]['message']);
@@ -151,10 +208,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, false),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -202,6 +261,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(2, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
@@ -222,10 +283,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -281,6 +344,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
@@ -293,10 +358,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, []),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -339,6 +406,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
@@ -364,10 +433,12 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -426,6 +497,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $queryBuilder->__calls
         );
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
@@ -434,6 +507,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testInsert()
     {
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
@@ -456,6 +530,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -468,6 +543,10 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $repository->insert($user);
 
+        self::assertCount(1, $cache->__cache);
+        self::assertArrayHasKey('id1', $cache->__cache);
+        self::assertInstanceOf(ModelInterface::class, $cache->__cache['id1']);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: insert model {model} with id {id}', $logger->__logs[0]['message']);
@@ -476,6 +555,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdate()
     {
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
@@ -501,6 +581,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -513,6 +594,10 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $repository->update($user);
 
+        self::assertCount(1, $cache->__cache);
+        self::assertArrayHasKey('id1', $cache->__cache);
+        self::assertInstanceOf(ModelInterface::class, $cache->__cache['id1']);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: update model {model} with id {id}', $logger->__logs[0]['message']);
@@ -521,6 +606,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
+        $cache = $this->getCache();
         $logger = $this->getLogger();
 
         $repository = $this->getDoctrineRepository(
@@ -540,6 +626,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $cache,
             $logger,
             User::class,
             'users'
@@ -552,6 +639,8 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $repository->delete($user);
 
+        self::assertCount(0, $cache->__cache);
+
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
         self::assertSame('model: delete model {model} with id {id}', $logger->__logs[0]['message']);
@@ -559,15 +648,17 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Connection      $connection
-     * @param LoggerInterface $logger
-     * @param string          $modelClass
-     * @param string          $table
+     * @param Connection          $connection
+     * @param ModelCacheInterface $cache
+     * @param LoggerInterface     $logger
+     * @param string              $modelClass
+     * @param string              $table
      *
      * @return AbstractDoctrineRepository
      */
     private function getDoctrineRepository(
         Connection $connection,
+        ModelCacheInterface $cache,
         LoggerInterface $logger,
         string $modelClass,
         string $table
@@ -575,7 +666,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         /** @var AbstractDoctrineRepository|\PHPUnit_Framework_MockObject_MockObject $repository */
         $repository = $this
             ->getMockBuilder(AbstractDoctrineRepository::class)
-            ->setConstructorArgs([$connection, $logger])
+            ->setConstructorArgs([$connection, $cache, $logger])
             ->setMethods(['getModelClass', 'getTable'])
             ->getMockForAbstractClass();
 
@@ -888,6 +979,61 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             });
 
         return $stmt;
+    }
+
+    /**
+     * @param array $cacheData
+     *
+     * @return ModelCacheInterface
+     */
+    private function getCache(array $cacheData = []): ModelCacheInterface
+    {
+        /** @var ModelCacheInterface|\PHPUnit_Framework_MockObject_MockObject $cache */
+        $cache = $this
+            ->getMockBuilder(ModelCacheInterface::class)
+            ->setMethods(['has', 'get', 'set', 'remove'])
+            ->getMockForAbstractClass()
+        ;
+
+        $cache->__cache = $cacheData;
+
+        $cache
+            ->expects(self::any())
+            ->method('has')
+            ->willReturnCallback(function (string $id) use ($cache) {
+                return array_key_exists($id, $cache->__cache);
+            })
+        ;
+
+        $cache
+            ->expects(self::any())
+            ->method('get')
+            ->willReturnCallback(function (string $id) use ($cache) {
+                return $cache->__cache[$id];
+            })
+        ;
+
+        $cache
+            ->expects(self::any())
+            ->method('set')
+            ->willReturnCallback(function (ModelInterface $model) use ($cache) {
+                $cache->__cache[$model->getId()] = $model;
+
+                return $cache;
+            })
+        ;
+
+        $cache
+            ->expects(self::any())
+            ->method('remove')
+            ->willReturnCallback(function (string $id) use ($cache) {
+                unset($cache->__cache[$id]);
+
+                return $cache;
+            })
+        ;
+
+        return $cache;
     }
 
     /**

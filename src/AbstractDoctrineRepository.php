@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
+use Chubbyphp\Model\Cache\ModelCacheInterface;
+use Chubbyphp\Model\Cache\NullModelCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -17,16 +19,27 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     private $connection;
 
     /**
+     * @var ModelCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @param Connection $connection
+     * @param Connection               $connection
+     * @param ModelCacheInterface|null $cache
+     * @param LoggerInterface|null     $logger
      */
-    public function __construct(Connection $connection, LoggerInterface $logger = null)
-    {
+    public function __construct(
+        Connection $connection,
+        ModelCacheInterface $cache = null,
+        LoggerInterface $logger = null
+    ) {
         $this->connection = $connection;
+        $this->cache = $cache ?? new NullModelCache();
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -42,6 +55,10 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
 
         $this->logger->info('model: find model {model} with id {id}', ['model' => $modelClass, 'id' => $id]);
 
+        if ($this->cache->has($id)) {
+            return $this->cache->get($id);
+        }
+
         $qb = $this->connection->createQueryBuilder();
         $qb->select('*')->from($this->getTable())->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
 
@@ -55,7 +72,11 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
             return null;
         }
 
-        return $modelClass::fromRow($row);
+        $model = $modelClass::fromRow($row);
+
+        $this->cache->set($model);
+
+        return $model;
     }
 
     /**
@@ -146,6 +167,8 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         );
 
         $this->connection->insert($this->getTable(), $model->toRow());
+
+        $this->cache->set($model);
     }
 
     /**
@@ -159,6 +182,8 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         );
 
         $this->connection->update($this->getTable(), $model->toRow(), ['id' => $model->getId()]);
+
+        $this->cache->set($model);
     }
 
     /**
@@ -172,6 +197,8 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         );
 
         $this->connection->delete($this->getTable(), ['id' => $model->getId()]);
+
+        $this->cache->remove($model->getId());
     }
 
     /**
