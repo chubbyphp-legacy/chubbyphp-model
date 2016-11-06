@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,8 +19,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, false),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -59,6 +64,14 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(2, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
+        self::assertSame(LogLevel::WARNING, $logger->__logs[1]['level']);
+        self::assertSame('Model {model} with id {id} not found', $logger->__logs[1]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[1]['context']);
     }
 
     public function testFindFound()
@@ -72,8 +85,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -122,6 +138,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
     public function testFindOneByNotFound()
@@ -130,8 +151,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, false),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -177,6 +201,14 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(2, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[0]['context']);
+        self::assertSame(LogLevel::WARNING, $logger->__logs[1]['level']);
+        self::assertSame('Model {model} by criteria {criteria} not found', $logger->__logs[1]['message']);
+        self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[1]['context']);
     }
 
     public function testFindOneByFound()
@@ -190,8 +222,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -245,6 +280,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[0]['context']);
     }
 
     public function testFindByNotFound()
@@ -253,8 +293,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->getStatement(\PDO::FETCH_ASSOC, []),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -295,6 +338,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'criteria' => ['active' => true]], $logger->__logs[0]['context']);
     }
 
     public function testFindByFound()
@@ -316,8 +364,11 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ]),
         ]);
 
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(['queryBuilder' => [$queryBuilder]]),
+            $logger,
             User::class,
             'users'
         );
@@ -374,10 +425,17 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             ],
             $queryBuilder->__calls
         );
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'criteria' => ['active' => true]], $logger->__logs[0]['context']);
     }
 
     public function testInsert()
     {
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(
                 [
@@ -398,6 +456,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $logger,
             User::class,
             'users'
         );
@@ -408,10 +467,17 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         $user->setActive(true);
 
         $repository->insert($user);
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Insert model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
     public function testUpdate()
     {
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(
                 [
@@ -435,6 +501,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $logger,
             User::class,
             'users'
         );
@@ -445,10 +512,17 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         $user->setActive(true);
 
         $repository->update($user);
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Update model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
     public function testDelete()
     {
+        $logger = $this->getLogger();
+
         $repository = $this->getDoctrineRepository(
             $this->getConnection(
                 [
@@ -466,6 +540,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]
             ),
+            $logger,
             User::class,
             'users'
         );
@@ -476,24 +551,31 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
         $user->setActive(true);
 
         $repository->delete($user);
+
+        self::assertCount(1, $logger->__logs);
+        self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
+        self::assertSame('Delete model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
     /**
-     * @param Connection $connection
-     * @param string     $modelClass
-     * @param string     $table
+     * @param Connection      $connection
+     * @param LoggerInterface $logger
+     * @param string          $modelClass
+     * @param string          $table
      *
      * @return AbstractDoctrineRepository
      */
     private function getDoctrineRepository(
         Connection $connection,
+        LoggerInterface $logger,
         string $modelClass,
         string $table
     ): AbstractDoctrineRepository {
         /** @var AbstractDoctrineRepository|\PHPUnit_Framework_MockObject_MockObject $repository */
         $repository = $this
             ->getMockBuilder(AbstractDoctrineRepository::class)
-            ->setConstructorArgs([$connection])
+            ->setConstructorArgs([$connection, $logger])
             ->setMethods(['getModelClass', 'getTable'])
             ->getMockForAbstractClass();
 
@@ -806,5 +888,55 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
             });
 
         return $stmt;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    private function getLogger(): LoggerInterface
+    {
+        $methods = [
+            'emergency',
+            'alert',
+            'critical',
+            'error',
+            'warning',
+            'notice',
+            'info',
+            'debug',
+        ];
+
+        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        $logger = $this
+            ->getMockBuilder(LoggerInterface::class)
+            ->setMethods(array_merge($methods, ['log']))
+            ->getMockForAbstractClass()
+        ;
+
+        $logger->__logs = [];
+
+        foreach ($methods as $method) {
+            $logger
+                ->expects(self::any())
+                ->method($method)
+                ->willReturnCallback(
+                    function (string $message, array $context = []) use ($logger, $method) {
+                        $logger->log($method, $message, $context);
+                    }
+                )
+            ;
+        }
+
+        $logger
+            ->expects(self::any())
+            ->method('log')
+            ->willReturnCallback(
+                function (string $level, string $message, array $context = []) use ($logger) {
+                    $logger->__logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
+                }
+            )
+        ;
+
+        return $logger;
     }
 }
