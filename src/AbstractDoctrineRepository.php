@@ -40,14 +40,17 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         /** @var ModelInterface $modelClass */
         $modelClass = $this->getModelClass();
 
-        $this->logger->info('Find model {model} with id {id}', ['model' => $modelClass, 'id' => $id]);
+        $this->logger->info('model: find model {model} with id {id}', ['model' => $modelClass, 'id' => $id]);
 
         $qb = $this->connection->createQueryBuilder();
         $qb->select('*')->from($this->getTable())->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
 
         $row = $qb->execute()->fetch(\PDO::FETCH_ASSOC);
         if (false === $row) {
-            $this->logger->warning('Model {model} with id {id} not found', ['model' => $modelClass, 'id' => $id]);
+            $this->logger->warning(
+                'model: model {model} with id {id} not found',
+                ['model' => $modelClass, 'id' => $id]
+            );
 
             return null;
         }
@@ -66,7 +69,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         $modelClass = $this->getModelClass();
 
         $this->logger->info(
-            'Find model {model} by criteria {criteria}',
+            'model: find model {model} with criteria {criteria}',
             ['model' => $modelClass, 'criteria' => $criteria]
         );
 
@@ -75,7 +78,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         $row = $qb->execute()->fetch(\PDO::FETCH_ASSOC);
         if (false === $row) {
             $this->logger->warning(
-                'Model {model} by criteria {criteria} not found',
+                'model: model {model} with criteria {criteria} not found',
                 ['model' => $modelClass, 'criteria' => $criteria]
             );
 
@@ -96,7 +99,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         $modelClass = $this->getModelClass();
 
         $this->logger->info(
-            'Find model {model} by criteria {criteria}',
+            'model: find model {model} with criteria {criteria}',
             ['model' => $modelClass, 'criteria' => $criteria]
         );
 
@@ -138,7 +141,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function insert(ModelInterface $model)
     {
         $this->logger->info(
-            'Insert model {model} with id {id}',
+            'model: insert model {model} with id {id}',
             ['model' => get_class($model), 'id' => $model->getId()]
         );
 
@@ -151,7 +154,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function update(ModelInterface $model)
     {
         $this->logger->info(
-            'Update model {model} with id {id}',
+            'model: update model {model} with id {id}',
             ['model' => get_class($model), 'id' => $model->getId()]
         );
 
@@ -164,7 +167,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
     public function delete(ModelInterface $model)
     {
         $this->logger->info(
-            'Delete model {model} with id {id}',
+            'model: delete model {model} with id {id}',
             ['model' => get_class($model), 'id' => $model->getId()]
         );
 

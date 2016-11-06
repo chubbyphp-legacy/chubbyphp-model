@@ -67,10 +67,10 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(2, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with id {id}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
         self::assertSame(LogLevel::WARNING, $logger->__logs[1]['level']);
-        self::assertSame('Model {model} with id {id} not found', $logger->__logs[1]['message']);
+        self::assertSame('model: model {model} with id {id} not found', $logger->__logs[1]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[1]['context']);
     }
 
@@ -141,7 +141,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with id {id}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
@@ -204,10 +204,10 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(2, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[0]['context']);
         self::assertSame(LogLevel::WARNING, $logger->__logs[1]['level']);
-        self::assertSame('Model {model} by criteria {criteria} not found', $logger->__logs[1]['message']);
+        self::assertSame('model: model {model} with criteria {criteria} not found', $logger->__logs[1]['message']);
         self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[1]['context']);
     }
 
@@ -283,7 +283,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'criteria' => ['username' => 'user1']], $logger->__logs[0]['context']);
     }
 
@@ -341,7 +341,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'criteria' => ['active' => true]], $logger->__logs[0]['context']);
     }
 
@@ -428,7 +428,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Find model {model} by criteria {criteria}', $logger->__logs[0]['message']);
+        self::assertSame('model: find model {model} with criteria {criteria}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'criteria' => ['active' => true]], $logger->__logs[0]['context']);
     }
 
@@ -470,7 +470,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Insert model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame('model: insert model {model} with id {id}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
@@ -515,7 +515,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Update model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame('model: update model {model} with id {id}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
@@ -554,7 +554,7 @@ final class DoctrineRepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $logger->__logs);
         self::assertSame(LogLevel::INFO, $logger->__logs[0]['level']);
-        self::assertSame('Delete model {model} with id {id}', $logger->__logs[0]['message']);
+        self::assertSame('model: delete model {model} with id {id}', $logger->__logs[0]['message']);
         self::assertSame(['model' => User::class, 'id' => 'id1'], $logger->__logs[0]['context']);
     }
 
