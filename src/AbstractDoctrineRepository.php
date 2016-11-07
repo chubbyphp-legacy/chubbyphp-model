@@ -50,7 +50,6 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function find(string $id)
     {
-        /** @var ModelInterface $modelClass */
         $modelClass = $this->getModelClass();
 
         $this->logger->info('model: find model {model} with id {id}', ['model' => $modelClass, 'id' => $id]);
@@ -72,7 +71,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
             return null;
         }
 
-        $model = $modelClass::fromRow($row);
+        $model = $this->fromRow($row);
 
         $this->cache->set($model);
 
@@ -86,7 +85,6 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function findOneBy(array $criteria = [])
     {
-        /** @var ModelInterface $modelClass */
         $modelClass = $this->getModelClass();
 
         $this->logger->info(
@@ -106,7 +104,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
             return null;
         }
 
-        return $modelClass::fromRow($row);
+        return $this->fromRow($row);
     }
 
     /**
@@ -116,7 +114,6 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
      */
     public function findBy(array $criteria = []): array
     {
-        /** @var ModelInterface $modelClass */
         $modelClass = $this->getModelClass();
 
         $this->logger->info(
@@ -132,7 +129,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
 
         $models = [];
         foreach ($rows as $row) {
-            $models[] = $modelClass::fromRow($row);
+            $models[] = $this->fromRow($row);
         }
 
         return $models;
@@ -199,6 +196,18 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface
         $this->connection->delete($this->getTable(), ['id' => $model->getId()]);
 
         $this->cache->remove($model->getId());
+    }
+
+    /**
+     * @param array $row
+     * @return ModelInterface
+     */
+    protected function fromRow(array $row): ModelInterface
+    {
+        /** @var ModelInterface $modelClass */
+        $modelClass = $this->getModelClass();
+
+        return $modelClass::fromRow($row);
     }
 
     /**
