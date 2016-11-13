@@ -149,6 +149,18 @@ final class User implements ModelInterface
             'active' => $this->active,
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'active' => $this->active,
+        ];
+    }
 }
 ```
 
@@ -194,7 +206,7 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param string $id
      *
-     * @return User|ModelInterface|null
+     * @return ModelInterface|null
      */
     public function find(string $id)
     {
@@ -209,33 +221,9 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param User[]|ModelInterface[]|array $criteria
-     *
-     * @return array
-     */
-    public function findBy(array $criteria = []): array
-    {
-        /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
-
-        $models = [];
-        foreach ($this->modelRows as $modelRow) {
-            foreach ($criteria as $key => $value) {
-                if ($modelRow[$key] !== $value) {
-                    continue 2;
-                }
-            }
-
-            $models[] = $modelClass::fromRow($modelRow);
-        }
-
-        return $models;
-    }
-
-    /**
      * @param array $criteria
      *
-     * @return User|ModelInterface|null
+     * @return ModelInterface|null
      */
     public function findOneBy(array $criteria = [])
     {
@@ -255,37 +243,71 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param User|ModelInterface $model
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
+     *
+     * @return array
+     */
+    public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
+    {
+        /** @var User $modelClass */
+        $modelClass = $this->getModelClass();
+
+        $models = [];
+        foreach ($this->modelRows as $modelRow) {
+            foreach ($criteria as $key => $value) {
+                if ($modelRow[$key] !== $value) {
+                    continue 2;
+                }
+            }
+
+            $models[] = $modelClass::fromRow($modelRow);
+        }
+
+        if (null !== $orderBy) {
+            usort($models, function (ModelInterface $a, ModelInterface $b) use ($orderBy) {
+                foreach ($orderBy as $key => $value) {
+                    $propertyReflection = new \ReflectionProperty(get_class($a), $key);
+                    $propertyReflection->setAccessible(true);
+                    $sorting = strcmp($propertyReflection->getValue($a), $propertyReflection->getValue($b));
+                    if ($value === 'DESC') {
+                        $sorting = $sorting * -1;
+                    }
+
+                    if (0 !== $sorting) {
+                        return $sorting;
+                    }
+                }
+
+                return 0;
+            });
+        }
+
+        if (null !== $limit && null !== $offset) {
+            return array_slice($models, $offset, $limit);
+        }
+
+        if (null !== $limit) {
+            return array_slice($models, 0, $limit);
+        }
+
+        return $models;
+    }
+
+    /**
+     * @param ModelInterface $model
      *
      * @throws \Exception
      */
-    public function insert(ModelInterface $model)
+    public function persist(ModelInterface $model)
     {
-        $id = $model->getId();
-        if (isset($this->modelRows[$id])) {
-            throw AlreadyKnownException::create($this->getModelClass(), $id);
-        }
-
         $this->modelRows[$model->getId()] = $model->toRow();
     }
 
     /**
-     * @param User|ModelInterface $model
-     *
-     * @throws \Exception
-     */
-    public function update(ModelInterface $model)
-    {
-        $id = $model->getId();
-        if (!isset($this->modelRows[$id])) {
-            throw UnknownException::create($this->getModelClass(), $id);
-        }
-
-        $this->modelRows[$id] = $model->toRow();
-    }
-
-    /**
-     * @param User|ModelInterface $model
+     * @param ModelInterface $model
      *
      * @throws \Exception
      */
@@ -293,40 +315,10 @@ final class UserRepository implements RepositoryInterface
     {
         $id = $model->getId();
         if (!isset($this->modelRows[$id])) {
-            throw UnknownException::create($this->getModelClass(), $id);
+            return;
         }
 
         unset($this->modelRows[$id]);
-    }
-}
-```
-
-#### Sample UserRepository with Doctrine
-
-```{.php}
-<?php
-
-namespace MyProject\Repository;
-
-use Chubbyphp\Model\AbstractDoctrineRepository;
-use Myproject\Model\User;
-
-final class UserRepository extends AbstractDoctrineRepository
-{
-    /**
-     * @return string
-     */
-    public function getModelClass(): string
-    {
-        return User::class;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getTable(): string
-    {
-        return 'users';
     }
 }
 ```
