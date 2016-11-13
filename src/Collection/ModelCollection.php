@@ -77,6 +77,10 @@ class ModelCollection implements ModelCollectionInterface
     {
         $this->models[$model->getId()] = $model;
 
+        if (isset($this->toRemoveModels[$model->getId()])) {
+            unset($this->toRemoveModels[$model->getId()]);
+        }
+
         return $this;
     }
 
