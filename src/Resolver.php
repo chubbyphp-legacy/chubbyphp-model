@@ -8,10 +8,11 @@ final class Resolver implements ResolverInterface
 {
     /**
      * @param RepositoryInterface $repository
-     * @param string $id
+     * @param string              $id
+     *
      * @return \Closure
      */
-    public function findResolver(RepositoryInterface $repository, string $id): \Closure
+    public function find(RepositoryInterface $repository, string $id): \Closure
     {
         return function () use ($repository, $id) {
             return $repository->find($id);
@@ -20,10 +21,11 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param RepositoryInterface $repository
-     * @param array $criteria
+     * @param array               $criteria
+     *
      * @return \Closure
      */
-    public function findOneByResolver(RepositoryInterface $repository, array $criteria): \Closure
+    public function findOneBy(RepositoryInterface $repository, array $criteria): \Closure
     {
         return function () use ($repository, $criteria) {
             return $repository->findOneBy($criteria);
@@ -32,13 +34,14 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param RepositoryInterface $repository
-     * @param array $criteria
-     * @param array|null $orderBy
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param array               $criteria
+     * @param array|null          $orderBy
+     * @param int|null            $limit
+     * @param int|null            $offset
+     *
      * @return ModelCollection
      */
-    public function findByCollection(
+    public function findBy(
         RepositoryInterface $repository,
         array $criteria, array
         $orderBy = null,

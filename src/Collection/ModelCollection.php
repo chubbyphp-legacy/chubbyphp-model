@@ -70,6 +70,7 @@ class ModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function add(ModelInterface $model): ModelCollectionInterface
@@ -81,6 +82,7 @@ class ModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function remove(ModelInterface $model): ModelCollectionInterface

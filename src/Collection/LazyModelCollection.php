@@ -28,6 +28,7 @@ class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * ResolverCollection constructor.
+     *
      * @param \Closure $resolver
      */
     public function __construct(\Closure $resolver)
@@ -96,6 +97,7 @@ class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function add(ModelInterface $model): ModelCollectionInterface
@@ -109,6 +111,7 @@ class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function remove(ModelInterface $model): ModelCollectionInterface
