@@ -3,7 +3,7 @@
 namespace Chubbyphp\Model;
 
 use Chubbyphp\Model\Collection\LazyModelCollection;
-use Chubbyphp\Model\Collection\ModelCollection;
+use Chubbyphp\Model\Collection\ModelCollectionInterface;
 
 final class Resolver implements ResolverInterface
 {
@@ -40,7 +40,7 @@ final class Resolver implements ResolverInterface
      * @param int|null            $limit
      * @param int|null            $offset
      *
-     * @return ModelCollection
+     * @return ModelCollectionInterface
      */
     public function findBy(
         RepositoryInterface $repository,
@@ -48,7 +48,7 @@ final class Resolver implements ResolverInterface
         $orderBy = null,
         int $limit = null,
         int $offset = null
-    ): ModelCollection {
+    ): ModelCollectionInterface {
         return new LazyModelCollection(function () use ($repository, $criteria, $orderBy, $limit, $offset) {
             return $repository->findBy($criteria, $orderBy, $limit, $offset);
         });

@@ -2,7 +2,7 @@
 
 namespace Chubbyphp\Model;
 
-use Chubbyphp\Model\Collection\ModelCollection;
+use Chubbyphp\Model\Collection\ModelCollectionInterface;
 
 interface ResolverInterface
 {
@@ -29,7 +29,7 @@ interface ResolverInterface
      * @param int|null            $limit
      * @param int|null            $offset
      *
-     * @return ModelCollection
+     * @return ModelCollectionInterface
      */
     public function findBy(
         RepositoryInterface $repository,
@@ -37,5 +37,5 @@ interface ResolverInterface
         $orderBy = null,
         int $limit = null,
         int $offset = null
-    ): ModelCollection;
+    ): ModelCollectionInterface;
 }
