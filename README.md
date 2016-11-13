@@ -15,7 +15,7 @@ Model and repository made simple.
 
 ## Suggest
 
- * doctrine/dbal: ^2.5.5
+ * chubbyphp/chubbyphp-model-doctrine-dbal: ~1.0@dev
 
 ## Installation
 
