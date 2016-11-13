@@ -2,7 +2,7 @@
 
 namespace Chubbyphp\Model;
 
-use Chubbyphp\Model\Collection\LazyPersistedModelCollection;
+use Chubbyphp\Model\Collection\ModelCollection;
 
 interface ResolverInterface
 {
@@ -26,7 +26,7 @@ interface ResolverInterface
      * @param array|null $orderBy
      * @param int|null $limit
      * @param int|null $offset
-     * @return LazyPersistedModelCollection
+     * @return ModelCollection
      */
     public function findByCollection(
         RepositoryInterface $repository,
@@ -34,5 +34,5 @@ interface ResolverInterface
         $orderBy = null,
         int $limit = null,
         int $offset = null
-    ): LazyPersistedModelCollection;
+    ): ModelCollection;
 }

@@ -4,7 +4,7 @@ namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
 
-class LazyPersistedModelCollection implements ModelCollectionInterface
+class LazyModelCollection implements ModelCollectionInterface
 {
     /**
      * @var \Closure
