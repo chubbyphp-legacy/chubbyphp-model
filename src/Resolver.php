@@ -2,6 +2,7 @@
 
 namespace Chubbyphp\Model;
 
+use Chubbyphp\Model\Collection\LazyModelCollection;
 use Chubbyphp\Model\Collection\ModelCollection;
 
 final class Resolver implements ResolverInterface
