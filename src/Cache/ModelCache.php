@@ -4,23 +4,22 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model\Cache;
 
-use Chubbyphp\Model\ModelInterface;
-
 final class ModelCache implements ModelCacheInterface
 {
     /**
-     * @var ModelInterface[]|array
+     * @var array
      */
     private $cache = [];
 
     /**
-     * @param ModelInterface $model
+     * @param string $id
+     * @param array  $row
      *
      * @return ModelCacheInterface
      */
-    public function set(ModelInterface $model): ModelCacheInterface
+    public function set(string $id, array $row): ModelCacheInterface
     {
-        $this->cache[$model->getId()] = $model;
+        $this->cache[$id] = $row;
 
         return $this;
     }
@@ -38,14 +37,14 @@ final class ModelCache implements ModelCacheInterface
     /**
      * @param string $id
      *
-     * @return ModelInterface
+     * @return array
      *
-     * @throws ModelNotFoundException
+     * @throws RowNotFoundException
      */
     public function get(string $id)
     {
         if (!$this->has($id)) {
-            throw ModelNotFoundException::fromId($id);
+            throw RowNotFoundException::fromId($id);
         }
 
         return $this->cache[$id];

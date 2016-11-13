@@ -3,8 +3,7 @@
 namespace Chubbyphp\Tests\Model\Cache;
 
 use Chubbyphp\Model\Cache\ModelCache;
-use Chubbyphp\Model\Cache\ModelNotFoundException;
-use Chubbyphp\Tests\Model\Resources\User;
+use Chubbyphp\Model\Cache\RowNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -18,7 +17,7 @@ final class ModelCacheTest extends \PHPUnit_Framework_TestCase
 
         $cache = new ModelCache();
 
-        $cache->set(new User($id));
+        $cache->set($id, []);
     }
 
     public function testHasWithoutValue()
@@ -35,7 +34,7 @@ final class ModelCacheTest extends \PHPUnit_Framework_TestCase
         $id = (string) Uuid::uuid4();
 
         $cache = new ModelCache();
-        $cache->set(new User($id));
+        $cache->set($id, []);
 
         self::assertTrue($cache->has($id));
     }
@@ -44,8 +43,8 @@ final class ModelCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        self::expectException(ModelNotFoundException::class);
-        self::expectExceptionMessage(sprintf('Model with id %s not found within cache', $id));
+        self::expectException(RowNotFoundException::class);
+        self::expectExceptionMessage(sprintf('Row with id %s not found within cache', $id));
 
         $cache = new ModelCache();
         $cache->get($id);
@@ -55,12 +54,10 @@ final class ModelCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        $user = new User($id);
-
         $cache = new ModelCache();
-        $cache->set($user);
+        $cache->set($id, ['key' => 'value']);
 
-        self::assertSame($user, $cache->get($id));
+        self::assertSame(['key' => 'value'], $cache->get($id));
     }
 
     public function testRemoveValue()

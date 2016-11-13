@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
-use Chubbyphp\Model\Exception\AlreadyKnownException;
 use Chubbyphp\Model\Exception\NotUniqueException;
-use Chubbyphp\Model\Exception\UnknownException;
 
 interface RepositoryInterface
 {
@@ -25,37 +23,26 @@ interface RepositoryInterface
     /**
      * @param array $criteria
      *
-     * @return ModelInterface[]array
-     */
-    public function findBy(array $criteria = []): array;
-
-    /**
-     * @param array $criteria
-     *
      * @return ModelInterface|null
      *
      * @throws NotUniqueException
      */
-    public function findOneBy(array $criteria = []);
+    public function findOneBy(array $criteria);
 
     /**
-     * @param ModelInterface $model
+     * @param array $criteria
      *
-     * @throws AlreadyKnownException
+     * @return ModelInterface[]|array
      */
-    public function insert(ModelInterface $model);
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null): array;
 
     /**
      * @param ModelInterface $model
-     *
-     * @throws UnknownException
      */
-    public function update(ModelInterface $model);
+    public function persist(ModelInterface $model);
 
     /**
      * @param ModelInterface $model
-     *
-     * @throws UnknownException
      */
     public function delete(ModelInterface $model);
 }

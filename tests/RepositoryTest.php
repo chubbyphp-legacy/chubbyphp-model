@@ -2,9 +2,7 @@
 
 namespace Chubbyphp\Tests\Model;
 
-use Chubbyphp\Model\Exception\AlreadyKnownException;
 use Chubbyphp\Model\Exception\NotUniqueException;
-use Chubbyphp\Model\Exception\UnknownException;
 use Chubbyphp\Tests\Model\Resources\User;
 use Chubbyphp\Tests\Model\Resources\UserRepository;
 use Ramsey\Uuid\Uuid;
@@ -171,7 +169,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $repo->findOneBy(['username' => 'nickname@domain.tld']);
     }
 
-    public function testInsert()
+    public function testPersist()
     {
         $repo = new UserRepository();
 
@@ -184,29 +182,9 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertNull($repo->find($id));
 
-        $repo->insert($user);
+        $repo->persist($user);
 
         self::assertInstanceOf(User::class, $repo->find($id));
-    }
-
-    public function testInsertAnAlreadyKnownExpectException()
-    {
-        $id = (string) Uuid::uuid4();
-
-        self::expectException(AlreadyKnownException::class);
-        self::expectExceptionMessage('Already known model of class '.User::class.' with id '.$id);
-
-        $repo = new UserRepository();
-
-        $user = new User($id);
-        $user->setUsername('user1d');
-        $user->setPassword('verysecurepassword');
-        $user->setActive(true);
-
-        self::assertNull($repo->find($id));
-
-        $repo->insert($user);
-        $repo->insert($user);
     }
 
     public function testUpdate()
@@ -229,7 +207,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $user->setUsername('nickname@domain.tld');
 
-        $repo->update($user);
+        $repo->persist($user);
 
         /** @var User $user */
         $user = $repo->find($modelRows[0]['id']);
@@ -237,25 +215,6 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf(User::class, $user);
 
         self::assertSame('nickname@domain.tld', $user->getUsername());
-    }
-
-    public function testUpdateAnUnknownExpectException()
-    {
-        $id = (string) Uuid::uuid4();
-
-        self::expectException(UnknownException::class);
-        self::expectExceptionMessage('Unknown model of class '.User::class.' with id '.$id);
-
-        $repo = new UserRepository();
-
-        $user = new User($id);
-        $user->setUsername('user1d');
-        $user->setPassword('verysecurepassword');
-        $user->setActive(true);
-
-        self::assertNull($repo->find($id));
-
-        $repo->update($user);
     }
 
     public function testDelete()
@@ -273,25 +232,6 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         /** @var User $user */
         $user = $repo->find($modelRows[0]['id']);
-
-        $repo->delete($user);
-    }
-
-    public function testDeleteAnUnknownExpectException()
-    {
-        $id = (string) Uuid::uuid4();
-
-        self::expectException(UnknownException::class);
-        self::expectExceptionMessage('Unknown model of class '.User::class.' with id '.$id);
-
-        $repo = new UserRepository();
-
-        $user = new User($id);
-        $user->setUsername('user1d');
-        $user->setPassword('verysecurepassword');
-        $user->setActive(true);
-
-        self::assertNull($repo->find($id));
 
         $repo->delete($user);
     }

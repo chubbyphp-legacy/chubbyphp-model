@@ -2,9 +2,7 @@
 
 namespace Chubbyphp\Tests\Model\Resources;
 
-use Chubbyphp\Model\Exception\AlreadyKnownException;
 use Chubbyphp\Model\Exception\NotUniqueException;
-use Chubbyphp\Model\Exception\UnknownException;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\RepositoryInterface;
 
@@ -54,30 +52,6 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param array $criteria
      *
-     * @return array
-     */
-    public function findBy(array $criteria = []): array
-    {
-        /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
-
-        $models = [];
-        foreach ($this->modelRows as $modelRow) {
-            foreach ($criteria as $key => $value) {
-                if ($modelRow[$key] !== $value) {
-                    continue 2;
-                }
-            }
-
-            $models[] = $modelClass::fromRow($modelRow);
-        }
-
-        return $models;
-    }
-
-    /**
-     * @param array $criteria
-     *
      * @return ModelInterface|null
      */
     public function findOneBy(array $criteria = [])
@@ -98,18 +72,48 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface $model
+     * @param array $criteria
      *
-     * @throws \Exception
+     * @return array
      */
-    public function insert(ModelInterface $model)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null): array
     {
-        $id = $model->getId();
-        if (isset($this->modelRows[$id])) {
-            throw AlreadyKnownException::create($this->getModelClass(), $id);
+        /** @var User $modelClass */
+        $modelClass = $this->getModelClass();
+
+        $models = [];
+        foreach ($this->modelRows as $modelRow) {
+            foreach ($criteria as $key => $value) {
+                if ($modelRow[$key] !== $value) {
+                    continue 2;
+                }
+            }
+
+            $models[] = $modelClass::fromRow($modelRow);
         }
 
-        $this->modelRows[$model->getId()] = $model->toRow();
+        if (null !== $orderBy) {
+            usort($models, function (array $a, array $b) use ($orderBy) {
+                foreach ($orderBy as $key => $value) {
+                    $sorting = strcmp($a[$key], $b[$key]);
+                    if (0 !== $sorting) {
+                        return $sorting;
+                    }
+                }
+
+                return 0;
+            });
+        }
+
+        if (null !== $limit && null !== $offset) {
+            return array_slice($models, $offset, $limit);
+        }
+
+        if (null !== $limit) {
+            return array_slice($models, 0, $limit);
+        }
+
+        return $models;
     }
 
     /**
@@ -117,14 +121,9 @@ final class UserRepository implements RepositoryInterface
      *
      * @throws \Exception
      */
-    public function update(ModelInterface $model)
+    public function persist(ModelInterface $model)
     {
-        $id = $model->getId();
-        if (!isset($this->modelRows[$id])) {
-            throw UnknownException::create($this->getModelClass(), $id);
-        }
-
-        $this->modelRows[$id] = $model->toRow();
+        $this->modelRows[$model->getId()] = $model->toRow();
     }
 
     /**
@@ -136,7 +135,7 @@ final class UserRepository implements RepositoryInterface
     {
         $id = $model->getId();
         if (!isset($this->modelRows[$id])) {
-            throw UnknownException::create($this->getModelClass(), $id);
+            return;
         }
 
         unset($this->modelRows[$id]);

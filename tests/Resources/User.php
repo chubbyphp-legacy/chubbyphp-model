@@ -118,4 +118,16 @@ final class User implements ModelInterface
             'active' => $this->active,
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'active' => $this->active,
+        ];
+    }
 }
