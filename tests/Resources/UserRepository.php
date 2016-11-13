@@ -72,11 +72,14 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $criteria
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
      *
      * @return array
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null): array
+    public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
         /** @var User $modelClass */
         $modelClass = $this->getModelClass();
@@ -93,9 +96,15 @@ final class UserRepository implements RepositoryInterface
         }
 
         if (null !== $orderBy) {
-            usort($models, function (array $a, array $b) use ($orderBy) {
+            usort($models, function (ModelInterface $a, ModelInterface $b) use ($orderBy) {
                 foreach ($orderBy as $key => $value) {
-                    $sorting = strcmp($a[$key], $b[$key]);
+                    $propertyReflection = new \ReflectionProperty(get_class($a), $key);
+                    $propertyReflection->setAccessible(true);
+                    $sorting = strcmp($propertyReflection->getValue($a), $propertyReflection->getValue($b));
+                    if ($value === 'DESC') {
+                        $sorting = $sorting * -1;
+                    }
+
                     if (0 !== $sorting) {
                         return $sorting;
                     }
