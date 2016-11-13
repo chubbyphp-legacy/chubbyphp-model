@@ -414,7 +414,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame('nickname@domain.tld', $user->getUsername());
     }
 
-    public function testDelete()
+    public function testRemove()
     {
         $modelRows = [
             [
@@ -430,6 +430,6 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         /** @var User $user */
         $user = $repo->find($modelRows[0]['id']);
 
-        $repo->delete($user);
+        $repo->remove($user);
     }
 }

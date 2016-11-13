@@ -140,7 +140,7 @@ final class UserRepository implements RepositoryInterface
      *
      * @throws \Exception
      */
-    public function delete(ModelInterface $model)
+    public function remove(ModelInterface $model)
     {
         $id = $model->getId();
         if (!isset($this->modelRows[$id])) {

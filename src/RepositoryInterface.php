@@ -47,5 +47,5 @@ interface RepositoryInterface
     /**
      * @param ModelInterface $model
      */
-    public function delete(ModelInterface $model);
+    public function remove(ModelInterface $model);
 }
