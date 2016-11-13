@@ -9,7 +9,27 @@ class ModelCollection implements ModelCollectionInterface
     /**
      * @var ModelInterface[]|array
      */
-    private $models = [];
+    private $initialModels;
+
+    /**
+     * @var ModelInterface[]|array
+     */
+    private $models;
+
+    /**
+     * @var ModelInterface[]|array
+     */
+    private $toRemoveModels;
+
+    /**
+     * @param ModelInterface[]|array $models
+     */
+    public function __construct(array $models = [])
+    {
+        $this->initialModels = $models;
+        $this->models = $models;
+        $this->toRemoveModels = [];
+    }
 
     /**
      * @return ModelInterface
@@ -69,6 +89,10 @@ class ModelCollection implements ModelCollectionInterface
             unset($this->models[$model->getId()]);
         }
 
+        if (isset($this->initialModels[$model->getId()])) {
+            $this->toRemoveModels[$model->getId()] = $model;
+        }
+
         return $this;
     }
 
@@ -85,7 +109,7 @@ class ModelCollection implements ModelCollectionInterface
      */
     public function toRemove(): array
     {
-        return [];
+        return $this->toRemoveModels;
     }
 
     /**
