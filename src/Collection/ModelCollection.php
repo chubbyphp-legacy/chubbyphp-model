@@ -26,7 +26,7 @@ class ModelCollection implements ModelCollectionInterface
      * @param RepositoryInterface $repository
      * @param array               $models
      */
-    public function __construct(RepositoryInterface $repository, array $models)
+    public function __construct(RepositoryInterface $repository, array $models = [])
     {
         $this->repository = $repository;
         $models = $this->modelsWithIdKey($models);
