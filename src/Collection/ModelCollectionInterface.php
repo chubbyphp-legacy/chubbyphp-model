@@ -11,13 +11,7 @@ interface ModelCollectionInterface extends \Iterator, \JsonSerializable
      */
     public function set(array $models);
 
-    /**
-     * @return ModelInterface[]|array
-     */
-    public function toPersist(): array;
+    public function persist();
 
-    /**
-     * @return ModelInterface[]|array
-     */
-    public function toRemove(): array;
+    public function remove();
 }

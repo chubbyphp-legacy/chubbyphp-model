@@ -101,27 +101,20 @@ class ModelCollection implements ModelCollectionInterface
         $this->models = $this->modelsWithIdKey($models);
     }
 
-    /**
-     * @return ModelInterface[]
-     */
-    public function toPersist(): array
+    public function persist()
     {
-        return $this->models;
+        foreach ($this->models as $model) {
+            $this->repository->persist($model);
+        }
     }
 
-    /**
-     * @return array
-     */
-    public function toRemove(): array
+    public function remove()
     {
-        $toRemove = [];
         foreach ($this->initialModels as $initialModel) {
             if (!isset($this->models[$initialModel->getId()])) {
-                $toRemove[$initialModel->getId()] = $initialModel;
+                $this->repository->remove($initialModel);
             }
         }
-
-        return $toRemove;
     }
 
     /**
