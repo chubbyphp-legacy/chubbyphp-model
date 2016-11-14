@@ -14,11 +14,6 @@ interface RepositoryInterface
     public function getModelClass(): string;
 
     /**
-     * @return ModelInterface
-     */
-    public function create(): ModelInterface;
-
-    /**
      * @param string $id
      *
      * @return ModelInterface|null
