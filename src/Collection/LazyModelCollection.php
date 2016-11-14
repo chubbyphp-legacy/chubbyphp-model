@@ -3,11 +3,17 @@
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RepositoryInterface;
 
 class LazyModelCollection implements ModelCollectionInterface
 {
     /**
-     * @var \Closure
+     * @var RepositoryInterface
+     */
+    private $repository;
+
+    /**
+     * @var \Closure;
      */
     private $resolver;
 
@@ -22,30 +28,60 @@ class LazyModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * @var ModelInterface[]|array
-     */
-    private $toRemoveModels;
-
-    /**
-     * ResolverCollection constructor.
+     * LazyModelCollection constructor.
      *
-     * @param \Closure $resolver
+     * @param RepositoryInterface $repository
+     * @param array               $criteria
+     * @param array|null          $orderBy
+     * @param int|null            $limit
+     * @param int|null            $offset
      */
-    public function __construct(\Closure $resolver)
-    {
-        $this->resolver = $resolver;
+    public function __construct(
+        RepositoryInterface $repository,
+        array $criteria,
+        array $orderBy = null,
+        int $limit = null,
+        int $offset = null
+    ) {
+        $this->repository = $repository;
+        $this->resolver = function () use ($repository, $criteria, $orderBy, $limit, $offset) {
+            return $repository->findBy($criteria, $orderBy, $limit, $offset);
+        };
     }
 
     private function loadModels()
     {
-        if (null !== $this->models) {
+        if (null !== $this->initialModels) {
             return;
         }
 
         $resolver = $this->resolver;
-        $this->initialModels = (array) $resolver();
-        $this->models = $this->initialModels;
-        $this->toRemoveModels = [];
+
+        $models = $this->modelsWithIdKey((array) $resolver());
+
+        $this->initialModels = $models;
+        $this->models = $models;
+    }
+
+    /**
+     * @param ModelInterface[]|array $models
+     *
+     * @return ModelInterface[]|array
+     */
+    private function modelsWithIdKey(array $models): array
+    {
+        $modelsWithIdKey = [];
+        foreach ($models as $model) {
+            if (!$model instanceof ModelInterface) {
+                throw new \InvalidArgumentException(
+                    sprintf('Model with index %d needs to implement: %s', ModelInterface::class)
+                );
+            }
+
+            $modelsWithIdKey[$model->getId()] = $model;
+        }
+
+        return $modelsWithIdKey;
     }
 
     /**
@@ -96,45 +132,17 @@ class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @param ModelInterface $model
-     *
-     * @return ModelCollectionInterface
+     * @param ModelInterface[]|array $models
      */
-    public function add(ModelInterface $model): ModelCollectionInterface
+    public function set(array $models)
     {
         $this->loadModels();
 
-        $this->models[$model->getId()] = $model;
-
-        if (isset($this->toRemoveModels[$model->getId()])) {
-            unset($this->toRemoveModels[$model->getId()]);
-        }
-
-        return $this;
+        $this->models = $this->modelsWithIdKey($models);
     }
 
     /**
-     * @param ModelInterface $model
-     *
-     * @return ModelCollectionInterface
-     */
-    public function remove(ModelInterface $model): ModelCollectionInterface
-    {
-        $this->loadModels();
-
-        if (isset($this->models[$model->getId()])) {
-            unset($this->models[$model->getId()]);
-        }
-
-        if (isset($this->initialModels[$model->getId()])) {
-            $this->toRemoveModels[$model->getId()] = $model;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return ModelInterface[]|array
+     * @return ModelInterface[]
      */
     public function toPersist(): array
     {
@@ -144,13 +152,20 @@ class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @return ModelInterface[]|array
+     * @return array
      */
     public function toRemove(): array
     {
         $this->loadModels();
 
-        return $this->toRemoveModels;
+        $toRemove = [];
+        foreach ($this->initialModels as $initialModel) {
+            if (!isset($this->models[$initialModel->getId()])) {
+                $toRemove[$initialModel->getId()] = $initialModel;
+            }
+        }
+
+        return $toRemove;
     }
 
     /**
@@ -160,11 +175,11 @@ class LazyModelCollection implements ModelCollectionInterface
     {
         $this->loadModels();
 
-        $serialzedModels = [];
+        $serializedModels = [];
         foreach ($this->models as $model) {
-            $serialzedModels[] = $model->jsonSerialize();
+            $serializedModels[] = $model->jsonSerialize();
         }
 
-        return $serialzedModels;
+        return $serializedModels;
     }
 }

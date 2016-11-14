@@ -3,9 +3,15 @@
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RepositoryInterface;
 
 class ModelCollection implements ModelCollectionInterface
 {
+    /**
+     * @var RepositoryInterface
+     */
+    private $repository;
+
     /**
      * @var ModelInterface[]|array
      */
@@ -17,18 +23,37 @@ class ModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * @var ModelInterface[]|array
+     * @param RepositoryInterface $repository
+     * @param array               $models
      */
-    private $toRemoveModels;
+    public function __construct(RepositoryInterface $repository, array $models)
+    {
+        $this->repository = $repository;
+        $models = $this->modelsWithIdKey($models);
+
+        $this->initialModels = $models;
+        $this->models = $models;
+    }
 
     /**
      * @param ModelInterface[]|array $models
+     *
+     * @return ModelInterface[]|array
      */
-    public function __construct(array $models = [])
+    private function modelsWithIdKey(array $models): array
     {
-        $this->initialModels = $models;
-        $this->models = $models;
-        $this->toRemoveModels = [];
+        $modelsWithIdKey = [];
+        foreach ($models as $model) {
+            if (!$model instanceof ModelInterface) {
+                throw new \InvalidArgumentException(
+                    sprintf('Model with index %d needs to implement: %s', ModelInterface::class)
+                );
+            }
+
+            $modelsWithIdKey[$model->getId()] = $model;
+        }
+
+        return $modelsWithIdKey;
     }
 
     /**
@@ -69,41 +94,15 @@ class ModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @param ModelInterface $model
-     *
-     * @return ModelCollectionInterface
+     * @param ModelInterface[]|array $models
      */
-    public function add(ModelInterface $model): ModelCollectionInterface
+    public function set(array $models)
     {
-        $this->models[$model->getId()] = $model;
-
-        if (isset($this->toRemoveModels[$model->getId()])) {
-            unset($this->toRemoveModels[$model->getId()]);
-        }
-
-        return $this;
+        $this->models = $this->modelsWithIdKey($models);
     }
 
     /**
-     * @param ModelInterface $model
-     *
-     * @return ModelCollectionInterface
-     */
-    public function remove(ModelInterface $model): ModelCollectionInterface
-    {
-        if (isset($this->models[$model->getId()])) {
-            unset($this->models[$model->getId()]);
-        }
-
-        if (isset($this->initialModels[$model->getId()])) {
-            $this->toRemoveModels[$model->getId()] = $model;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return ModelInterface[]|array
+     * @return ModelInterface[]
      */
     public function toPersist(): array
     {
@@ -111,11 +110,18 @@ class ModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @return ModelInterface[]|array
+     * @return array
      */
     public function toRemove(): array
     {
-        return $this->toRemoveModels;
+        $toRemove = [];
+        foreach ($this->initialModels as $initialModel) {
+            if (!isset($this->models[$initialModel->getId()])) {
+                $toRemove[$initialModel->getId()] = $initialModel;
+            }
+        }
+
+        return $toRemove;
     }
 
     /**
@@ -123,11 +129,11 @@ class ModelCollection implements ModelCollectionInterface
      */
     public function jsonSerialize(): array
     {
-        $serialzedModels = [];
+        $serializedModels = [];
         foreach ($this->models as $model) {
-            $serialzedModels[] = $model->jsonSerialize();
+            $serializedModels[] = $model->jsonSerialize();
         }
 
-        return $serialzedModels;
+        return $serializedModels;
     }
 }
