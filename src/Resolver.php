@@ -29,4 +29,25 @@ final class Resolver implements ResolverInterface
             return $repository->findOneBy($criteria);
         };
     }
+
+    /**
+     * @param RepositoryInterface $repository
+     * @param array               $criteria
+     * @param array|null          $orderBy
+     * @param int|null            $limit
+     * @param int|null            $offset
+     *
+     * @return \Closure
+     */
+    public function findBy(
+        RepositoryInterface $repository,
+        array $criteria,
+        array $orderBy = null,
+        int $limit = null,
+        int $offset = null
+    ): \Closure {
+        return function () use ($repository, $criteria, $orderBy, $limit, $offset) {
+            return $repository->findBy($criteria, $orderBy, $limit, $offset);
+        };
+    }
 }
