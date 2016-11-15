@@ -3,15 +3,9 @@
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
-use Chubbyphp\Model\RepositoryInterface;
 
 class ModelCollection implements ModelCollectionInterface
 {
-    /**
-     * @var RepositoryInterface
-     */
-    private $repository;
-
     /**
      * @var ModelInterface[]|array
      */
@@ -23,12 +17,10 @@ class ModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * @param RepositoryInterface $repository
-     * @param array               $models
+     * @param ModelInterface[]|array $models
      */
-    public function __construct(RepositoryInterface $repository, array $models = [])
+    public function __construct(array $models = [])
     {
-        $this->repository = $repository;
         $models = $this->modelsWithIdKey($models);
 
         $this->initialModels = $models;
@@ -101,20 +93,27 @@ class ModelCollection implements ModelCollectionInterface
         $this->models = $this->modelsWithIdKey($models);
     }
 
-    public function persist()
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toPersist(): array
     {
-        foreach ($this->models as $model) {
-            $this->repository->persist($model);
-        }
+        return $this->models;
     }
 
-    public function remove()
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toRemove(): array
     {
+        $toRemoveModels = [];
         foreach ($this->initialModels as $initialModel) {
             if (!isset($this->models[$initialModel->getId()])) {
-                $this->repository->remove($initialModel);
+                $toRemoveModels[$initialModel->getId()] = $initialModel;
             }
         }
+
+        return $toRemoveModels;
     }
 
     /**

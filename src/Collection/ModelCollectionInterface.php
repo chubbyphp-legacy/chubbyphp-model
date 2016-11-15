@@ -7,11 +7,17 @@ use Chubbyphp\Model\ModelInterface;
 interface ModelCollectionInterface extends \Iterator, \JsonSerializable
 {
     /**
-     * @param ModelInterface[] $models
+     * @param ModelInterface[]|array $models
      */
     public function set(array $models);
 
-    public function persist();
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toPersist(): array;
 
-    public function remove();
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toRemove(): array;
 }

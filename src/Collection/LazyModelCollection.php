@@ -3,15 +3,9 @@
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
-use Chubbyphp\Model\RepositoryInterface;
 
 class LazyModelCollection implements ModelCollectionInterface
 {
-    /**
-     * @var RepositoryInterface
-     */
-    private $repository;
-
     /**
      * @var \Closure;
      */
@@ -28,25 +22,11 @@ class LazyModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * LazyModelCollection constructor.
-     *
-     * @param RepositoryInterface $repository
-     * @param array               $criteria
-     * @param array|null          $orderBy
-     * @param int|null            $limit
-     * @param int|null            $offset
+     * @param \Closure $resolver
      */
-    public function __construct(
-        RepositoryInterface $repository,
-        array $criteria,
-        array $orderBy = null,
-        int $limit = null,
-        int $offset = null
-    ) {
-        $this->repository = $repository;
-        $this->resolver = function () use ($repository, $criteria, $orderBy, $limit, $offset) {
-            return $repository->findBy($criteria, $orderBy, $limit, $offset);
-        };
+    public function __construct(\Closure $resolver)
+    {
+        $this->resolver = $resolver;
     }
 
     private function loadModels()
@@ -141,24 +121,31 @@ class LazyModelCollection implements ModelCollectionInterface
         $this->models = $this->modelsWithIdKey($models);
     }
 
-    public function persist()
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toPersist(): array
     {
         $this->loadModels();
 
-        foreach ($this->models as $model) {
-            $this->repository->persist($model);
-        }
+        return $this->models;
     }
 
-    public function remove()
+    /**
+     * @return ModelInterface[]|array
+     */
+    public function toRemove(): array
     {
         $this->loadModels();
 
+        $toRemoveModels = [];
         foreach ($this->initialModels as $initialModel) {
             if (!isset($this->models[$initialModel->getId()])) {
-                $this->repository->remove($initialModel);
+                $toRemoveModels[$initialModel->getId()] = $initialModel;
             }
         }
+
+        return $toRemoveModels;
     }
 
     /**
