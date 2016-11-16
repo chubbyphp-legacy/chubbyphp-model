@@ -22,8 +22,6 @@ interface RepositoryInterface
      * @param array $criteria
      *
      * @return ModelInterface|null
-     *
-     * @throws NotUniqueException
      */
     public function findOneBy(array $criteria);
 
