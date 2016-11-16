@@ -2,7 +2,6 @@
 
 namespace Chubbyphp\Tests\Model\Resources;
 
-use Chubbyphp\Model\NotUniqueException;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\RepositoryInterface;
 
@@ -62,13 +61,7 @@ final class UserRepository implements RepositoryInterface
             return null;
         }
 
-        $modelsCount = count($models);
-
-        if (1 === $modelsCount) {
-            return reset($models);
-        }
-
-        throw NotUniqueException::create($this->getModelClass(), $criteria, $modelsCount);
+        return reset($models);
     }
 
     /**

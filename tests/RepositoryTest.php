@@ -2,7 +2,6 @@
 
 namespace Chubbyphp\Tests\Model;
 
-use Chubbyphp\Model\NotUniqueException;
 use Chubbyphp\Tests\Model\Resources\User;
 use Chubbyphp\Tests\Model\Resources\UserRepository;
 use Ramsey\Uuid\Uuid;
@@ -332,38 +331,6 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[2]['username'], $user->getUsername());
         self::assertSame($modelEntries[2]['password'], $user->getPassword());
         self::assertSame($modelEntries[2]['active'], $user->isActive());
-    }
-
-    public function testFindOneByNotUniqueExceptsException()
-    {
-        self::expectException(NotUniqueException::class);
-        self::expectExceptionMessage(
-            'There are 2 models of class '.User::class.' for criteria username: nickname1@domain.tld'
-        );
-
-        $modelEntries = [
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-        ];
-
-        $repo = new UserRepository($modelEntries);
-        $repo->findOneBy(['username' => 'nickname1@domain.tld']);
     }
 
     public function testPersist()
