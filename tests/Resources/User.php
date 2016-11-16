@@ -40,7 +40,7 @@ final class User implements ModelInterface
      *
      * @return ModelInterface
      */
-    public static function fromRow(array $data): ModelInterface
+    public static function fromPersistence(array $data): ModelInterface
     {
         $object = new self($data['id']);
         $object->username = $data['username'];
@@ -109,7 +109,7 @@ final class User implements ModelInterface
     /**
      * @return array
      */
-    public function toRow(): array
+    public function toPersistence(): array
     {
         return [
             'id' => $this->id,

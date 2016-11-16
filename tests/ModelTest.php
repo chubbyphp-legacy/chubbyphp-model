@@ -23,7 +23,7 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
         $active = true;
 
         /** @var User $user */
-        $user = User::fromRow(['id' => $id, 'username' => $username, 'password' => $password, 'active' => $active]);
+        $user = User::fromPersistence(['id' => $id, 'username' => $username, 'password' => $password, 'active' => $active]);
 
         self::assertInstanceOf(User::class, $user);
         self::assertSame($id, $user->getId());
@@ -46,7 +46,7 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
 
         self::assertSame(
             ['id' => $id, 'username' => $username, 'password' => $password, 'active' => $active],
-            $user->toRow()
+            $user->toPersistence()
         );
     }
 }

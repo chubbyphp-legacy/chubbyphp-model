@@ -11,12 +11,12 @@ interface ModelInterface extends \JsonSerializable
      *
      * @return ModelInterface
      */
-    public static function fromRow(array $data): ModelInterface;
+    public static function fromPersistence(array $data): ModelInterface;
 
     /**
      * @return array
      */
-    public function toRow(): array;
+    public function toPersistence(): array;
 
     /**
      * @return string

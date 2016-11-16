@@ -46,7 +46,7 @@ final class UserRepository implements RepositoryInterface
         /** @var User $modelClass */
         $modelClass = $this->getModelClass();
 
-        return $modelClass::fromRow($this->modelRows[$id]);
+        return $modelClass::fromPersistence($this->modelRows[$id]);
     }
 
     /**
@@ -92,7 +92,7 @@ final class UserRepository implements RepositoryInterface
                 }
             }
 
-            $models[] = $modelClass::fromRow($modelRow);
+            $models[] = $modelClass::fromPersistence($modelRow);
         }
 
         if (null !== $orderBy) {
@@ -132,7 +132,7 @@ final class UserRepository implements RepositoryInterface
      */
     public function persist(ModelInterface $model)
     {
-        $this->modelRows[$model->getId()] = $model->toRow();
+        $this->modelRows[$model->getId()] = $model->toPersistence();
     }
 
     /**
