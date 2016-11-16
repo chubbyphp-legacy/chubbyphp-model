@@ -67,56 +67,9 @@ class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @return ModelInterface
-     */
-    public function current()
-    {
-        $this->loadModels();
-
-        return current($this->models);
-    }
-
-    /**
-     * @return ModelInterface|false
-     */
-    public function next()
-    {
-        $this->loadModels();
-
-        return next($this->models);
-    }
-
-    /**
-     * @return string
-     */
-    public function key()
-    {
-        $this->loadModels();
-
-        return key($this->models);
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-        $this->loadModels();
-
-        return (bool) current($this->models);
-    }
-
-    public function rewind()
-    {
-        $this->loadModels();
-
-        reset($this->models);
-    }
-
-    /**
      * @param ModelInterface[]|array $models
      */
-    public function setModels(array $models)
+    public function set(array $models)
     {
         $this->loadModels();
 
@@ -126,7 +79,7 @@ class LazyModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getModels(): array
+    public function get(): array
     {
         $this->loadModels();
 
@@ -136,7 +89,7 @@ class LazyModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getInitialModels(): array
+    public function getInitial(): array
     {
         $this->loadModels();
 

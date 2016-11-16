@@ -51,46 +51,9 @@ class ModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @return ModelInterface
-     */
-    public function current()
-    {
-        return current($this->models);
-    }
-
-    /**
-     * @return ModelInterface|false
-     */
-    public function next()
-    {
-        return next($this->models);
-    }
-
-    /**
-     * @return string
-     */
-    public function key()
-    {
-        return key($this->models);
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-        return (bool) current($this->models);
-    }
-
-    public function rewind()
-    {
-        reset($this->models);
-    }
-
-    /**
      * @param ModelInterface[]|array $models
      */
-    public function setModels(array $models)
+    public function set(array $models)
     {
         $this->models = $this->modelsWithIdKey($models);
     }
@@ -98,7 +61,7 @@ class ModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getModels(): array
+    public function get(): array
     {
         return $this->models;
     }
@@ -106,7 +69,7 @@ class ModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getInitialModels(): array
+    public function getInitial(): array
     {
         return $this->initialModels;
     }
