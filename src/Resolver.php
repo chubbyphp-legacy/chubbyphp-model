@@ -4,52 +4,78 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
+use Chubbyphp\Model\Doctrine\DBAL\MissingRepositoryException;
+use Interop\Container\ContainerInterface;
+
 final class Resolver implements ResolverInterface
 {
     /**
-     * @param RepositoryInterface $repository
-     * @param string              $id
-     *
+     * @var ContainerInterface|RepositoryInterface[]
+     */
+    private $container;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @param string $modelClass
+     * @param string $id
      * @return \Closure
      */
-    public function find(RepositoryInterface $repository, string $id): \Closure
+    public function find(string $modelClass, string $id): \Closure
     {
-        return function () use ($repository, $id) {
-            return $repository->find($id);
+        return function () use ($modelClass, $id) {
+            return $this->getRepositoryByClass($modelClass)->find($id);
         };
     }
 
     /**
-     * @param RepositoryInterface $repository
-     * @param array               $criteria
-     *
+     * @param string $modelClass
+     * @param array $criteria
      * @return \Closure
      */
-    public function findOneBy(RepositoryInterface $repository, array $criteria): \Closure
+    public function findOneBy(string $modelClass, array $criteria): \Closure
     {
-        return function () use ($repository, $criteria) {
-            return $repository->findOneBy($criteria);
+        return function () use ($modelClass, $criteria) {
+            return $this->getRepositoryByClass($modelClass)->findOneBy($criteria);
         };
     }
 
     /**
-     * @param RepositoryInterface $repository
-     * @param array               $criteria
-     * @param array|null          $orderBy
-     * @param int|null            $limit
-     * @param int|null            $offset
-     *
+     * @param string $modelClass
+     * @param array $criteria
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
      * @return \Closure
      */
     public function findBy(
-        RepositoryInterface $repository,
+        string $modelClass,
         array $criteria,
         array $orderBy = null,
         int $limit = null,
         int $offset = null
     ): \Closure {
-        return function () use ($repository, $criteria, $orderBy, $limit, $offset) {
-            return $repository->findBy($criteria, $orderBy, $limit, $offset);
+        return function () use ($modelClass, $criteria, $orderBy, $limit, $offset) {
+            return $this->getRepositoryByClass($modelClass)->findBy($criteria, $orderBy, $limit, $offset);
         };
+    }
+
+    /**
+     * @param string $modelClass
+     * @return RepositoryInterface
+     */
+    public function getRepositoryByClass(string $modelClass): RepositoryInterface
+    {
+        if (!$this->container->has($modelClass)) {
+            throw MissingRepositoryException::create($modelClass);
+        }
+
+        return $this->container->get($modelClass);
     }
 }
