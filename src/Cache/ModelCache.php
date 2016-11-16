@@ -13,13 +13,13 @@ final class ModelCache implements ModelCacheInterface
 
     /**
      * @param string $id
-     * @param array  $row
+     * @param array  $entry
      *
      * @return ModelCacheInterface
      */
-    public function set(string $id, array $row): ModelCacheInterface
+    public function set(string $id, array $entry): ModelCacheInterface
     {
-        $this->cache[$id] = $row;
+        $this->cache[$id] = $entry;
 
         return $this;
     }
