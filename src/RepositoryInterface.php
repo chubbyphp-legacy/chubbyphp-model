@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
-use Chubbyphp\Model\Exception\NotUniqueException;
-
 interface RepositoryInterface
 {
     /**

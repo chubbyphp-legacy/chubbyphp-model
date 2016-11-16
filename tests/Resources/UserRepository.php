@@ -2,7 +2,7 @@
 
 namespace Chubbyphp\Tests\Model\Resources;
 
-use Chubbyphp\Model\Exception\NotUniqueException;
+use Chubbyphp\Model\NotUniqueException;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\RepositoryInterface;
 
@@ -11,16 +11,16 @@ final class UserRepository implements RepositoryInterface
     /**
      * @var array[]
      */
-    private $modelRows;
+    private $modelEntries;
 
     /**
-     * @param array $modelRows
+     * @param array $modelEntries
      */
-    public function __construct(array $modelRows = [])
+    public function __construct(array $modelEntries = [])
     {
-        $this->modelRows = [];
-        foreach ($modelRows as $modelRow) {
-            $this->modelRows[$modelRow['id']] = $modelRow;
+        $this->modelEntries = [];
+        foreach ($modelEntries as $modelEntry) {
+            $this->modelEntries[$modelEntry['id']] = $modelEntry;
         }
     }
 
@@ -39,14 +39,14 @@ final class UserRepository implements RepositoryInterface
      */
     public function find(string $id)
     {
-        if (!isset($this->modelRows[$id])) {
+        if (!isset($this->modelEntries[$id])) {
             return null;
         }
 
         /** @var User $modelClass */
         $modelClass = $this->getModelClass();
 
-        return $modelClass::fromPersistence($this->modelRows[$id]);
+        return $modelClass::fromPersistence($this->modelEntries[$id]);
     }
 
     /**
@@ -85,14 +85,14 @@ final class UserRepository implements RepositoryInterface
         $modelClass = $this->getModelClass();
 
         $models = [];
-        foreach ($this->modelRows as $modelRow) {
+        foreach ($this->modelEntries as $modelEntry) {
             foreach ($criteria as $key => $value) {
-                if ($modelRow[$key] !== $value) {
+                if ($modelEntry[$key] !== $value) {
                     continue 2;
                 }
             }
 
-            $models[] = $modelClass::fromPersistence($modelRow);
+            $models[] = $modelClass::fromPersistence($modelEntry);
         }
 
         if (null !== $orderBy) {
@@ -128,25 +128,25 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param ModelInterface $model
      *
-     * @throws \Exception
+     * @thentries \Exception
      */
     public function persist(ModelInterface $model)
     {
-        $this->modelRows[$model->getId()] = $model->toPersistence();
+        $this->modelEntries[$model->getId()] = $model->toPersistence();
     }
 
     /**
      * @param ModelInterface $model
      *
-     * @throws \Exception
+     * @thentries \Exception
      */
     public function remove(ModelInterface $model)
     {
         $id = $model->getId();
-        if (!isset($this->modelRows[$id])) {
+        if (!isset($this->modelEntries[$id])) {
             return;
         }
 
-        unset($this->modelRows[$id]);
+        unset($this->modelEntries[$id]);
     }
 }

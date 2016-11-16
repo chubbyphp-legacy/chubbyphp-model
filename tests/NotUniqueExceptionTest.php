@@ -1,12 +1,12 @@
 <?php
 
-namespace Chubbyphp\Tests\Model\Exception;
+namespace Chubbyphp\Tests\Model;
 
-use Chubbyphp\Model\Exception\NotUniqueException;
+use Chubbyphp\Model\NotUniqueException;
 use Chubbyphp\Tests\Model\Resources\User;
 
 /**
- * @covers Chubbyphp\Model\Exception\NotUniqueException
+ * @covers Chubbyphp\Model\NotUniqueException
  */
 final class NotUniqueExceptionTest extends \PHPUnit_Framework_TestCase
 {

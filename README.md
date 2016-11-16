@@ -182,16 +182,16 @@ final class UserRepository implements RepositoryInterface
     /**
      * @var array[]
      */
-    private $modelRows;
+    private $modelEntries;
 
     /**
-     * @param array $modelRows
+     * @param array $modelEntries
      */
-    public function __construct(array $modelRows = [])
+    public function __construct(array $modelEntries = [])
     {
-        $this->modelRows = [];
-        foreach ($modelRows as $modelRow) {
-            $this->modelRows[$modelRow['id']] = $modelRow;
+        $this->modelEntries = [];
+        foreach ($modelEntries as $modelEntry) {
+            $this->modelEntries[$modelEntry['id']] = $modelEntry;
         }
     }
 
@@ -210,14 +210,14 @@ final class UserRepository implements RepositoryInterface
      */
     public function find(string $id)
     {
-        if (!isset($this->modelRows[$id])) {
+        if (!isset($this->modelEntries[$id])) {
             return null;
         }
 
         /** @var User $modelClass */
         $modelClass = $this->getModelClass();
 
-        return $modelClass::fromRow($this->modelRows[$id]);
+        return $modelClass::fromRow($this->modelEntries[$id]);
     }
 
     /**
@@ -256,14 +256,14 @@ final class UserRepository implements RepositoryInterface
         $modelClass = $this->getModelClass();
 
         $models = [];
-        foreach ($this->modelRows as $modelRow) {
+        foreach ($this->modelEntries as $modelEntry) {
             foreach ($criteria as $key => $value) {
-                if ($modelRow[$key] !== $value) {
+                if ($modelEntry[$key] !== $value) {
                     continue 2;
                 }
             }
 
-            $models[] = $modelClass::fromRow($modelRow);
+            $models[] = $modelClass::fromRow($modelEntry);
         }
 
         if (null !== $orderBy) {
@@ -303,7 +303,7 @@ final class UserRepository implements RepositoryInterface
      */
     public function persist(ModelInterface $model)
     {
-        $this->modelRows[$model->getId()] = $model->toRow();
+        $this->modelEntries[$model->getId()] = $model->toRow();
     }
 
     /**
@@ -314,11 +314,11 @@ final class UserRepository implements RepositoryInterface
     public function delete(ModelInterface $model)
     {
         $id = $model->getId();
-        if (!isset($this->modelRows[$id])) {
+        if (!isset($this->modelEntries[$id])) {
             return;
         }
 
-        unset($this->modelRows[$id]);
+        unset($this->modelEntries[$id]);
     }
 }
 ```

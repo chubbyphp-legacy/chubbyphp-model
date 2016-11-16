@@ -126,7 +126,7 @@ class LazyModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function toPersist(): array
+    public function toPersistence(): array
     {
         $this->loadModels();
 
@@ -136,18 +136,18 @@ class LazyModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function toRemove(): array
+    public function removeFromPersistence(): array
     {
         $this->loadModels();
 
-        $toRemoveModels = [];
+        $removeFromPersistenceModels = [];
         foreach ($this->initialModels as $initialModel) {
             if (!isset($this->models[$initialModel->getId()])) {
-                $toRemoveModels[$initialModel->getId()] = $initialModel;
+                $removeFromPersistenceModels[$initialModel->getId()] = $initialModel;
             }
         }
 
-        return $toRemoveModels;
+        return $removeFromPersistenceModels;
     }
 
     /**

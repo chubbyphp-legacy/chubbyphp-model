@@ -26,7 +26,7 @@ interface ModelCacheInterface
      *
      * @return array
      *
-     * @throws RowNotFoundException
+     * @throws EntryNotFoundException
      */
     public function get(string $id);
 

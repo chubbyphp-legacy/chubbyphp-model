@@ -39,12 +39,12 @@ final class ModelCache implements ModelCacheInterface
      *
      * @return array
      *
-     * @throws RowNotFoundException
+     * @throws EntryNotFoundException
      */
     public function get(string $id)
     {
         if (!$this->has($id)) {
-            throw RowNotFoundException::fromId($id);
+            throw EntryNotFoundException::fromId($id);
         }
 
         return $this->cache[$id];

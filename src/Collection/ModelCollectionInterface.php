@@ -16,10 +16,10 @@ interface ModelCollectionInterface extends \Iterator, \JsonSerializable
     /**
      * @return ModelInterface[]|array
      */
-    public function toPersist(): array;
+    public function toPersistence(): array;
 
     /**
      * @return ModelInterface[]|array
      */
-    public function toRemove(): array;
+    public function removeFromPersistence(): array;
 }

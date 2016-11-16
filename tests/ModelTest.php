@@ -15,7 +15,7 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
         self::assertSame($id, $user->getId());
     }
 
-    public function testFromRow()
+    public function testFromEntry()
     {
         $id = (string) Uuid::uuid4();
         $username = 'user1d';
@@ -32,7 +32,7 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
         self::assertSame($active, $user->isActive());
     }
 
-    public function testToRow()
+    public function testToEntry()
     {
         $id = (string) Uuid::uuid4();
         $username = 'user1d';

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chubbyphp\Model\Exception;
+namespace Chubbyphp\Model;
 
 class NotUniqueException extends \RuntimeException
 {

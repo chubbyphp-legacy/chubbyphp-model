@@ -3,7 +3,7 @@
 namespace Chubbyphp\Tests\Model\Cache;
 
 use Chubbyphp\Model\Cache\ModelCache;
-use Chubbyphp\Model\Cache\RowNotFoundException;
+use Chubbyphp\Model\Cache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -43,8 +43,8 @@ final class ModelCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        self::expectException(RowNotFoundException::class);
-        self::expectExceptionMessage(sprintf('Row with id %s not found within cache', $id));
+        self::expectException(EntryNotFoundException::class);
+        self::expectExceptionMessage(sprintf('Entry with id %s not found within cache', $id));
 
         $cache = new ModelCache();
         $cache->get($id);
