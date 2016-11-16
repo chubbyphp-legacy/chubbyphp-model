@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
-use Chubbyphp\Model\Doctrine\DBAL\MissingRepositoryException;
 use Interop\Container\ContainerInterface;
 
 final class Resolver implements ResolverInterface
@@ -25,6 +24,7 @@ final class Resolver implements ResolverInterface
     /**
      * @param string $modelClass
      * @param string $id
+     *
      * @return \Closure
      */
     public function find(string $modelClass, string $id): \Closure
@@ -36,7 +36,8 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param string $modelClass
-     * @param array $criteria
+     * @param array  $criteria
+     *
      * @return \Closure
      */
     public function findOneBy(string $modelClass, array $criteria): \Closure
@@ -47,11 +48,12 @@ final class Resolver implements ResolverInterface
     }
 
     /**
-     * @param string $modelClass
-     * @param array $criteria
+     * @param string     $modelClass
+     * @param array      $criteria
      * @param array|null $orderBy
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param int|null   $limit
+     * @param int|null   $offset
+     *
      * @return \Closure
      */
     public function findBy(
@@ -68,6 +70,7 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param string $modelClass
+     *
      * @return RepositoryInterface
      */
     public function getRepositoryByClass(string $modelClass): RepositoryInterface

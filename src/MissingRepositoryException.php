@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chubbyphp\Model\Doctrine\DBAL;
+namespace Chubbyphp\Model;
 
 class MissingRepositoryException extends \RuntimeException
 {
