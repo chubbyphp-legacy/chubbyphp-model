@@ -25,12 +25,53 @@ final class Resolver implements ResolverInterface
      * @param string $modelClass
      * @param string $id
      *
+     * @return ModelInterface|null
+     */
+    public function find(string $modelClass, string $id)
+    {
+        return $this->getRepositoryByClass($modelClass)->find($id);
+    }
+
+    /**
+     * @param string $modelClass
+     * @param array  $criteria
+     *
+     * @return ModelInterface|null
+     */
+    public function findOneBy(string $modelClass, array $criteria)
+    {
+        return $this->getRepositoryByClass($modelClass)->findOneBy($criteria);
+    }
+
+    /**
+     * @param string     $modelClass
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
+     *
+     * @return array
+     */
+    public function findBy(
+        string $modelClass,
+        array $criteria,
+        array $orderBy = null,
+        int $limit = null,
+        int $offset = null
+    ): array {
+        return $this->getRepositoryByClass($modelClass)->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    /**
+     * @param string $modelClass
+     * @param string $id
+     *
      * @return \Closure
      */
-    public function find(string $modelClass, string $id): \Closure
+    public function lazyFind(string $modelClass, string $id): \Closure
     {
         return function () use ($modelClass, $id) {
-            return $this->getRepositoryByClass($modelClass)->find($id);
+            return $this->find($modelClass, $id);
         };
     }
 
@@ -40,10 +81,10 @@ final class Resolver implements ResolverInterface
      *
      * @return \Closure
      */
-    public function findOneBy(string $modelClass, array $criteria): \Closure
+    public function lazyFindOneBy(string $modelClass, array $criteria): \Closure
     {
         return function () use ($modelClass, $criteria) {
-            return $this->getRepositoryByClass($modelClass)->findOneBy($criteria);
+            return $this->findOneBy($modelClass, $criteria);
         };
     }
 
@@ -56,7 +97,7 @@ final class Resolver implements ResolverInterface
      *
      * @return \Closure
      */
-    public function findBy(
+    public function lazyFindBy(
         string $modelClass,
         array $criteria,
         array $orderBy = null,
@@ -64,8 +105,24 @@ final class Resolver implements ResolverInterface
         int $offset = null
     ): \Closure {
         return function () use ($modelClass, $criteria, $orderBy, $limit, $offset) {
-            return $this->getRepositoryByClass($modelClass)->findBy($criteria, $orderBy, $limit, $offset);
+            return $this->findBy($modelClass, $criteria, $orderBy, $limit, $offset);
         };
+    }
+
+    /**
+     * @param ModelInterface $model
+     */
+    public function persist(ModelInterface $model)
+    {
+        $this->getRepositoryByClass(get_class($model))->persist($model);
+    }
+
+    /**
+     * @param ModelInterface $model
+     */
+    public function remove(ModelInterface $model)
+    {
+        $this->getRepositoryByClass(get_class($model))->remove($model);
     }
 
     /**
@@ -73,7 +130,7 @@ final class Resolver implements ResolverInterface
      *
      * @return RepositoryInterface
      */
-    public function getRepositoryByClass(string $modelClass): RepositoryInterface
+    private function getRepositoryByClass(string $modelClass): RepositoryInterface
     {
         if (!$this->container->has($modelClass)) {
             throw MissingRepositoryException::create($modelClass);
