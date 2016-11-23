@@ -18,7 +18,19 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelEntries = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'username' => 'user1d',
+                'username' => 'nickname3@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => true,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname2@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => false,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname1@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -63,237 +75,23 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $repo = new UserRepository($modelEntries);
 
-        $users = $repo->findBy([]);
+        $users = $repo->findBy(
+            ['password' => 'verysecurepassword'],
+            ['username' => 'DESC'],
+            1,
+            1
+        );
 
-        self::assertCount(3, $users);
+        self::assertCount(1, $users);
 
-        /** @var User $user */
-        $user = array_shift($users);
+        $user = reset($users);
 
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[0]['id'], $user->getId());
-        self::assertSame($modelEntries[0]['username'], $user->getUsername());
-        self::assertSame($modelEntries[0]['password'], $user->getPassword());
-        self::assertSame($modelEntries[0]['active'], $user->isActive());
+        self::assertInstanceOf(UserRepository::getModelClass(), $user);
 
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());
         self::assertSame($modelEntries[1]['password'], $user->getPassword());
         self::assertSame($modelEntries[1]['active'], $user->isActive());
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[2]['id'], $user->getId());
-        self::assertSame($modelEntries[2]['username'], $user->getUsername());
-        self::assertSame($modelEntries[2]['password'], $user->getPassword());
-        self::assertSame($modelEntries[2]['active'], $user->isActive());
-    }
-
-    public function testFindByActive()
-    {
-        $modelEntries = [
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-        ];
-
-        $repo = new UserRepository($modelEntries);
-
-        $activeUsers = $repo->findBy(['active' => true]);
-
-        self::assertCount(2, $activeUsers);
-
-        /** @var User $activeUser */
-        $activeUser = array_shift($activeUsers);
-
-        self::assertInstanceOf(User::class, $activeUser);
-        self::assertSame($modelEntries[0]['id'], $activeUser->getId());
-        self::assertSame($modelEntries[0]['username'], $activeUser->getUsername());
-        self::assertSame($modelEntries[0]['password'], $activeUser->getPassword());
-        self::assertSame($modelEntries[0]['active'], $activeUser->isActive());
-
-        /** @var User $activeUser */
-        $activeUser = array_shift($activeUsers);
-
-        self::assertInstanceOf(User::class, $activeUser);
-        self::assertSame($modelEntries[2]['id'], $activeUser->getId());
-        self::assertSame($modelEntries[2]['username'], $activeUser->getUsername());
-        self::assertSame($modelEntries[2]['password'], $activeUser->getPassword());
-        self::assertSame($modelEntries[2]['active'], $activeUser->isActive());
-    }
-
-    public function testFindByInactive()
-    {
-        $modelEntries = [
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-        ];
-
-        $repo = new UserRepository($modelEntries);
-
-        $inactiveUsers = $repo->findBy(['active' => false]);
-
-        self::assertCount(1, $inactiveUsers);
-
-        /** @var User $inactiveUser */
-        $inactiveUser = array_shift($inactiveUsers);
-
-        self::assertInstanceOf(User::class, $inactiveUser);
-        self::assertSame($modelEntries[1]['id'], $inactiveUser->getId());
-        self::assertSame($modelEntries[1]['username'], $inactiveUser->getUsername());
-        self::assertSame($modelEntries[1]['password'], $inactiveUser->getPassword());
-        self::assertSame($modelEntries[1]['active'], $inactiveUser->isActive());
-    }
-
-    public function testFindByWithOrderByUsername()
-    {
-        $modelEntries = [
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-        ];
-
-        $repo = new UserRepository($modelEntries);
-
-        $users = $repo->findBy([], ['username' => 'ASC']);
-
-        self::assertCount(3, $users);
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[2]['id'], $user->getId());
-        self::assertSame($modelEntries[2]['username'], $user->getUsername());
-        self::assertSame($modelEntries[2]['password'], $user->getPassword());
-        self::assertSame($modelEntries[2]['active'], $user->isActive());
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[0]['id'], $user->getId());
-        self::assertSame($modelEntries[0]['username'], $user->getUsername());
-        self::assertSame($modelEntries[0]['password'], $user->getPassword());
-        self::assertSame($modelEntries[0]['active'], $user->isActive());
-    }
-
-    public function testFindByWithOrderByUsernameAndActive()
-    {
-        $modelEntries = [
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
-            ],
-            [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
-            ],
-        ];
-
-        $repo = new UserRepository($modelEntries);
-
-        $users = $repo->findBy([], ['username' => 'ASC', 'active' => 'ASC']);
-
-        self::assertCount(3, $users);
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[2]['id'], $user->getId());
-        self::assertSame($modelEntries[2]['username'], $user->getUsername());
-        self::assertSame($modelEntries[2]['password'], $user->getPassword());
-        self::assertSame($modelEntries[2]['active'], $user->isActive());
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
-
-        /** @var User $user */
-        $user = array_shift($users);
-
-        self::assertInstanceOf(User::class, $user);
-        self::assertSame($modelEntries[0]['id'], $user->getId());
-        self::assertSame($modelEntries[0]['username'], $user->getUsername());
-        self::assertSame($modelEntries[0]['password'], $user->getPassword());
-        self::assertSame($modelEntries[0]['active'], $user->isActive());
     }
 
     public function testFindOneBy()
@@ -354,7 +152,19 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelEntries = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'username' => 'user1d',
+                'username' => 'nickname3@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => true,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname2@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => false,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname1@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -384,7 +194,19 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         $modelEntries = [
             [
                 'id' => (string) Uuid::uuid4(),
-                'username' => 'user1d',
+                'username' => 'nickname3@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => true,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname2@domain.tld',
+                'password' => 'verysecurepassword',
+                'active' => false,
+            ],
+            [
+                'id' => (string) Uuid::uuid4(),
+                'username' => 'nickname1@domain.tld',
                 'password' => 'verysecurepassword',
                 'active' => true,
             ],
@@ -395,6 +217,13 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         /** @var User $user */
         $user = $repo->find($modelEntries[0]['id']);
 
+        self::assertInstanceOf(User::class, $user);
+
         $repo->remove($user);
+
+        /** @var User $user */
+        $user = $repo->find($modelEntries[0]['id']);
+
+        self::assertNull($user);
     }
 }
