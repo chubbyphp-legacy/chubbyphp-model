@@ -20,7 +20,7 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param ContainerInterface $container
-     * @param array $mapping
+     * @param array              $mapping
      */
     public function __construct(ContainerInterface $container, array $mapping)
     {
@@ -139,7 +139,7 @@ final class Resolver implements ResolverInterface
      */
     private function getRepositoryByClass(string $modelClass): RepositoryInterface
     {
-        if (isset($this->mapping[$modelClass])) {
+        if (!isset($this->mapping[$modelClass])) {
             throw MissingRepositoryException::create($modelClass);
         }
 
