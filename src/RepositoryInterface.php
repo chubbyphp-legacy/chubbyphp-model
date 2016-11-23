@@ -9,7 +9,7 @@ interface RepositoryInterface
     /**
      * @return string
      */
-    public function getModelClass(): string;
+    public static function getModelClass(): string;
 
     /**
      * @param string $id
