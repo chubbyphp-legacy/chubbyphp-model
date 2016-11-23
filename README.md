@@ -16,6 +16,7 @@ Model and repository made simple.
 ## Suggest
 
  * chubbyphp/chubbyphp-model-doctrine-dbal: ~1.0@dev
+ * container-interop/container-interop: ~1.1
 
 ## Installation
 

@@ -19,7 +19,8 @@
         "ramsey/uuid": "~3.5"
     },
     "suggest": {
-        "chubbyphp/chubbyphp-model-doctrine-dbal": "Needed for doctrine dbal implementation"
+        "chubbyphp/chubbyphp-model-doctrine-dbal": "Needed for doctrine dbal implementation",
+        "container-interop/container-interop": "Needed to use the delivered resolver implementation"
     },
     "autoload": {
         "psr-4": { "Chubbyphp\\Model\\": "src/" }
