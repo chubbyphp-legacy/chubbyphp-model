@@ -10,9 +10,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetModelClass()
     {
-        $repo = new UserRepository();
-
-        self::assertSame(User::class, $repo->getModelClass());
+        self::assertSame(User::class, UserRepository::getModelClass());
     }
 
     public function testFind()

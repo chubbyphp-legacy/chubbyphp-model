@@ -26,7 +26,7 @@ final class UserRepository implements RepositoryInterface
     /**
      * @return string
      */
-    public function getModelClass(): string
+    public static function getModelClass(): string
     {
         return User::class;
     }
@@ -43,7 +43,7 @@ final class UserRepository implements RepositoryInterface
         }
 
         /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
+        $modelClass = self::getModelClass();
 
         return $modelClass::fromPersistence($this->modelEntries[$id]);
     }
@@ -75,7 +75,7 @@ final class UserRepository implements RepositoryInterface
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
         /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
+        $modelClass = self::getModelClass();
 
         $models = [];
         foreach ($this->modelEntries as $modelEntry) {

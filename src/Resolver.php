@@ -141,7 +141,6 @@ final class Resolver implements ResolverInterface
     {
         if (isset($this->mapping[$modelClass])) {
             throw MissingRepositoryException::create($modelClass);
-
         }
 
         return $this->container->get($this->mapping[$modelClass]);

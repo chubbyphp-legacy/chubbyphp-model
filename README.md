@@ -33,7 +33,6 @@ Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
 namespace MyProject\Model;
 
 use Chubbyphp\Model\ModelInterface;
-use Chubbyphp\Model\RepositoryInterface;
 use Ramsey\Uuid\Uuid;
 
 final class User implements ModelInterface
@@ -69,9 +68,9 @@ final class User implements ModelInterface
     /**
      * @param array $data
      *
-     * @return User|ModelInterface
+     * @return ModelInterface
      */
-    public static function fromRow(array $data): ModelInterface
+    public static function fromPersistence(array $data): ModelInterface
     {
         $object = new self($data['id']);
         $object->username = $data['username'];
@@ -140,7 +139,7 @@ final class User implements ModelInterface
     /**
      * @return array
      */
-    public function toRow(): array
+    public function toPersistence(): array
     {
         return [
             'id' => $this->id,
@@ -175,7 +174,6 @@ namespace MyProject\Repository;
 
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\RepositoryInterface;
-use Myproject\Model\User;
 
 final class UserRepository implements RepositoryInterface
 {
@@ -198,7 +196,7 @@ final class UserRepository implements RepositoryInterface
     /**
      * @return string
      */
-    public function getModelClass(): string
+    public static function getModelClass(): string
     {
         return User::class;
     }
@@ -215,9 +213,9 @@ final class UserRepository implements RepositoryInterface
         }
 
         /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
+        $modelClass = self::getModelClass();
 
-        return $modelClass::fromRow($this->modelEntries[$id]);
+        return $modelClass::fromPersistence($this->modelEntries[$id]);
     }
 
     /**
@@ -247,7 +245,7 @@ final class UserRepository implements RepositoryInterface
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
         /** @var User $modelClass */
-        $modelClass = $this->getModelClass();
+        $modelClass = self::getModelClass();
 
         $models = [];
         foreach ($this->modelEntries as $modelEntry) {
@@ -257,7 +255,7 @@ final class UserRepository implements RepositoryInterface
                 }
             }
 
-            $models[] = $modelClass::fromRow($modelEntry);
+            $models[] = $modelClass::fromPersistence($modelEntry);
         }
 
         if (null !== $orderBy) {
@@ -293,19 +291,19 @@ final class UserRepository implements RepositoryInterface
     /**
      * @param ModelInterface $model
      *
-     * @throws \Exception
+     * @thentries \Exception
      */
     public function persist(ModelInterface $model)
     {
-        $this->modelEntries[$model->getId()] = $model->toRow();
+        $this->modelEntries[$model->getId()] = $model->toPersistence();
     }
 
     /**
      * @param ModelInterface $model
      *
-     * @throws \Exception
+     * @thentries \Exception
      */
-    public function delete(ModelInterface $model)
+    public function remove(ModelInterface $model)
     {
         $id = $model->getId();
         if (!isset($this->modelEntries[$id])) {
