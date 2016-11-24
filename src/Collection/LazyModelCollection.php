@@ -67,7 +67,7 @@ final class LazyModelCollection implements ModelCollectionInterface
         $this->resolveModels();
 
         if (isset($this->models[$model->getId()])) {
-            unset($this->models[$model->getId());
+            unset($this->models[$model->getId()]);
         }
 
         return $this;

@@ -45,7 +45,7 @@ final class ModelCollection implements ModelCollectionInterface
     public function removeModel(ModelInterface $model): ModelCollectionInterface
     {
         if (isset($this->models[$model->getId()])) {
-            unset($this->models[$model->getId());
+            unset($this->models[$model->getId()]);
         }
 
         return $this;
