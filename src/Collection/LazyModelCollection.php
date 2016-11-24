@@ -41,7 +41,7 @@ final class LazyModelCollection implements ModelCollectionInterface
 
         $this->resolver = null;
 
-        $this->setModels($resolver());
+        $this->setModels((array) $resolver());
         $this->initialModels = $this->models;
     }
 
