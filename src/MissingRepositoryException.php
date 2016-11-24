@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
-class MissingRepositoryException extends \RuntimeException
+final class MissingRepositoryException extends \RuntimeException
 {
     /**
      * @param string $modelClass
