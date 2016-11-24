@@ -24,6 +24,47 @@ Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
 
 ## Usage
 
+### Collection
+
+#### LazyModelCollection
+
+```{.php}
+<?php
+
+use Chubbyphp\Model\Collection\LazyModelCollection;
+use MyProject\Model\User;
+
+$resolver = ...
+
+$collection = new LazyModelCollection($resolver->lazyFindBy(....));
+
+$user = new User();
+$user->setUsername('username1');
+$user->setPassword('password');
+$user->setActive(true);
+
+$collection->addModel($user);
+
+```
+
+#### ModelCollection
+
+```{.php}
+<?php
+
+use Chubbyphp\Model\Collection\ModelCollection;
+use MyProject\Model\User;
+
+$collection = new ModelCollection([]);
+
+$user = new User();
+$user->setUsername('username1');
+$user->setPassword('password');
+$user->setActive(true);
+
+$collection->addModel($user);
+```
+
 ### Model
 
 #### Sample User
@@ -314,6 +355,21 @@ final class UserRepository implements RepositoryInterface
         unset($this->modelEntries[$id]);
     }
 }
+```
+
+### Resolver
+
+```{.php}
+<?php
+
+use Chubbyphp\Model\Resolver;
+use Interop\Container\ContainerInterface;
+use MyProject\Repository\UserRepository;
+
+$container = ...
+
+$resolver = new Resolver($container, [UserRepository::getModelClass() => UserRepository::class]);
+$resolver->find(UserRepository::getModelClass(), 5);
 ```
 
 [1]: https://packagist.org/packages/chubbyphp/chubbyphp-model
