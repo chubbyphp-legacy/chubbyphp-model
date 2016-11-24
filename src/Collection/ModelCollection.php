@@ -6,7 +6,7 @@ namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
 
-class ModelCollection implements ModelCollectionInterface
+final class ModelCollection implements ModelCollectionInterface
 {
     /**
      * @var ModelInterface[]|array
@@ -23,45 +23,52 @@ class ModelCollection implements ModelCollectionInterface
      */
     public function __construct(array $models = [])
     {
-        $models = $this->modelsWithIdKey($models);
-
-        $this->initialModels = $models;
-        $this->models = $models;
+        $this->setModels($models);
+        $this->initialModels = $this->models;
     }
 
     /**
-     * @param ModelInterface[]|array $models
-     *
-     * @return ModelInterface[]|array
+     * @param ModelInterface $model
+     * @return ModelCollectionInterface
      */
-    private function modelsWithIdKey(array $models): array
+    public function addModel(ModelInterface $model): ModelCollectionInterface
     {
-        $modelsWithIdKey = [];
-        foreach ($models as $model) {
-            if (!$model instanceof ModelInterface) {
-                throw new \InvalidArgumentException(
-                    sprintf('Model with index %d needs to implement: %s', ModelInterface::class)
-                );
-            }
+        $this->models[$model->getId()] = $model;
 
-            $modelsWithIdKey[$model->getId()] = $model;
+        return $this;
+    }
+
+    /**
+     * @param ModelInterface $model
+     * @return ModelCollectionInterface
+     */
+    public function removeModel(ModelInterface $model): ModelCollectionInterface
+    {
+        if (isset($this->models[$model->getId()])) {
+            unset($this->models[$model->getId());
         }
 
-        return $modelsWithIdKey;
+        return $this;
     }
 
     /**
      * @param ModelInterface[]|array $models
+     * @return ModelCollectionInterface
      */
-    public function set(array $models)
+    public function setModels(array $models): ModelCollectionInterface
     {
-        $this->models = $this->modelsWithIdKey($models);
+        $this->models = [];
+        foreach ($models as $model) {
+            $this->addModel($model);
+        }
+
+        return $this;
     }
 
     /**
      * @return ModelInterface[]|array
      */
-    public function get(): array
+    public function getModels(): array
     {
         return $this->models;
     }
@@ -69,7 +76,7 @@ class ModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getInitial(): array
+    public function getInitialModels(): array
     {
         return $this->initialModels;
     }

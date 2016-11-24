@@ -6,7 +6,7 @@ namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
 
-class LazyModelCollection implements ModelCollectionInterface
+final class LazyModelCollection implements ModelCollectionInterface
 {
     /**
      * @var \Closure;
@@ -31,57 +31,70 @@ class LazyModelCollection implements ModelCollectionInterface
         $this->resolver = $resolver;
     }
 
-    private function loadModels()
+    private function resolveModels()
     {
-        if (null !== $this->initialModels) {
+        if (null === $this->resolver) {
             return;
         }
 
         $resolver = $this->resolver;
 
-        $models = $this->modelsWithIdKey((array) $resolver());
+        $this->resolver = null;
 
-        $this->initialModels = $models;
-        $this->models = $models;
+        $this->setModels($resolver());
+        $this->initialModels = $this->models;
     }
 
     /**
-     * @param ModelInterface[]|array $models
-     *
-     * @return ModelInterface[]|array
+     * @param ModelInterface $model
+     * @return ModelCollectionInterface
      */
-    private function modelsWithIdKey(array $models): array
+    public function addModel(ModelInterface $model): ModelCollectionInterface
     {
-        $modelsWithIdKey = [];
-        foreach ($models as $model) {
-            if (!$model instanceof ModelInterface) {
-                throw new \InvalidArgumentException(
-                    sprintf('Model with index %d needs to implement: %s', ModelInterface::class)
-                );
-            }
+        $this->resolveModels();
 
-            $modelsWithIdKey[$model->getId()] = $model;
+        $this->models[$model->getId()] = $model;
+
+        return $this;
+    }
+
+    /**
+     * @param ModelInterface $model
+     * @return ModelCollectionInterface
+     */
+    public function removeModel(ModelInterface $model): ModelCollectionInterface
+    {
+        $this->resolveModels();
+
+        if (isset($this->models[$model->getId()])) {
+            unset($this->models[$model->getId());
         }
 
-        return $modelsWithIdKey;
+        return $this;
     }
 
     /**
      * @param ModelInterface[]|array $models
+     * @return ModelCollectionInterface
      */
-    public function set(array $models)
+    public function setModels(array $models): ModelCollectionInterface
     {
-        $this->loadModels();
+        $this->resolveModels();
 
-        $this->models = $this->modelsWithIdKey($models);
+        $this->models = [];
+        foreach ($models as $model) {
+            $this->addModel($model);
+        }
+
+        return $this;
     }
 
     /**
      * @return ModelInterface[]|array
      */
-    public function get(): array
+    public function getModels(): array
     {
-        $this->loadModels();
+        $this->resolveModels();
 
         return $this->models;
     }
@@ -89,9 +102,9 @@ class LazyModelCollection implements ModelCollectionInterface
     /**
      * @return ModelInterface[]|array
      */
-    public function getInitial(): array
+    public function getInitialModels(): array
     {
-        $this->loadModels();
+        $this->resolveModels();
 
         return $this->initialModels;
     }
@@ -101,7 +114,7 @@ class LazyModelCollection implements ModelCollectionInterface
      */
     public function jsonSerialize(): array
     {
-        $this->loadModels();
+        $this->resolveModels();
 
         $serializedModels = [];
         foreach ($this->models as $model) {
