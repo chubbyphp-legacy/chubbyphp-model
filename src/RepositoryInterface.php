@@ -7,9 +7,11 @@ namespace Chubbyphp\Model;
 interface RepositoryInterface
 {
     /**
-     * @return string
+     * @param string $modelClass
+     *
+     * @return bool
      */
-    public static function getModelClass(): string;
+    public function isResponsible(string $modelClass): bool;
 
     /**
      * @param string $id

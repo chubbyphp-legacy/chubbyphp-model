@@ -16,16 +16,16 @@ final class Resolver implements ResolverInterface
     /**
      * @var string[]|array
      */
-    private $mapping;
+    private $repositoryKeys;
 
     /**
      * @param ContainerInterface $container
-     * @param array              $mapping
+     * @param array              $repositoryKeys
      */
-    public function __construct(ContainerInterface $container, array $mapping)
+    public function __construct(ContainerInterface $container, array $repositoryKeys)
     {
         $this->container = $container;
-        $this->mapping = $mapping;
+        $this->repositoryKeys = $repositoryKeys;
     }
 
     /**
@@ -139,10 +139,14 @@ final class Resolver implements ResolverInterface
      */
     private function getRepositoryByClass(string $modelClass): RepositoryInterface
     {
-        if (!isset($this->mapping[$modelClass])) {
-            throw MissingRepositoryException::create($modelClass);
+        foreach ($this->repositoryKeys as $repositoryKey) {
+            /** @var RepositoryInterface $repository */
+            $repository = $this->container->get($repositoryKey);
+            if ($repository->isResponsible($modelClass)) {
+                return $repository;
+            }
         }
 
-        return $this->container->get($this->mapping[$modelClass]);
+        throw MissingRepositoryException::create($modelClass);
     }
 }

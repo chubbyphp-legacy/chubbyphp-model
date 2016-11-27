@@ -24,11 +24,13 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @return string
+     * @param string $modelClass
+     *
+     * @return bool
      */
-    public static function getModelClass(): string
+    public function isResponsible(string $modelClass): bool
     {
-        return User::class;
+        return $modelClass === User::class;
     }
 
     /**
@@ -42,10 +44,7 @@ final class UserRepository implements RepositoryInterface
             return null;
         }
 
-        /** @var User $modelClass */
-        $modelClass = self::getModelClass();
-
-        return $modelClass::fromPersistence($this->modelEntries[$id]);
+        return User::fromPersistence($this->modelEntries[$id]);
     }
 
     /**
@@ -74,9 +73,6 @@ final class UserRepository implements RepositoryInterface
      */
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
-        /** @var User $modelClass */
-        $modelClass = self::getModelClass();
-
         $models = [];
         foreach ($this->modelEntries as $modelEntry) {
             foreach ($criteria as $key => $value) {
@@ -85,7 +81,7 @@ final class UserRepository implements RepositoryInterface
                 }
             }
 
-            $models[] = $modelClass::fromPersistence($modelEntry);
+            $models[] = User::fromPersistence($modelEntry);
         }
 
         if (null !== $orderBy) {

@@ -8,11 +8,6 @@ use Ramsey\Uuid\Uuid;
 
 final class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetModelClass()
-    {
-        self::assertSame(User::class, UserRepository::getModelClass());
-    }
-
     public function testFind()
     {
         $modelEntries = [
@@ -86,7 +81,7 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $user = reset($users);
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());

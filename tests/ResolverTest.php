@@ -40,12 +40,12 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
-        $user = $resolver->find(UserRepository::getModelClass(), $modelEntries[0]['id']);
+        $user = $resolver->find(User::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[0]['id'], $user->getId());
         self::assertSame($modelEntries[0]['username'], $user->getUsername());
@@ -79,12 +79,12 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
-        $user = $resolver->findOneBy(UserRepository::getModelClass(), ['username' => 'nickname2@domain.tld']);
+        $user = $resolver->findOneBy(User::class, ['username' => 'nickname2@domain.tld']);
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());
@@ -118,11 +118,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
         $users = $resolver->findBy(
-            UserRepository::getModelClass(),
+            User::class,
             ['password' => 'verysecurepassword'],
             ['username' => 'DESC'],
             1,
@@ -133,7 +133,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         $user = reset($users);
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());
@@ -167,16 +167,16 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
-        $closure = $resolver->lazyFind(UserRepository::getModelClass(), $modelEntries[0]['id']);
+        $closure = $resolver->lazyFind(User::class, $modelEntries[0]['id']);
 
         self::assertInstanceOf(\Closure::class, $closure);
 
         $user = $closure();
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[0]['id'], $user->getId());
         self::assertSame($modelEntries[0]['username'], $user->getUsername());
@@ -210,16 +210,16 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
-        $closure = $resolver->lazyFindOneBy(UserRepository::getModelClass(), ['username' => 'nickname2@domain.tld']);
+        $closure = $resolver->lazyFindOneBy(User::class, ['username' => 'nickname2@domain.tld']);
 
         self::assertInstanceOf(\Closure::class, $closure);
 
         $user = $closure();
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());
@@ -253,11 +253,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
         $closure = $resolver->lazyFindBy(
-            UserRepository::getModelClass(),
+            User::class,
             ['password' => 'verysecurepassword'],
             ['username' => 'DESC'],
             1,
@@ -272,7 +272,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         $user = reset($users);
 
-        self::assertInstanceOf(UserRepository::getModelClass(), $user);
+        self::assertInstanceOf(User::class, $user);
 
         self::assertSame($modelEntries[1]['id'], $user->getId());
         self::assertSame($modelEntries[1]['username'], $user->getUsername());
@@ -285,7 +285,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository([])]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
         $id = (string) Uuid::uuid4();
@@ -328,7 +328,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
         /** @var User $user */
@@ -374,7 +374,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::getModelClass() => UserRepository::class,
+            UserRepository::class,
         ]);
 
         /** @var User $user */
