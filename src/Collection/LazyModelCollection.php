@@ -47,6 +47,7 @@ final class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function addModel(ModelInterface $model): ModelCollectionInterface
@@ -60,6 +61,7 @@ final class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface $model
+     *
      * @return ModelCollectionInterface
      */
     public function removeModel(ModelInterface $model): ModelCollectionInterface
@@ -75,6 +77,7 @@ final class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ModelInterface[]|array $models
+     *
      * @return ModelCollectionInterface
      */
     public function setModels(array $models): ModelCollectionInterface
