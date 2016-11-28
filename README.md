@@ -236,11 +236,13 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @return string
+     * @param string $modelClass
+     *
+     * @return bool
      */
-    public static function getModelClass(): string
+    public function isResponsible(string $modelClass): bool
     {
-        return User::class;
+        return $modelClass === User::class;
     }
 
     /**
@@ -254,10 +256,7 @@ final class UserRepository implements RepositoryInterface
             return null;
         }
 
-        /** @var User $modelClass */
-        $modelClass = self::getModelClass();
-
-        return $modelClass::fromPersistence($this->modelEntries[$id]);
+        return User::fromPersistence($this->modelEntries[$id]);
     }
 
     /**
@@ -286,9 +285,6 @@ final class UserRepository implements RepositoryInterface
      */
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
-        /** @var User $modelClass */
-        $modelClass = self::getModelClass();
-
         $models = [];
         foreach ($this->modelEntries as $modelEntry) {
             foreach ($criteria as $key => $value) {
@@ -297,7 +293,7 @@ final class UserRepository implements RepositoryInterface
                 }
             }
 
-            $models[] = $modelClass::fromPersistence($modelEntry);
+            $models[] = User::fromPersistence($modelEntry);
         }
 
         if (null !== $orderBy) {
@@ -364,12 +360,13 @@ final class UserRepository implements RepositoryInterface
 
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
+use MyProject\Model\User;
 use MyProject\Repository\UserRepository;
 
 $container = ...
 
-$resolver = new Resolver($container, [UserRepository::getModelClass() => UserRepository::class]);
-$resolver->find(UserRepository::getModelClass(), 5);
+$resolver = new Resolver($container, [UserRepository::class]);
+$resolver->find(User::class, 5);
 ```
 
 [1]: https://packagist.org/packages/chubbyphp/chubbyphp-model
