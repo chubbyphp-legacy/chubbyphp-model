@@ -260,13 +260,14 @@ final class UserRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $criteria
+     * @param array      $criteria
+     * @param array|null $orderBy
      *
      * @return ModelInterface|null
      */
-    public function findOneBy(array $criteria = [])
+    public function findOneBy(array $criteria, array $orderBy = null)
     {
-        $models = $this->findBy($criteria);
+        $models = $this->findBy($criteria, $orderBy, 1, 0);
 
         if ([] === $models) {
             return null;

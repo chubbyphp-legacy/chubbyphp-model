@@ -21,11 +21,12 @@ interface RepositoryInterface
     public function find(string $id);
 
     /**
-     * @param array $criteria
+     * @param array      $criteria
+     * @param array|null $orderBy
      *
      * @return ModelInterface|null
      */
-    public function findOneBy(array $criteria);
+    public function findOneBy(array $criteria, array $orderBy = null);
 
     /**
      * @param array      $criteria
