@@ -113,6 +113,16 @@ final class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        $this->resolveModels();
+
+        return new \ArrayIterator($this->models);
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array

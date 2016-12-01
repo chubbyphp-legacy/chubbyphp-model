@@ -4,6 +4,7 @@ namespace Chubbyphp\Tests\Model\Collection;
 
 use Chubbyphp\Model\Collection\ModelCollection;
 use Chubbyphp\Tests\Model\Resources\User;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @covers Chubbyphp\Model\Collection\ModelCollection
@@ -55,6 +56,27 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
+    }
+
+    public function testIteratable()
+    {
+        $id = (string) Uuid::uuid4();
+
+        $user = new User($id);
+        $user->setUsername('username1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $modelCollection = new ModelCollection([$user]);
+
+        foreach ($modelCollection as $key => $model) {
+            self::assertSame($id, $key);
+            self::assertSame($user, $model);
+
+            return;
+        }
+
+        self::fail('collection is not iteratable');
     }
 
     public function testJsonSerialize()

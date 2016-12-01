@@ -6,7 +6,7 @@ namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
 
-interface ModelCollectionInterface extends \JsonSerializable
+interface ModelCollectionInterface extends \IteratorAggregate, \JsonSerializable
 {
     /**
      * @param ModelInterface $model

@@ -85,6 +85,14 @@ final class ModelCollection implements ModelCollectionInterface
     }
 
     /**
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->models);
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array
