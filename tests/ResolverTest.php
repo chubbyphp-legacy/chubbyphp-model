@@ -10,7 +10,7 @@ use Interop\Container\ContainerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @covers Chubbyphp\Model\Resolver
+ * @covers \Chubbyphp\Model\Resolver
  */
 final class ResolverTest extends \PHPUnit_Framework_TestCase
 {

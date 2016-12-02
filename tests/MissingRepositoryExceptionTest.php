@@ -6,7 +6,7 @@ use Chubbyphp\Model\MissingRepositoryException;
 use Chubbyphp\Tests\Model\Resources\User;
 
 /**
- * @covers Chubbyphp\Model\MissingRepositoryException
+ * @covers \Chubbyphp\Model\MissingRepositoryException
  */
 final class MissingRepositoryExceptionTest extends \PHPUnit_Framework_TestCase
 {

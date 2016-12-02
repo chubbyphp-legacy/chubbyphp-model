@@ -7,7 +7,7 @@ use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @covers Chubbyphp\Model\Collection\LazyModelCollection
+ * @covers \Chubbyphp\Model\Collection\LazyModelCollection
  */
 final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 {

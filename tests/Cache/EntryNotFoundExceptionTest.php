@@ -6,7 +6,7 @@ use Chubbyphp\Model\Cache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @covers Chubbyphp\Model\Cache\EntryNotFoundException
+ * @covers \Chubbyphp\Model\Cache\EntryNotFoundException
  */
 final class EntryNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
 {
