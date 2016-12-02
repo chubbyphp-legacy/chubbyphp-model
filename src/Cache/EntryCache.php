@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model\Cache;
 
-final class ModelCache implements ModelCacheInterface
+final class EntryCache implements EntryCacheInterface
 {
     /**
      * @var array
@@ -15,9 +15,9 @@ final class ModelCache implements ModelCacheInterface
      * @param string $id
      * @param array  $entry
      *
-     * @return ModelCacheInterface
+     * @return EntryCacheInterface
      */
-    public function set(string $id, array $entry): ModelCacheInterface
+    public function set(string $id, array $entry): EntryCacheInterface
     {
         $this->cache[$id] = $entry;
 
@@ -53,11 +53,21 @@ final class ModelCache implements ModelCacheInterface
     /**
      * @param string $id
      *
-     * @return ModelCacheInterface
+     * @return EntryCacheInterface
      */
-    public function remove(string $id): ModelCacheInterface
+    public function remove(string $id): EntryCacheInterface
     {
         unset($this->cache[$id]);
+
+        return $this;
+    }
+
+    /**
+     * @return EntryCacheInterface
+     */
+    public function clear(): EntryCacheInterface
+    {
+        $this->cache = [];
 
         return $this;
     }

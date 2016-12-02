@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model\Cache;
 
-interface ModelCacheInterface
+interface EntryCacheInterface
 {
     /**
      * @param string $id
      * @param array  $entry
      *
-     * @return ModelCacheInterface
+     * @return EntryCacheInterface
      */
-    public function set(string $id, array $entry): ModelCacheInterface;
+    public function set(string $id, array $entry): EntryCacheInterface;
 
     /**
      * @param string $id
@@ -33,7 +33,12 @@ interface ModelCacheInterface
     /**
      * @param string $id
      *
-     * @return ModelCacheInterface
+     * @return EntryCacheInterface
      */
-    public function remove(string $id): ModelCacheInterface;
+    public function remove(string $id): EntryCacheInterface;
+
+    /**
+     * @return EntryCacheInterface
+     */
+    public function clear(): EntryCacheInterface;
 }
