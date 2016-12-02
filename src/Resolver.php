@@ -40,14 +40,15 @@ final class Resolver implements ResolverInterface
     }
 
     /**
-     * @param string $modelClass
-     * @param array  $criteria
+     * @param string     $modelClass
+     * @param array      $criteria
+     * @param array|null $orderBy
      *
      * @return ModelInterface|null
      */
-    public function findOneBy(string $modelClass, array $criteria)
+    public function findOneBy(string $modelClass, array $criteria, array $orderBy = null)
     {
-        return $this->getRepositoryByClass($modelClass)->findOneBy($criteria);
+        return $this->getRepositoryByClass($modelClass)->findOneBy($criteria, $orderBy);
     }
 
     /**
@@ -83,15 +84,16 @@ final class Resolver implements ResolverInterface
     }
 
     /**
-     * @param string $modelClass
-     * @param array  $criteria
+     * @param string     $modelClass
+     * @param array      $criteria
+     * @param array|null $orderBy
      *
      * @return \Closure
      */
-    public function lazyFindOneBy(string $modelClass, array $criteria): \Closure
+    public function lazyFindOneBy(string $modelClass, array $criteria, array $orderBy = null): \Closure
     {
-        return function () use ($modelClass, $criteria) {
-            return $this->findOneBy($modelClass, $criteria);
+        return function () use ($modelClass, $criteria, $orderBy) {
+            return $this->findOneBy($modelClass, $criteria, $orderBy);
         };
     }
 

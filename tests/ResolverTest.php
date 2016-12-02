@@ -82,14 +82,14 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             UserRepository::class,
         ]);
 
-        $user = $resolver->findOneBy(User::class, ['username' => 'nickname2@domain.tld']);
+        $user = $resolver->findOneBy(User::class, ['active' => true], ['username' => 'ASC']);
 
         self::assertInstanceOf(User::class, $user);
 
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $user->getId());
+        self::assertSame($modelEntries[2]['username'], $user->getUsername());
+        self::assertSame($modelEntries[2]['password'], $user->getPassword());
+        self::assertSame($modelEntries[2]['active'], $user->isActive());
     }
 
     public function testFindBy()
@@ -213,7 +213,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             UserRepository::class,
         ]);
 
-        $closure = $resolver->lazyFindOneBy(User::class, ['username' => 'nickname2@domain.tld']);
+        $closure = $resolver->lazyFindOneBy(User::class, ['active' => true], ['username' => 'ASC']);
 
         self::assertInstanceOf(\Closure::class, $closure);
 
@@ -221,10 +221,10 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(User::class, $user);
 
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $user->getId());
+        self::assertSame($modelEntries[2]['username'], $user->getUsername());
+        self::assertSame($modelEntries[2]['password'], $user->getPassword());
+        self::assertSame($modelEntries[2]['active'], $user->isActive());
     }
 
     public function testLazyFindBy()
