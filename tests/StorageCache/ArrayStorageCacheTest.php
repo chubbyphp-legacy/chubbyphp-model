@@ -1,21 +1,21 @@
 <?php
 
-namespace Chubbyphp\Tests\Model\Cache;
+namespace Chubbyphp\Tests\Model\StorageCache;
 
-use Chubbyphp\Model\Cache\EntryCache;
-use Chubbyphp\Model\Cache\EntryNotFoundException;
+use Chubbyphp\Model\StorageCache\ArrayStorageCache;
+use Chubbyphp\Model\StorageCache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @covers \Chubbyphp\Model\Cache\EntryCache
+ * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache
  */
-final class EntryCacheTest extends \PHPUnit_Framework_TestCase
+final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetValue()
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
 
         $cache->set($id, []);
     }
@@ -24,7 +24,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
 
         self::assertFalse($cache->has($id));
     }
@@ -33,7 +33,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
         $cache->set($id, []);
 
         self::assertTrue($cache->has($id));
@@ -46,7 +46,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
         self::expectException(EntryNotFoundException::class);
         self::expectExceptionMessage(sprintf('Entry with id %s not found within cache', $id));
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
         $cache->get($id);
     }
 
@@ -54,7 +54,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
         $cache->set($id, ['key' => 'value']);
 
         self::assertSame(['key' => 'value'], $cache->get($id));
@@ -64,7 +64,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
         $cache->remove($id);
     }
 
@@ -73,7 +73,7 @@ final class EntryCacheTest extends \PHPUnit_Framework_TestCase
         $id1 = (string) Uuid::uuid4();
         $id2 = (string) Uuid::uuid4();
 
-        $cache = new EntryCache();
+        $cache = new ArrayStorageCache();
 
         $cache->set($id1, []);
         $cache->set($id2, []);

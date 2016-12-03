@@ -1,12 +1,12 @@
 <?php
 
-namespace Chubbyphp\Tests\Model\Cache;
+namespace Chubbyphp\Tests\Model\StorageCache;
 
-use Chubbyphp\Model\Cache\EntryNotFoundException;
+use Chubbyphp\Model\StorageCache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @covers \Chubbyphp\Model\Cache\EntryNotFoundException
+ * @covers \Chubbyphp\Model\StorageCache\EntryNotFoundException
  */
 final class EntryNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Chubbyphp\Model\Cache;
+namespace Chubbyphp\Model\StorageCache;
 
-interface EntryCacheInterface
+interface StorageCacheInterface
 {
     /**
      * @param string $id
      * @param array  $entry
      *
-     * @return EntryCacheInterface
+     * @return StorageCacheInterface
      */
-    public function set(string $id, array $entry): EntryCacheInterface;
+    public function set(string $id, array $entry): StorageCacheInterface;
 
     /**
      * @param string $id
@@ -33,12 +33,12 @@ interface EntryCacheInterface
     /**
      * @param string $id
      *
-     * @return EntryCacheInterface
+     * @return StorageCacheInterface
      */
-    public function remove(string $id): EntryCacheInterface;
+    public function remove(string $id): StorageCacheInterface;
 
     /**
-     * @return EntryCacheInterface
+     * @return StorageCacheInterface
      */
-    public function clear(): EntryCacheInterface;
+    public function clear(): StorageCacheInterface;
 }

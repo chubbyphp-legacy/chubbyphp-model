@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chubbyphp\Model\Cache;
+namespace Chubbyphp\Model\StorageCache;
 
 class EntryNotFoundException extends \RuntimeException
 {
