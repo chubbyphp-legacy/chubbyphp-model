@@ -44,7 +44,6 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
         $id = (string) Uuid::uuid4();
 
         self::expectException(EntryNotFoundException::class);
-        self::expectExceptionMessage(sprintf('Entry with id %s not found within cache', $id));
 
         $cache = new ArrayStorageCache();
         $cache->get($id);

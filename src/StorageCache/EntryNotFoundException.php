@@ -13,6 +13,6 @@ final class EntryNotFoundException extends \RuntimeException
      */
     public static function fromId(string $id)
     {
-        return new self(sprintf('Entry with id %s not found within cache', $id));
+        return new self(sprintf('Entry with id %s not found within storage cache', $id));
     }
 }

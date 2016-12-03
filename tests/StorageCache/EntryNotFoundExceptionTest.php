@@ -17,7 +17,7 @@ final class EntryNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
         $exception = EntryNotFoundException::fromId($id);
 
         self::assertSame(
-            sprintf('Entry with id %s not found within cache', $id),
+            sprintf('Entry with id %s not found within storage cache', $id),
             $exception->getMessage()
         );
     }
