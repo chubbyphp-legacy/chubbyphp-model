@@ -41,9 +41,9 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithoutValue()
     {
-        $id = (string) Uuid::uuid4();
-
         self::expectException(EntryNotFoundException::class);
+
+        $id = (string) Uuid::uuid4();
 
         $cache = new ArrayStorageCache();
         $cache->get($id);
