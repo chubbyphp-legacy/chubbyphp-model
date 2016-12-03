@@ -221,4 +221,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertNull($user);
     }
+
+    public function testClear()
+    {
+        $repo = new UserRepository();
+        $repo->clear();
+    }
 }

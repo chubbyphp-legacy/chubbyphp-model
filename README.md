@@ -333,27 +333,39 @@ final class UserRepository implements RepositoryInterface
 
     /**
      * @param ModelInterface $model
+     * @return RepositoryInterface
      *
-     * @thentries \Exception
+     * @throws \Exception
      */
-    public function persist(ModelInterface $model)
+    public function persist(ModelInterface $model): RepositoryInterface
     {
         $this->modelEntries[$model->getId()] = $model->toPersistence();
+
+        return $this;
     }
 
     /**
      * @param ModelInterface $model
+     * @return RepositoryInterface
      *
-     * @thentries \Exception
+     * @throws \Exception
      */
-    public function remove(ModelInterface $model)
+    public function remove(ModelInterface $model): RepositoryInterface
     {
         $id = $model->getId();
-        if (!isset($this->modelEntries[$id])) {
-            return;
+        if (isset($this->modelEntries[$id])) {
+            unset($this->modelEntries[$id]);
         }
 
-        unset($this->modelEntries[$id]);
+        return $this;
+    }
+
+    /**
+     * @return RepositoryInterface
+     */
+    public function clear(): RepositoryInterface
+    {
+        return $this;
     }
 }
 ```

@@ -40,11 +40,20 @@ interface RepositoryInterface
 
     /**
      * @param ModelInterface $model
+     *
+     * @return RepositoryInterface
      */
-    public function persist(ModelInterface $model);
+    public function persist(ModelInterface $model): RepositoryInterface;
 
     /**
      * @param ModelInterface $model
+     *
+     * @return RepositoryInterface
      */
-    public function remove(ModelInterface $model);
+    public function remove(ModelInterface $model): RepositoryInterface;
+
+    /**
+     * @return RepositoryInterface
+     */
+    public function clear(): RepositoryInterface;
 }
