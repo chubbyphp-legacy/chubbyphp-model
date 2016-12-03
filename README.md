@@ -77,27 +77,14 @@ namespace MyProject\Model;
 use Chubbyphp\Model\ModelInterface;
 use Ramsey\Uuid\Uuid;
 
-final class User implements ModelInterface
+final class MyModel implements ModelInterface
 {
     /**
      * @var string
      */
     private $id;
 
-    /**
-     * @var string
-     */
-    private $username;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var bool
-     */
-    private $active;
+    ....
 
     /**
      * @param string|null $id
@@ -114,12 +101,10 @@ final class User implements ModelInterface
      */
     public static function fromPersistence(array $data): ModelInterface
     {
-        $object = new self($data['id']);
-        $object->username = $data['username'];
-        $object->password = $data['password'];
-        $object->active = $data['active'];
+        $model = new self($data['id']);
+        ...
 
-        return $object;
+        return $model;
     }
 
     /**
@@ -131,63 +116,13 @@ final class User implements ModelInterface
     }
 
     /**
-     * @return string
-     */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(string $username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    /**
-     * @param bool $active
-     */
-    public function setActive(bool $active)
-    {
-        $this->active = $active;
-    }
-
-    /**
      * @return array
      */
     public function toPersistence(): array
     {
         return [
             'id' => $this->id,
-            'username' => $this->username,
-            'password' => $this->password,
-            'active' => $this->active,
+            ...
         ];
     }
 
@@ -198,8 +133,7 @@ final class User implements ModelInterface
     {
         return [
             'id' => $this->id,
-            'username' => $this->username,
-            'active' => $this->active,
+            ...
         ];
     }
 }
@@ -207,7 +141,7 @@ final class User implements ModelInterface
 
 ### Repository
 
-#### Sample UserRepository
+#### Sample MyRepository
 
 ```{.php}
 <?php
@@ -217,156 +151,9 @@ namespace MyProject\Repository;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\RepositoryInterface;
 
-final class UserRepository implements RepositoryInterface
+final class MyRepository implements RepositoryInterface
 {
-    /**
-     * @var array[]
-     */
-    private $modelEntries;
-
-    /**
-     * @param array $modelEntries
-     */
-    public function __construct(array $modelEntries = [])
-    {
-        $this->modelEntries = [];
-        foreach ($modelEntries as $modelEntry) {
-            $this->modelEntries[$modelEntry['id']] = $modelEntry;
-        }
-    }
-
-    /**
-     * @param string $modelClass
-     *
-     * @return bool
-     */
-    public function isResponsible(string $modelClass): bool
-    {
-        return $modelClass === User::class;
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return ModelInterface|null
-     */
-    public function find(string $id)
-    {
-        if (!isset($this->modelEntries[$id])) {
-            return null;
-        }
-
-        return User::fromPersistence($this->modelEntries[$id]);
-    }
-
-    /**
-     * @param array      $criteria
-     * @param array|null $orderBy
-     *
-     * @return ModelInterface|null
-     */
-    public function findOneBy(array $criteria, array $orderBy = null)
-    {
-        $models = $this->findBy($criteria, $orderBy, 1, 0);
-
-        if ([] === $models) {
-            return null;
-        }
-
-        return reset($models);
-    }
-
-    /**
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
-     *
-     * @return array
-     */
-    public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
-    {
-        if ([] === $this->modelEntries) {
-            return [];
-        }
-
-        $models = [];
-        foreach ($this->modelEntries as $modelEntry) {
-            foreach ($criteria as $key => $value) {
-                if ($modelEntry[$key] !== $value) {
-                    continue 2;
-                }
-            }
-
-            $models[] = User::fromPersistence($modelEntry);
-        }
-
-        if (null !== $orderBy) {
-            usort($models, function (ModelInterface $a, ModelInterface $b) use ($orderBy) {
-                foreach ($orderBy as $key => $value) {
-                    $propertyReflection = new \ReflectionProperty(get_class($a), $key);
-                    $propertyReflection->setAccessible(true);
-                    $sorting = strcmp($propertyReflection->getValue($a), $propertyReflection->getValue($b));
-                    if ($value === 'DESC') {
-                        $sorting = $sorting * -1;
-                    }
-
-                    if (0 !== $sorting) {
-                        return $sorting;
-                    }
-                }
-
-                return 0;
-            });
-        }
-
-        if (null !== $limit && null !== $offset) {
-            return array_slice($models, $offset, $limit);
-        }
-
-        if (null !== $limit) {
-            return array_slice($models, 0, $limit);
-        }
-
-        return $models;
-    }
-
-    /**
-     * @param ModelInterface $model
-     * @return RepositoryInterface
-     *
-     * @throws \Exception
-     */
-    public function persist(ModelInterface $model): RepositoryInterface
-    {
-        $this->modelEntries[$model->getId()] = $model->toPersistence();
-
-        return $this;
-    }
-
-    /**
-     * @param ModelInterface $model
-     * @return RepositoryInterface
-     *
-     * @throws \Exception
-     */
-    public function remove(ModelInterface $model): RepositoryInterface
-    {
-        $id = $model->getId();
-        if (isset($this->modelEntries[$id])) {
-            unset($this->modelEntries[$id]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return RepositoryInterface
-     */
-    public function clear(): RepositoryInterface
-    {
-        return $this;
-    }
+   ...
 }
 ```
 
@@ -378,11 +165,11 @@ final class UserRepository implements RepositoryInterface
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
 use MyProject\Model\User;
-use MyProject\Repository\UserRepository;
+use MyProject\Repository\MyRepository;
 
 $container = ...
 
-$resolver = new Resolver($container, [UserRepository::class]);
+$resolver = new Resolver($container, [MyRepository::class]);
 $resolver->find(User::class, 5);
 ```
 

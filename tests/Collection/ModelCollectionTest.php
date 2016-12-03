@@ -3,24 +3,25 @@
 namespace Chubbyphp\Tests\Model\Collection;
 
 use Chubbyphp\Model\Collection\ModelCollection;
-use Chubbyphp\Tests\Model\Resources\User;
-use Ramsey\Uuid\Uuid;
+use Chubbyphp\Tests\Model\GetModelTrait;
 
 final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
+    use GetModelTrait;
+
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\ModelCollection::addModel
      */
     public function testAddModel()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([]);
-        $modelCollection->addModel($user);
+        $modelCollection = new ModelCollection();
+
+        $modelCollection->addModel($model);
 
         self::assertCount(1, $modelCollection->getModels());
     }
@@ -31,22 +32,21 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveModel()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([$user]);
+        $modelCollection = new ModelCollection([$model]);
 
         self::assertCount(1, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
 
-        $modelCollection->removeModel($user);
+        $modelCollection->removeModel($model);
 
         self::assertCount(1, $modelCollection->getInitialModels());
         self::assertCount(0, $modelCollection->getModels());
 
-        $modelCollection->removeModel($user);
+        $modelCollection->removeModel($model);
     }
 
     /**
@@ -55,13 +55,13 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([]);
-        $modelCollection->setModels([$user]);
+        $modelCollection = new ModelCollection();
+
+        $modelCollection->setModels([$model]);
 
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
@@ -73,13 +73,13 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModels()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([]);
-        $modelCollection->setModels([$user]);
+        $modelCollection = new ModelCollection();
+
+        $modelCollection->setModels([$model]);
 
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
@@ -91,13 +91,13 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModels()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([]);
-        $modelCollection->setModels([$user]);
+        $modelCollection = new ModelCollection();
+
+        $modelCollection->setModels([$model]);
 
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
@@ -109,18 +109,15 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteratable()
     {
-        $id = (string) Uuid::uuid4();
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $user = new User($id);
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
-
-        $modelCollection = new ModelCollection([$user]);
+        $modelCollection = new ModelCollection([$model]);
 
         foreach ($modelCollection as $key => $model) {
-            self::assertSame($id, $key);
-            self::assertSame($user, $model);
+            self::assertSame('id1', $key);
+            self::assertSame($model, $model);
 
             return;
         }
@@ -134,18 +131,17 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $user = new User();
-        $user->setUsername('username1');
-        $user->setPassword('password');
-        $user->setActive(true);
+        $model = $this->getModel('id1');
+        $model->setName('name1');
+        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([$user]);
+        $modelCollection = new ModelCollection([$model]);
 
         $modelsAsArray = json_decode(json_encode($modelCollection), true);
 
         self::assertCount(1, $modelsAsArray);
 
-        self::assertSame('username1', $modelsAsArray[0]['username']);
-        self::assertTrue($modelsAsArray[0]['active']);
+        self::assertSame('name1', $modelsAsArray[0]['name']);
+        self::assertSame('category', $modelsAsArray[0]['category']);
     }
 }

@@ -3,14 +3,15 @@
 namespace Chubbyphp\Tests\Model;
 
 use Chubbyphp\Model\MissingRepositoryException;
+use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RepositoryInterface;
 use Chubbyphp\Model\Resolver;
-use Chubbyphp\Tests\Model\Resources\User;
-use Chubbyphp\Tests\Model\Resources\UserRepository;
 use Interop\Container\ContainerInterface;
-use Ramsey\Uuid\Uuid;
 
 final class ResolverTest extends \PHPUnit_Framework_TestCase
 {
+    use GetRepositoryTrait;
+
     /**
      * @covers \Chubbyphp\Model\Resolver::__construct
      * @covers \Chubbyphp\Model\Resolver::find
@@ -20,40 +21,35 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        /** @var User $user */
-        $user = $resolver->find(User::class, $modelEntries[0]['id']);
+        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertSame($modelEntries[0]['id'], $user->getId());
-        self::assertSame($modelEntries[0]['username'], $user->getUsername());
-        self::assertSame($modelEntries[0]['password'], $user->getPassword());
-        self::assertSame($modelEntries[0]['active'], $user->isActive());
+        self::assertSame($modelEntries[0]['id'], $model->getId());
+        self::assertSame($modelEntries[0]['name'], $model->getName());
+        self::assertSame($modelEntries[0]['category'], $model->getCategory());
     }
 
     /**
@@ -65,40 +61,35 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        /** @var User $user */
-        $user = $resolver->findOneBy(User::class, ['active' => true], ['username' => 'ASC']);
+        $model = $resolver->findOneBy(ModelInterface::class, ['category' => 'category1'], ['name' => 'ASC']);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertSame($modelEntries[2]['id'], $user->getId());
-        self::assertSame($modelEntries[2]['username'], $user->getUsername());
-        self::assertSame($modelEntries[2]['password'], $user->getPassword());
-        self::assertSame($modelEntries[2]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $model->getId());
+        self::assertSame($modelEntries[2]['name'], $model->getName());
+        self::assertSame($modelEntries[2]['category'], $model->getCategory());
     }
 
     /**
@@ -110,50 +101,46 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        $users = $resolver->findBy(
-            User::class,
-            ['password' => 'verysecurepassword'],
-            ['username' => 'DESC'],
+        $models = $resolver->findBy(
+            ModelInterface::class,
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
             1,
             1
         );
 
-        self::assertCount(1, $users);
+        self::assertCount(1, $models);
 
-        /** @var User $user */
-        $user = reset($users);
+        /** @var ModelInterface $model */
+        $model = reset($models);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $model->getId());
+        self::assertSame($modelEntries[2]['name'], $model->getName());
+        self::assertSame($modelEntries[2]['category'], $model->getCategory());
     }
 
     /**
@@ -165,44 +152,38 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        $closure = $resolver->lazyFind(User::class, $modelEntries[0]['id']);
+        $closure = $resolver->lazyFind(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(\Closure::class, $closure);
+        /** @var ModelInterface $model */
+        $model = $closure();
 
-        /** @var User $user */
-        $user = $closure();
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertInstanceOf(User::class, $user);
-
-        self::assertSame($modelEntries[0]['id'], $user->getId());
-        self::assertSame($modelEntries[0]['username'], $user->getUsername());
-        self::assertSame($modelEntries[0]['password'], $user->getPassword());
-        self::assertSame($modelEntries[0]['active'], $user->isActive());
+        self::assertSame($modelEntries[0]['id'], $model->getId());
+        self::assertSame($modelEntries[0]['name'], $model->getName());
+        self::assertSame($modelEntries[0]['category'], $model->getCategory());
     }
 
     /**
@@ -214,44 +195,38 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        $closure = $resolver->lazyFindOneBy(User::class, ['active' => true], ['username' => 'ASC']);
+        $closure = $resolver->lazyFindOneBy(ModelInterface::class, ['category' => 'category1'], ['name' => 'ASC']);
 
-        self::assertInstanceOf(\Closure::class, $closure);
+        /** @var ModelInterface $model */
+        $model = $closure();
 
-        /** @var User $user */
-        $user = $closure();
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertInstanceOf(User::class, $user);
-
-        self::assertSame($modelEntries[2]['id'], $user->getId());
-        self::assertSame($modelEntries[2]['username'], $user->getUsername());
-        self::assertSame($modelEntries[2]['password'], $user->getPassword());
-        self::assertSame($modelEntries[2]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $model->getId());
+        self::assertSame($modelEntries[2]['name'], $model->getName());
+        self::assertSame($modelEntries[2]['category'], $model->getCategory());
     }
 
     /**
@@ -263,54 +238,48 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
         $closure = $resolver->lazyFindBy(
-            User::class,
-            ['password' => 'verysecurepassword'],
-            ['username' => 'DESC'],
+            ModelInterface::class,
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
             1,
             1
         );
 
-        self::assertInstanceOf(\Closure::class, $closure);
+        $models = $closure();
 
-        $users = $closure();
+        self::assertCount(1, $models);
 
-        self::assertCount(1, $users);
+        /** @var ModelInterface $model */
+        $model = reset($models);
 
-        /** @var User $user */
-        $user = reset($users);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertInstanceOf(User::class, $user);
-
-        self::assertSame($modelEntries[1]['id'], $user->getId());
-        self::assertSame($modelEntries[1]['username'], $user->getUsername());
-        self::assertSame($modelEntries[1]['password'], $user->getPassword());
-        self::assertSame($modelEntries[1]['active'], $user->isActive());
+        self::assertSame($modelEntries[2]['id'], $model->getId());
+        self::assertSame($modelEntries[2]['name'], $model->getName());
+        self::assertSame($modelEntries[2]['category'], $model->getCategory());
     }
 
     /**
@@ -320,24 +289,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsert()
     {
-        $container = $this->getContainer([UserRepository::class => new UserRepository([])]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        $id = (string) Uuid::uuid4();
+        $model = $this->getModel('id1')->setName('name1')->setCategory('category1');
 
-        $user = new User($id);
-        $user->setUsername('user1d');
-        $user->setPassword('verysecurepassword');
-        $user->setActive(true);
+        self::assertNull($resolver->find(ModelInterface::class, 'id1'));
 
-        self::assertNull($resolver->find(User::class, $id));
+        $resolver->persist($model);
 
-        $resolver->persist($user);
-
-        self::assertInstanceOf(User::class, $resolver->find(User::class, $id));
+        self::assertInstanceOf(ModelInterface::class, $resolver->find(ModelInterface::class, 'id1'));
     }
 
     /**
@@ -349,46 +313,41 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        /** @var User $user */
-        $user = $resolver->find(User::class, $modelEntries[0]['id']);
+        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        $user->setUsername('nickname@domain.tld');
+        $model->setName('name5');
 
-        $resolver->persist($user);
+        $resolver->persist($model);
 
-        /** @var User $user */
-        $user = $resolver->find(User::class, $modelEntries[0]['id']);
+        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        self::assertSame('nickname@domain.tld', $user->getUsername());
+        self::assertSame('name5', $model->getName());
     }
 
     /**
@@ -400,42 +359,37 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $modelEntries = [
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname3@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id1',
+                'name' => 'name3',
+                'category' => 'category1',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname2@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => false,
+                'id' => 'id2',
+                'name' => 'name2',
+                'category' => 'category2',
             ],
             [
-                'id' => (string) Uuid::uuid4(),
-                'username' => 'nickname1@domain.tld',
-                'password' => 'verysecurepassword',
-                'active' => true,
+                'id' => 'id3',
+                'name' => 'name1',
+                'category' => 'category1',
             ],
         ];
 
-        $container = $this->getContainer([UserRepository::class => new UserRepository($modelEntries)]);
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
 
         $resolver = new Resolver($container, [
-            UserRepository::class,
+            RepositoryInterface::class,
         ]);
 
-        /** @var User $user */
-        $user = $resolver->find(User::class, $modelEntries[0]['id']);
+        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(ModelInterface::class, $model);
 
-        $resolver->remove($user);
+        $resolver->remove($model);
 
-        /** @var User $user */
-        $user = $resolver->find(User::class, $modelEntries[0]['id']);
+        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
 
-        self::assertNull($user);
+        self::assertNull($model);
     }
 
     /**
