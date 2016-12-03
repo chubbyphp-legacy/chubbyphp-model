@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model\StorageCache;
 
-class EntryNotFoundException extends \RuntimeException
+final class EntryNotFoundException extends \RuntimeException
 {
     /**
      * @param string $id
