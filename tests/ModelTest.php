@@ -7,6 +7,10 @@ use Ramsey\Uuid\Uuid;
 
 final class ModelTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\User::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\User::getId
+     */
     public function testGetId()
     {
         $id = (string) Uuid::uuid4();
@@ -15,7 +19,11 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
         self::assertSame($id, $user->getId());
     }
 
-    public function testFromEntry()
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\User::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\User::fromPersistence
+     */
+    public function testFromPersistence()
     {
         $id = (string) Uuid::uuid4();
         $username = 'user1d';
@@ -32,7 +40,11 @@ final class ModelTest extends \PHPUnit_Framework_TestCase
         self::assertSame($active, $user->isActive());
     }
 
-    public function testToEntry()
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\User::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\User::toPersistence
+     */
+    public function testToPersistence()
     {
         $id = (string) Uuid::uuid4();
         $username = 'user1d';

@@ -6,11 +6,11 @@ use Chubbyphp\Model\StorageCache\NullStorageCache;
 use Chubbyphp\Model\StorageCache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @covers \Chubbyphp\Model\StorageCache\NullStorageCache
- */
 final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::set
+     */
     public function testSetValue()
     {
         $id = (string) Uuid::uuid4();
@@ -20,6 +20,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->set($id, []);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::has
+     */
     public function testHasWithoutValue()
     {
         $id = (string) Uuid::uuid4();
@@ -29,6 +32,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         self::assertFalse($cache->has($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::has
+     */
     public function testHasWithValue()
     {
         $id = (string) Uuid::uuid4();
@@ -39,6 +45,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         self::assertFalse($cache->has($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::get
+     */
     public function testGetWithoutValue()
     {
         self::expectException(EntryNotFoundException::class);
@@ -49,6 +58,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->get($id);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::get
+     */
     public function testGetWithValue()
     {
         self::expectException(EntryNotFoundException::class);
@@ -61,6 +73,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->get($id);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::remove
+     */
     public function testRemoveValue()
     {
         $id = (string) Uuid::uuid4();
@@ -69,6 +84,9 @@ final class NullStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->remove($id);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\NullStorageCache::clear
+     */
     public function testClear()
     {
         $id1 = (string) Uuid::uuid4();

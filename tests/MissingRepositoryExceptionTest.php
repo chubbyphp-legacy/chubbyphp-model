@@ -5,11 +5,11 @@ namespace Chubbyphp\Tests\Model;
 use Chubbyphp\Model\MissingRepositoryException;
 use Chubbyphp\Tests\Model\Resources\User;
 
-/**
- * @covers \Chubbyphp\Model\MissingRepositoryException
- */
 final class MissingRepositoryExceptionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\MissingRepositoryException::create
+     */
     public function testCreate()
     {
         $exception = MissingRepositoryException::create(User::class);

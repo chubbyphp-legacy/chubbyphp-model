@@ -6,11 +6,12 @@ use Chubbyphp\Model\StorageCache\ArrayStorageCache;
 use Chubbyphp\Model\StorageCache\EntryNotFoundException;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache
- */
 final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::set
+     */
     public function testSetValue()
     {
         $id = (string) Uuid::uuid4();
@@ -20,6 +21,10 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->set($id, []);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::has
+     */
     public function testHasWithoutValue()
     {
         $id = (string) Uuid::uuid4();
@@ -29,6 +34,10 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
         self::assertFalse($cache->has($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::has
+     */
     public function testHasWithValue()
     {
         $id = (string) Uuid::uuid4();
@@ -39,6 +48,10 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($cache->has($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::get
+     */
     public function testGetWithoutValue()
     {
         self::expectException(EntryNotFoundException::class);
@@ -49,33 +62,41 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
         $cache->get($id);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::get
+     */
     public function testGetWithValue()
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new ArrayStorageCache();
-        $cache->set($id, ['key' => 'value']);
+        $cache = new ArrayStorageCache([$id => ['key' => 'value']]);
 
         self::assertSame(['key' => 'value'], $cache->get($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::remove
+     */
     public function testRemoveValue()
     {
         $id = (string) Uuid::uuid4();
 
-        $cache = new ArrayStorageCache();
+        $cache = new ArrayStorageCache([$id => ['key' => 'value']]);
         $cache->remove($id);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::__construct
+     * @covers \Chubbyphp\Model\StorageCache\ArrayStorageCache::clear
+     */
     public function testClear()
     {
         $id1 = (string) Uuid::uuid4();
         $id2 = (string) Uuid::uuid4();
 
-        $cache = new ArrayStorageCache();
-
-        $cache->set($id1, []);
-        $cache->set($id2, []);
+        $cache = new ArrayStorageCache([$id1 => [], $id2 => []]);
 
         self::assertTrue($cache->has($id1));
         self::assertTrue($cache->has($id2));

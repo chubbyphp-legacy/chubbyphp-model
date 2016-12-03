@@ -9,11 +9,13 @@ use Chubbyphp\Tests\Model\Resources\UserRepository;
 use Interop\Container\ContainerInterface;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @covers \Chubbyphp\Model\Resolver
- */
 final class ResolverTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::find
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testFind()
     {
         $modelEntries = [
@@ -43,6 +45,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             UserRepository::class,
         ]);
 
+        /** @var User $user */
         $user = $resolver->find(User::class, $modelEntries[0]['id']);
 
         self::assertInstanceOf(User::class, $user);
@@ -53,6 +56,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[0]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::findOneBy
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testFindOneBy()
     {
         $modelEntries = [
@@ -82,6 +90,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             UserRepository::class,
         ]);
 
+        /** @var User $user */
         $user = $resolver->findOneBy(User::class, ['active' => true], ['username' => 'ASC']);
 
         self::assertInstanceOf(User::class, $user);
@@ -92,6 +101,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[2]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::findBy
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testFindBy()
     {
         $modelEntries = [
@@ -131,6 +145,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $users);
 
+        /** @var User $user */
         $user = reset($users);
 
         self::assertInstanceOf(User::class, $user);
@@ -141,6 +156,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[1]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::lazyFind
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testLazyFind()
     {
         $modelEntries = [
@@ -174,6 +194,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(\Closure::class, $closure);
 
+        /** @var User $user */
         $user = $closure();
 
         self::assertInstanceOf(User::class, $user);
@@ -184,6 +205,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[0]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::lazyFindOneBy
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testLazyFindOneBy()
     {
         $modelEntries = [
@@ -217,6 +243,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(\Closure::class, $closure);
 
+        /** @var User $user */
         $user = $closure();
 
         self::assertInstanceOf(User::class, $user);
@@ -227,6 +254,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[2]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::lazyFindBy
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testLazyFindBy()
     {
         $modelEntries = [
@@ -270,6 +302,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $users);
 
+        /** @var User $user */
         $user = reset($users);
 
         self::assertInstanceOf(User::class, $user);
@@ -280,7 +313,12 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[1]['active'], $user->isActive());
     }
 
-    public function testPersist()
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::persist
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
+    public function testInsert()
     {
         $container = $this->getContainer([UserRepository::class => new UserRepository([])]);
 
@@ -302,6 +340,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf(User::class, $resolver->find(User::class, $id));
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::persist
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testUpdate()
     {
         $modelEntries = [
@@ -348,6 +391,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame('nickname@domain.tld', $user->getUsername());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::remove
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testRemove()
     {
         $modelEntries = [
@@ -390,6 +438,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertNull($user);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::find
+     * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     */
     public function testUnknownModel()
     {
         self::expectException(MissingRepositoryException::class);

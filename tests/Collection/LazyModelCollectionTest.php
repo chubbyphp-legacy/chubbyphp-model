@@ -6,11 +6,13 @@ use Chubbyphp\Model\Collection\LazyModelCollection;
 use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @covers \Chubbyphp\Model\Collection\LazyModelCollection
- */
 final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::addModel
+     */
     public function testAddModel()
     {
         $user = new User();
@@ -26,6 +28,11 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::assertCount(1, $modelCollection->getModels());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::removeModel
+     */
     public function testRemoveModel()
     {
         $user = new User();
@@ -48,6 +55,11 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $modelCollection->removeModel($user);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::setModels
+     */
     public function testSetModels()
     {
         $user = new User();
@@ -64,6 +76,53 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::assertCount(1, $modelCollection->getModels());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getInitialModels
+     */
+    public function testGetInitialModels()
+    {
+        $user = new User();
+        $user->setUsername('username1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $modelCollection = new LazyModelCollection(function () {
+            return [];
+        });
+        $modelCollection->setModels([$user]);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getModels
+     */
+    public function testGetModels()
+    {
+        $user = new User();
+        $user->setUsername('username1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $modelCollection = new LazyModelCollection(function () {
+            return [];
+        });
+        $modelCollection->setModels([$user]);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getIterator
+     */
     public function testIteratable()
     {
         $id = (string) Uuid::uuid4();
@@ -87,6 +146,11 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::fail('collection is not iteratable');
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerialize
+     */
     public function testJsonSerialize()
     {
         $user = new User();

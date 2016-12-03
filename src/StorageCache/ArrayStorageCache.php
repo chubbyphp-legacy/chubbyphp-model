@@ -12,6 +12,14 @@ final class ArrayStorageCache implements StorageCacheInterface
     private $cache = [];
 
     /**
+     * @param array $cache
+     */
+    public function __construct(array $cache = [])
+    {
+        $this->cache = $cache;
+    }
+
+    /**
      * @param string $id
      * @param array  $entry
      *

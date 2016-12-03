@@ -8,6 +8,10 @@ use Ramsey\Uuid\Uuid;
 
 final class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::find
+     */
     public function testFind()
     {
         $modelEntries = [
@@ -45,6 +49,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[0]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::findOneBy
+     */
     public function testFindOneBy()
     {
         $modelEntries = [
@@ -80,6 +88,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[2]['active'], $user->isActive());
     }
 
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::findBy
+     */
     public function testFindBy()
     {
         $modelEntries = [
@@ -124,7 +136,11 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[1]['active'], $user->isActive());
     }
 
-    public function testPersist()
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::persist
+     */
+    public function testInsert()
     {
         $repo = new UserRepository();
 
@@ -142,6 +158,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf(User::class, $repo->find($id));
     }
 
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::persist
+     */
     public function testUpdate()
     {
         $modelEntries = [
@@ -184,6 +204,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertSame('nickname@domain.tld', $user->getUsername());
     }
 
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::remove
+     */
     public function testRemove()
     {
         $modelEntries = [
@@ -222,6 +246,10 @@ final class RepositoryTest extends \PHPUnit_Framework_TestCase
         self::assertNull($user);
     }
 
+    /**
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::__construct
+     * @covers \Chubbyphp\Tests\Model\Resources\UserRepository::clear
+     */
     public function testClear()
     {
         $repo = new UserRepository();

@@ -6,11 +6,12 @@ use Chubbyphp\Model\Collection\ModelCollection;
 use Chubbyphp\Tests\Model\Resources\User;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @covers \Chubbyphp\Model\Collection\ModelCollection
- */
 final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::addModel
+     */
     public function testAddModel()
     {
         $user = new User();
@@ -18,12 +19,16 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $user->setPassword('password');
         $user->setActive(true);
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection([]);
         $modelCollection->addModel($user);
 
         self::assertCount(1, $modelCollection->getModels());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::removeModel
+     */
     public function testRemoveModel()
     {
         $user = new User();
@@ -44,6 +49,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $modelCollection->removeModel($user);
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::setModels
+     */
     public function testSetModels()
     {
         $user = new User();
@@ -51,13 +60,53 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $user->setPassword('password');
         $user->setActive(true);
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection([]);
         $modelCollection->setModels([$user]);
 
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getInitialModels
+     */
+    public function testGetInitialModels()
+    {
+        $user = new User();
+        $user->setUsername('username1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $modelCollection = new ModelCollection([]);
+        $modelCollection->setModels([$user]);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getModels
+     */
+    public function testGetModels()
+    {
+        $user = new User();
+        $user->setUsername('username1');
+        $user->setPassword('password');
+        $user->setActive(true);
+
+        $modelCollection = new ModelCollection([]);
+        $modelCollection->setModels([$user]);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getIterator
+     */
     public function testIteratable()
     {
         $id = (string) Uuid::uuid4();
@@ -79,6 +128,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::fail('collection is not iteratable');
     }
 
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::jsonSerialize
+     */
     public function testJsonSerialize()
     {
         $user = new User();
