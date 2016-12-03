@@ -286,6 +286,10 @@ final class UserRepository implements RepositoryInterface
      */
     public function findBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): array
     {
+        if ([] === $this->modelEntries) {
+            return [];
+        }
+
         $models = [];
         foreach ($this->modelEntries as $modelEntry) {
             foreach ($criteria as $key => $value) {
