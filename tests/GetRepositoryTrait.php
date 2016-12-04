@@ -22,6 +22,7 @@ trait GetRepositoryTrait
             'find',
             'findOneBy',
             'findBy',
+            'findByMagicMethod',
             'persist',
             'remove',
             'clear',
@@ -101,6 +102,12 @@ trait GetRepositoryTrait
                 }
 
                 return $models;
+            }
+        );
+
+        $repository->expects(self::any())->method('findByMagicMethod')->willReturnCallback(
+            function () use ($repository) {
+                return func_get_args();
             }
         );
 

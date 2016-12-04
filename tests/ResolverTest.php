@@ -12,6 +12,58 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 {
     use GetRepositoryTrait;
 
+    public function testFindByMagicMethod()
+    {
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
+
+        $resolver = new Resolver($container, [
+            RepositoryInterface::class,
+        ]);
+
+        $returnValue = $resolver->findByMagicMethod(
+            ModelInterface::class,
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
+            1,
+            1
+        );
+
+        self::assertSame([
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
+            1,
+            1,
+        ], $returnValue);
+    }
+
+    public function testlazyFindByMagicMethod()
+    {
+        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
+
+        $resolver = new Resolver($container, [
+            RepositoryInterface::class,
+        ]);
+
+        $closure = $resolver->lazyFindByMagicMethod(
+            ModelInterface::class,
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
+            1,
+            1
+        );
+
+        self::assertInstanceOf(\Closure::class, $closure);
+
+        $returnValue = $closure();
+
+        self::assertSame([
+            ['category' => 'category1'],
+            ['name' => 'DESC'],
+            1,
+            1,
+        ], $returnValue);
+    }
+
     /**
      * @covers \Chubbyphp\Model\Resolver::__construct
      * @covers \Chubbyphp\Model\Resolver::find

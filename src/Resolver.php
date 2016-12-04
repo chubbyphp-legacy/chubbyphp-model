@@ -29,6 +29,27 @@ final class Resolver implements ResolverInterface
     }
 
     /**
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        $modelClass = array_shift($arguments);
+
+        if (substr($name, 0, 4) === 'lazy') {
+            $name = substr($name, 4);
+
+            return function () use ($modelClass, $name, $arguments) {
+                return $this->getRepositoryByClass($modelClass)->$name(...$arguments);
+            };
+        }
+
+        return $this->getRepositoryByClass($modelClass)->$name(...$arguments);
+    }
+
+    /**
      * @param string $modelClass
      * @param string $id
      *

@@ -7,6 +7,14 @@ namespace Chubbyphp\Model;
 interface ResolverInterface
 {
     /**
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, $arguments);
+
+    /**
      * @param string $modelClass
      * @param string $id
      *
