@@ -94,7 +94,7 @@ trait GetModelTrait
                 'id' => $model->__id,
                 'name' => $model->__name,
                 'category' => $model->__category,
-                'oneToOne' => $model->__oneToOne,
+                'oneToOneId' => null !== $model->__oneToOne ? $model->__oneToOne->getId() : null,
                 'oneToMany' => $model->__oneToMany
             ];
         });
