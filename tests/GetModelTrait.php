@@ -2,6 +2,7 @@
 
 namespace Chubbyphp\Tests\Model;
 
+use Chubbyphp\Model\Collection\ModelCollection;
 use Chubbyphp\Model\ModelInterface;
 
 trait GetModelTrait
@@ -20,6 +21,10 @@ trait GetModelTrait
             'getName',
             'setCategory',
             'getCategory',
+            'setOneToOne',
+            'getOneToOne',
+            'setOneToMany',
+            'getOneToMany',
             'jsonSerialize',
             'toPersistence',
         ])->getMockForAbstractClass();
@@ -27,6 +32,8 @@ trait GetModelTrait
         $model->__id = $id;
         $model->__name = null;
         $model->__category = null;
+        $model->__oneToOne = null;
+        $model->__oneToMany = new ModelCollection();
 
         $model->expects(self::any())->method('getId')->willReturnCallback(function () use ($model) {
             return $model->__id;
@@ -52,11 +59,33 @@ trait GetModelTrait
             return $model->__category;
         });
 
+        $model->expects(self::any())->method('setOneToOne')->willReturnCallback(function (ModelInterface $relatedModel) use ($model) {
+            $model->__oneToOne = $relatedModel;
+
+            return $model;
+        });
+
+        $model->expects(self::any())->method('getOneToOne')->willReturnCallback(function () use ($model) {
+            return $model->__oneToOne;
+        });
+
+        $model->expects(self::any())->method('setOneToMany')->willReturnCallback(function (array $relatedModels) use ($model) {
+            $model->__oneToMany->setModels($relatedModels);
+
+            return $model;
+        });
+
+        $model->expects(self::any())->method('getOneToMany')->willReturnCallback(function () use ($model) {
+            return $model->__oneToMany->getModels();
+        });
+
         $model->expects(self::any())->method('jsonSerialize')->willReturnCallback(function () use ($model) {
             return [
                 'id' => $model->__id,
                 'name' => $model->__name,
                 'category' => $model->__category,
+                'oneToOne' => null !== $model->__oneToOne ? $model->__oneToOne->jsonSerialize() : null,
+                'oneToMany' => $model->__oneToMany->jsonSerialize()
             ];
         });
 
@@ -65,6 +94,8 @@ trait GetModelTrait
                 'id' => $model->__id,
                 'name' => $model->__name,
                 'category' => $model->__category,
+                'oneToOne' => $model->__oneToOne,
+                'oneToMany' => $model->__oneToMany
             ];
         });
 
