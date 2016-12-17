@@ -36,7 +36,7 @@ final class MyModelRepository extends AbstractRepository
      */
     protected function fromPersistence(array $modelEntry): ModelInterface
     {
-        if (isset($modelEntry['oneToOneId'])) {
+        if (null !== $modelEntry['oneToOneId']) {
             $modelEntry['oneToOne'] = new LazyModelReference(
                 $this->resolver->lazyFind(MyEmbeddedModel::class, $modelEntry['oneToOneId'])
             );

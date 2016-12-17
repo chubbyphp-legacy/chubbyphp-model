@@ -137,9 +137,7 @@ abstract class AbstractRepository implements RepositoryInterface
                 $modelCollections[] = $value;
                 unset($modelEntry[$field]);
             } elseif ($value instanceof ModelReferenceInterface) {
-                if (null !== $referenceId = $this->persistReference($value)) {
-                    $modelEntry[$field.'Id'] = $referenceId;
-                }
+                $modelEntry[$field.'Id'] = $this->persistReference($value);
                 unset($modelEntry[$field]);
             }
         }
