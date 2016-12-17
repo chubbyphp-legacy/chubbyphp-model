@@ -3,12 +3,10 @@
 namespace Chubbyphp\Tests\Model\Collection;
 
 use Chubbyphp\Model\Collection\LazyModelCollection;
-use Chubbyphp\Tests\Model\GetModelTrait;
+use MyProject\Model\MyModel;
 
 final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    use GetModelTrait;
-
     /**
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
@@ -16,7 +14,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddModel()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -36,7 +34,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveModel()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -62,7 +60,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -83,7 +81,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModels()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -104,7 +102,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModels()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -125,7 +123,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteratable()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -150,7 +148,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 

@@ -4,24 +4,40 @@ namespace Chubbyphp\Tests\Model;
 
 use Chubbyphp\Model\MissingRepositoryException;
 use Chubbyphp\Model\ModelInterface;
-use Chubbyphp\Model\RepositoryInterface;
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
+use MyProject\Model\MyEmbeddedModel;
+use MyProject\Model\MyModel;
+use MyProject\Repository\MyEmbeddedRepository;
+use MyProject\Repository\MyModelRepository;
+use Pimple\Container;
 
 final class ResolverTest extends \PHPUnit_Framework_TestCase
 {
-    use GetRepositoryTrait;
-
     public function testFindByMagicMethod()
     {
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
+        $container = new Container();
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container) {
+            return new MyModelRepository([], $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container) {
+            return new MyEmbeddedRepository([], $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
 
         $returnValue = $resolver->findByMagicMethod(
-            ModelInterface::class,
+            MyModel::class,
             ['category' => 'category1'],
             ['name' => 'DESC'],
             1,
@@ -36,16 +52,30 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         ], $returnValue);
     }
 
-    public function testlazyFindByMagicMethod()
+    public function testLazyFindByMagicMethod()
     {
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
+        $container = new Container();
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container) {
+            return new MyModelRepository([], $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container) {
+            return new MyEmbeddedRepository([], $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
 
         $closure = $resolver->lazyFindByMagicMethod(
-            ModelInterface::class,
+            MyModel::class,
             ['category' => 'category1'],
             ['name' => 'DESC'],
             1,
@@ -76,32 +106,74 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        /** @var MyModel $model */
+        $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
+
+        self::assertInstanceOf(MyModel::class, $model);
 
         self::assertSame($modelEntries[0]['id'], $model->getId());
         self::assertSame($modelEntries[0]['name'], $model->getName());
         self::assertSame($modelEntries[0]['category'], $model->getCategory());
+        self::assertSame($modelEntries[0]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(2, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[0]->getId());
+        self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[1]->getId());
     }
 
     /**
@@ -116,32 +188,73 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $model = $resolver->findOneBy(ModelInterface::class, ['category' => 'category1'], ['name' => 'ASC']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        /** @var MyModel $model */
+        $model = $resolver->findOneBy(MyModel::class, ['category' => 'category1'], ['name' => 'ASC']);
 
         self::assertInstanceOf(ModelInterface::class, $model);
 
         self::assertSame($modelEntries[2]['id'], $model->getId());
         self::assertSame($modelEntries[2]['name'], $model->getName());
         self::assertSame($modelEntries[2]['category'], $model->getCategory());
+        self::assertSame($modelEntries[2]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(1, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[1]['id'], $model->getOneToMany()[0]->getId());
     }
 
     /**
@@ -156,27 +269,62 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
+
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
 
         $models = $resolver->findBy(
-            ModelInterface::class,
+            MyModel::class,
             ['category' => 'category1'],
             ['name' => 'DESC'],
             1,
@@ -185,7 +333,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $models);
 
-        /** @var ModelInterface $model */
+        /** @var MyModel $model */
         $model = reset($models);
 
         self::assertInstanceOf(ModelInterface::class, $model);
@@ -193,6 +341,11 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[2]['id'], $model->getId());
         self::assertSame($modelEntries[2]['name'], $model->getName());
         self::assertSame($modelEntries[2]['category'], $model->getCategory());
+        self::assertSame($modelEntries[2]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(1, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[1]['id'], $model->getOneToMany()[0]->getId());
     }
 
     /**
@@ -207,28 +360,63 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $closure = $resolver->lazyFind(ModelInterface::class, $modelEntries[0]['id']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        /** @var ModelInterface $model */
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        $closure = $resolver->lazyFind(MyModel::class, $modelEntries[0]['id']);
+
+        /** @var MyModel $model */
         $model = $closure();
 
         self::assertInstanceOf(ModelInterface::class, $model);
@@ -236,6 +424,12 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         self::assertSame($modelEntries[0]['id'], $model->getId());
         self::assertSame($modelEntries[0]['name'], $model->getName());
         self::assertSame($modelEntries[0]['category'], $model->getCategory());
+        self::assertSame($modelEntries[0]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(2, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[0]->getId());
+        self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[1]->getId());
     }
 
     /**
@@ -250,35 +444,75 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $closure = $resolver->lazyFindOneBy(ModelInterface::class, ['category' => 'category1'], ['name' => 'ASC']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        /** @var ModelInterface $model */
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        $closure = $resolver->lazyFindOneBy(MyModel::class, ['category' => 'category1'], ['name' => 'ASC']);
+
+        /** @var MyModel $model */
         $model = $closure();
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        self::assertInstanceOf(MyModel::class, $model);
 
         self::assertSame($modelEntries[2]['id'], $model->getId());
         self::assertSame($modelEntries[2]['name'], $model->getName());
         self::assertSame($modelEntries[2]['category'], $model->getCategory());
+        self::assertSame($modelEntries[2]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(1, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[1]['id'], $model->getOneToMany()[0]->getId());
     }
 
     /**
@@ -293,27 +527,62 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
+
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
 
         $closure = $resolver->lazyFindBy(
-            ModelInterface::class,
+            MyModel::class,
             ['category' => 'category1'],
             ['name' => 'DESC'],
             1,
@@ -324,14 +593,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(1, $models);
 
-        /** @var ModelInterface $model */
+        /** @var MyModel $model */
         $model = reset($models);
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        self::assertInstanceOf(MyModel::class, $model);
 
         self::assertSame($modelEntries[2]['id'], $model->getId());
         self::assertSame($modelEntries[2]['name'], $model->getName());
         self::assertSame($modelEntries[2]['category'], $model->getCategory());
+        self::assertSame($modelEntries[2]['oneToOneId'], $model->getOneToOne()->getId());
+
+        self::assertCount(1, $model->getOneToMany());
+
+        self::assertSame($embeddedModelEntries[1]['id'], $model->getOneToMany()[0]->getId());
     }
 
     /**
@@ -341,19 +615,50 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsert()
     {
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository([])]);
+        $container = new Container();
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        $model = $this->getModel('id1')->setName('name1')->setCategory('category1');
+        $container[MyModelRepository::class] = function () use ($container) {
+            return new MyModelRepository([], $container['resolver']);
+        };
 
-        self::assertNull($resolver->find(ModelInterface::class, 'id1'));
+        $container[MyEmbeddedRepository::class] = function () use ($container) {
+            return new MyEmbeddedRepository([], $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        self::assertNull($resolver->find(MyModel::class, 'id1'));
+
+        $model = (new MyModel('id1'))
+            ->setName('name1')
+            ->setCategory('category1')
+            ->setOneToOne((new MyEmbeddedModel('id1', 'id1'))->setName('name1'))
+            ->setOneToMany([
+                (new MyEmbeddedModel('id1', 'id1'))->setName('name1'),
+                (new MyEmbeddedModel('id1', 'id2'))->setName('name2')
+            ])
+        ;
 
         $resolver->persist($model);
 
-        self::assertInstanceOf(ModelInterface::class, $resolver->find(ModelInterface::class, 'id1'));
+        /** @var MyModel $modelFromRepository */
+        $modelFromRepository = $resolver->find(MyModel::class, 'id1');
+
+        self::assertInstanceOf(MyModel::class, $modelFromRepository);
+
+        self::assertSame($model->getId(), $modelFromRepository->getId());
+        self::assertSame($model->getName(), $modelFromRepository->getName());
+        self::assertSame($model->getCategory(), $modelFromRepository->getCategory());
+        self::assertEquals($model->getOneToOne(), $modelFromRepository->getOneToOne());
+        self::assertEquals($model->getOneToMany(), $modelFromRepository->getOneToMany());
     }
 
     /**
@@ -368,36 +673,73 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        /** @var MyModel $model */
+        $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
+
+        self::assertInstanceOf(MyModel::class, $model);
 
         $model->setName('name5');
 
         $resolver->persist($model);
 
-        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
+        /** @var MyModel $model */
+        $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        self::assertInstanceOf(MyModel::class, $model);
 
         self::assertSame('name5', $model->getName());
     }
@@ -414,32 +756,69 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
+                'oneToOneId' => 'id1'
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
+                'oneToOneId' => null
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
+                'oneToOneId' => 'id3'
             ],
         ];
 
-        $container = $this->getContainer([RepositoryInterface::class => $this->getRepository($modelEntries)]);
+        $embeddedModelEntries = [
+            [
+                'id' => 'id1',
+                'modelId' => 'id1',
+                'name' => 'name3'
+            ],
+            [
+                'id' => 'id2',
+                'modelId' => 'id3',
+                'name' => 'name2'
+            ],
+            [
+                'id' => 'id3',
+                'modelId' => 'id1',
+                'name' => 'name1'
+            ],
+        ];
 
-        $resolver = new Resolver($container, [
-            RepositoryInterface::class,
-        ]);
+        $container = new Container();
 
-        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
 
-        self::assertInstanceOf(ModelInterface::class, $model);
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        /** @var MyModel $model */
+        $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
+
+        self::assertInstanceOf(MyModel::class, $model);
 
         $resolver->remove($model);
 
-        $model = $resolver->find(ModelInterface::class, $modelEntries[0]['id']);
+        /** @var MyModel $model */
+        $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
 
         self::assertNull($model);
     }
@@ -452,33 +831,33 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     public function testUnknownModel()
     {
         self::expectException(MissingRepositoryException::class);
-        self::expectExceptionMessage(sprintf('Missing repository for model "%s"', User::class));
+        self::expectExceptionMessage(sprintf('Missing repository for model "%s"', MyModel::class));
 
-        $container = $this->getContainer([]);
+        $resolver = new Resolver($this->getInteropContainer(new Container()), []);
 
-        $resolver = new Resolver($container, []);
-
-        $resolver->find(User::class, 'someid');
+        $resolver->find(MyModel::class, 'someid');
     }
 
     /**
-     * @param array $services
-     *
+     * @param Container $container
      * @return ContainerInterface
      */
-    private function getContainer(array $services): ContainerInterface
+    private function getInteropContainer(Container $container): ContainerInterface
     {
-        $container = $this->getMockBuilder(ContainerInterface::class)
+        /** @var ContainerInterface|\PHPUnit_Framework_MockObject_MockObject $interopContainer */
+        $interopContainer = $this->getMockBuilder(ContainerInterface::class)
             ->setMethods(['get'])
             ->getMockForAbstractClass();
 
-        $container
+        $interopContainer->__container = $container;
+
+        $interopContainer
             ->expects(self::any())
             ->method('get')
-            ->willReturnCallback(function (string $key) use ($services) {
-                return $services[$key];
+            ->willReturnCallback(function (string $key) use ($interopContainer) {
+                return $interopContainer->__container[$key];
             });
 
-        return $container;
+        return $interopContainer;
     }
 }

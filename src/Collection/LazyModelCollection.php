@@ -99,7 +99,7 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
-        return $this->models;
+        return array_values($this->models);
     }
 
     /**

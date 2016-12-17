@@ -4,12 +4,10 @@ namespace Chubbyphp\Tests\Model\Reference;
 
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\LazyModelReference;
-use Chubbyphp\Tests\Model\GetModelTrait;
+use MyProject\Model\MyModel;
 
 final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
 {
-    use GetModelTrait;
-
     /**
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::__construct
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
@@ -17,7 +15,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModel()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -38,7 +36,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModel()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -59,7 +57,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModel()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -80,7 +78,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -116,7 +114,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = $this->getModel('id1');
+        $model = new MyModel('id1');
         $model->setName('name1');
         $model->setCategory('category');
 

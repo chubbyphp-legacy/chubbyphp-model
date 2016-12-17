@@ -73,7 +73,7 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getModels(): array
     {
-        return $this->models;
+        return array_values($this->models);
     }
 
     /**
