@@ -32,18 +32,17 @@ Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
 <?php
 
 use Chubbyphp\Model\Collection\LazyModelCollection;
-use MyProject\Model\User;
+use MyProject\Model\MyModel;
 
 $resolver = ...
 
 $collection = new LazyModelCollection($resolver->lazyFindBy(....));
 
-$user = new User();
-$user->setUsername('username1');
-$user->setPassword('password');
-$user->setActive(true);
+$model = new MyModel();
+$model->setName('name1');
+$model->setCategory('category1');
 
-$collection->addModel($user);
+$collection->addModel($model);
 
 ```
 
@@ -53,21 +52,59 @@ $collection->addModel($user);
 <?php
 
 use Chubbyphp\Model\Collection\ModelCollection;
-use MyProject\Model\User;
+use MyProject\Model\MyModel;
 
 $collection = new ModelCollection([]);
 
-$user = new User();
-$user->setUsername('username1');
-$user->setPassword('password');
-$user->setActive(true);
+$model = new MyModel();
+$model->setName('name1');
+$model->setCategory('category1');
 
-$collection->addModel($user);
+$collection->addModel($model);
+```
+
+### Reference
+
+#### LazyModelReference
+
+```{.php}
+<?php
+
+use Chubbyphp\Model\Reference\LazyModelReference;
+use MyProject\Model\MyModel;
+
+$resolver = ...
+
+$reference = new LazyModelReference($resolver->lazyFindOneBy(....));
+
+$model = new MyModel();
+$model->setName('name1');
+$model->setCategory('category1');
+
+$reference->setModel($model);
+
+```
+
+#### ModelReference
+
+```{.php}
+<?php
+
+use Chubbyphp\Model\Reference\ModelReference;
+use MyProject\Model\MyModel;
+
+$reference = new ModelReference([]);
+
+$model = new MyModel();
+$model->setName('name1');
+$model->setCategory('category1');
+
+$reference->setModel($model);
 ```
 
 ### Model
 
-#### Sample User
+#### Sample MyModel
 
 ```{.php}
 <?php
@@ -164,13 +201,13 @@ final class MyRepository implements RepositoryInterface
 
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
-use MyProject\Model\User;
+use MyProject\Model\MyModel;
 use MyProject\Repository\MyRepository;
 
 $container = ...
 
 $resolver = new Resolver($container, [MyRepository::class]);
-$resolver->find(User::class, 5);
+$resolver->find(MyModel::class, 5);
 ```
 
 [1]: https://packagist.org/packages/chubbyphp/chubbyphp-model
