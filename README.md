@@ -54,7 +54,7 @@ $collection->addModel($model);
 use Chubbyphp\Model\Collection\ModelCollection;
 use MyProject\Model\MyModel;
 
-$collection = new ModelCollection([]);
+$collection = new ModelCollection();
 
 $model = new MyModel();
 $model->setName('name1');
@@ -93,7 +93,7 @@ $reference->setModel($model);
 use Chubbyphp\Model\Reference\ModelReference;
 use MyProject\Model\MyModel;
 
-$reference = new ModelReference([]);
+$reference = new ModelReference();
 
 $model = new MyModel();
 $model->setName('name1');
