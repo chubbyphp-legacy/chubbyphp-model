@@ -14,11 +14,11 @@ interface RepositoryInterface
     public function isResponsible(string $modelClass): bool;
 
     /**
-     * @param string $id
+     * @param string|null $id
      *
      * @return ModelInterface|null
      */
-    public function find(string $id);
+    public function find(string $id = null);
 
     /**
      * @param array      $criteria

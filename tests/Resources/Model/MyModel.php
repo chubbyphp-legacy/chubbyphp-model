@@ -38,12 +38,35 @@ final class MyModel implements ModelInterface
 
     /**
      * @param string|null $id
+     * @return MyModel
      */
-    public function __construct(string $id = null)
+    public static function create(string $id = null): MyModel
     {
-        $this->id = $id ?? (string) Uuid::uuid4();
-        $this->oneToOne = new ModelReference();
-        $this->oneToMany = new ModelCollection();
+        $myModel = new self;
+        $myModel->id = $id ?? (string) Uuid::uuid4();
+        $myModel->oneToOne = new ModelReference();
+        $myModel->oneToMany = new ModelCollection();
+
+        return $myModel;
+    }
+
+    private function __construct() {}
+
+    /**
+     * @param array $data
+     *
+     * @return ModelInterface
+     */
+    public static function fromPersistence(array $data): ModelInterface
+    {
+        $model = new self;
+        $model->id = $data['id'];
+        $model->name = $data['name'];
+        $model->category = $data['category'];
+        $model->oneToOne = $data['oneToOne'];
+        $model->oneToMany = $data['oneToMany'];
+
+        return $model;
     }
 
     /**
@@ -128,22 +151,6 @@ final class MyModel implements ModelInterface
     public function getOneToMany()
     {
         return $this->oneToMany->getModels();
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return ModelInterface
-     */
-    public static function fromPersistence(array $data): ModelInterface
-    {
-        $model = new self($data['id']);
-        $model->name = $data['name'];
-        $model->category = $data['category'];
-        $model->oneToOne = $data['oneToOne'];
-        $model->oneToMany = $data['oneToMany'];
-
-        return $model;
     }
 
     /**

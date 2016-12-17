@@ -147,12 +147,35 @@ final class MyModel implements ModelInterface
 
     /**
      * @param string|null $id
+     * @return MyModel
      */
-    public function __construct(string $id = null)
+    public static function create(string $id = null): MyModel
     {
-        $this->id = $id ?? (string) Uuid::uuid4();
-        $this->oneToOne = new ModelReference();
-        $this->oneToMany = new ModelCollection();
+        $myModel = new self;
+        $myModel->id = $id ?? (string) Uuid::uuid4();
+        $myModel->oneToOne = new ModelReference();
+        $myModel->oneToMany = new ModelCollection();
+
+        return $myModel;
+    }
+
+    private function __construct() {}
+
+    /**
+     * @param array $data
+     *
+     * @return ModelInterface
+     */
+    public static function fromPersistence(array $data): ModelInterface
+    {
+        $model = new self;
+        $model->id = $data['id'];
+        $model->name = $data['name'];
+        $model->category = $data['category'];
+        $model->oneToOne = $data['oneToOne'];
+        $model->oneToMany = $data['oneToMany'];
+
+        return $model;
     }
 
     /**
@@ -240,22 +263,6 @@ final class MyModel implements ModelInterface
     }
 
     /**
-     * @param array $data
-     *
-     * @return ModelInterface
-     */
-    public static function fromPersistence(array $data): ModelInterface
-    {
-        $model = new self($data['id']);
-        $model->name = $data['name'];
-        $model->category = $data['category'];
-        $model->oneToOne = $data['oneToOne'];
-        $model->oneToMany = $data['oneToMany'];
-
-        return $model;
-    }
-
-    /**
      * @return array
      */
     public function toPersistence(): array
@@ -317,12 +324,18 @@ final class MyEmbeddedModel implements ModelInterface
     /**
      * @param string $modelId
      * @param string|null $id
+     * @return MyEmbeddedModel
      */
-    public function __construct(string $modelId, string $id = null)
+    public function create(string $modelId, string $id = null): MyEmbeddedModel
     {
-        $this->id = $id ?? (string) Uuid::uuid4();
-        $this->modelId = $modelId;
+        $myEmbeddedModel = new self;
+        $myEmbeddedModel->id = $id ?? (string) Uuid::uuid4();
+        $myEmbeddedModel->modelId = $modelId;
+
+        return $myEmbeddedModel;
     }
+
+    private function __construct() {}
 
     /**
      * @param array $data
@@ -331,7 +344,9 @@ final class MyEmbeddedModel implements ModelInterface
      */
     public static function fromPersistence(array $data): ModelInterface
     {
-        $model = new self($data['modelId'], $data['id']);
+        $model = new self;
+        $model->id = $data['id'];
+        $model->modelId = $data['modelId'];
         $model->name = $data['name'];
 
         return $model;
@@ -432,13 +447,9 @@ final class MyModelRepository extends AbstractRepository
      */
     protected function fromPersistence(array $modelEntry): ModelInterface
     {
-        if (null !== $modelEntry['oneToOneId']) {
-            $modelEntry['oneToOne'] = new LazyModelReference(
-                $this->resolver->lazyFind(MyEmbeddedModel::class, $modelEntry['oneToOneId'])
-            );
-        } else {
-            $modelEntry['oneToOne'] = new ModelReference();
-        }
+        $modelEntry['oneToOne'] = new LazyModelReference(
+            $this->resolver->lazyFind(MyEmbeddedModel::class, $modelEntry['oneToOneId'])
+        );
 
         $modelEntry['oneToMany'] = new LazyModelCollection(
             $this->resolver->lazyFindBy(MyEmbeddedModel::class, ['modelId' => $modelEntry['id']])

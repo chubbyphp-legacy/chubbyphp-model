@@ -16,11 +16,11 @@ interface ResolverInterface
 
     /**
      * @param string $modelClass
-     * @param string $id
+     * @param string|null $id
      *
      * @return ModelInterface|null
      */
-    public function find(string $modelClass, string $id);
+    public function find(string $modelClass, string $id = null);
 
     /**
      * @param string     $modelClass
@@ -50,11 +50,11 @@ interface ResolverInterface
 
     /**
      * @param string $modelClass
-     * @param string $id
+     * @param string|null $id
      *
      * @return \Closure
      */
-    public function lazyFind(string $modelClass, string $id): \Closure;
+    public function lazyFind(string $modelClass, string $id = null): \Closure;
 
     /**
      * @param string     $modelClass

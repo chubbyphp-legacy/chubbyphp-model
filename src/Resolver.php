@@ -51,12 +51,16 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param string $modelClass
-     * @param string $id
+     * @param string|null $id
      *
      * @return ModelInterface|null
      */
-    public function find(string $modelClass, string $id)
+    public function find(string $modelClass, string $id = null)
     {
+        if (null === $id) {
+            return null;
+        }
+
         return $this->getRepositoryByClass($modelClass)->find($id);
     }
 
@@ -93,11 +97,11 @@ final class Resolver implements ResolverInterface
 
     /**
      * @param string $modelClass
-     * @param string $id
+     * @param string|null $id
      *
      * @return \Closure
      */
-    public function lazyFind(string $modelClass, string $id): \Closure
+    public function lazyFind(string $modelClass, string $id = null): \Closure
     {
         return function () use ($modelClass, $id) {
             return $this->find($modelClass, $id);

@@ -27,12 +27,18 @@ final class MyEmbeddedModel implements ModelInterface
     /**
      * @param string $modelId
      * @param string|null $id
+     * @return MyEmbeddedModel
      */
-    public function __construct(string $modelId, string $id = null)
+    public static function create(string $modelId, string $id = null): MyEmbeddedModel
     {
-        $this->id = $id ?? (string) Uuid::uuid4();
-        $this->modelId = $modelId;
+        $myEmbeddedModel = new self;
+        $myEmbeddedModel->id = $id ?? (string) Uuid::uuid4();
+        $myEmbeddedModel->modelId = $modelId;
+
+        return $myEmbeddedModel;
     }
+
+    private function __construct() {}
 
     /**
      * @param array $data
@@ -41,7 +47,9 @@ final class MyEmbeddedModel implements ModelInterface
      */
     public static function fromPersistence(array $data): ModelInterface
     {
-        $model = new self($data['modelId'], $data['id']);
+        $model = new self;
+        $model->id = $data['id'];
+        $model->modelId = $data['modelId'];
         $model->name = $data['name'];
 
         return $model;

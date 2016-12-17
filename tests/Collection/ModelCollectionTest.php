@@ -13,7 +13,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddModel()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -30,7 +30,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveModel()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -53,7 +53,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -71,7 +71,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModels()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -89,7 +89,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModels()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -107,7 +107,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteratable()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -129,7 +129,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 

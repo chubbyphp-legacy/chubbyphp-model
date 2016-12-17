@@ -14,7 +14,7 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModel()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -32,7 +32,7 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModel()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -50,7 +50,7 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModel()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -68,7 +68,7 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 
@@ -98,7 +98,7 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = new MyModel('id1');
+        $model = MyModel::create('id1');
         $model->setName('name1');
         $model->setCategory('category');
 

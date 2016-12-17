@@ -16,25 +16,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindByMagicMethod()
     {
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container) {
-            return new MyModelRepository([], $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container) {
-            return new MyEmbeddedRepository([], $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver();
 
         $returnValue = $resolver->findByMagicMethod(
             MyModel::class,
@@ -54,25 +36,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
     public function testLazyFindByMagicMethod()
     {
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container) {
-            return new MyModelRepository([], $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container) {
-            return new MyEmbeddedRepository([], $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver();
 
         $closure = $resolver->lazyFindByMagicMethod(
             MyModel::class,
@@ -140,25 +104,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         /** @var MyModel $model */
         $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
@@ -174,6 +120,24 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[0]->getId());
         self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[1]->getId());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::find
+     */
+    public function testFindWithNull()
+    {
+        $container = new Container();
+
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), []);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        self::assertNull($resolver->find(MyModel::class, null));
     }
 
     /**
@@ -222,25 +186,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         /** @var MyModel $model */
         $model = $resolver->findOneBy(MyModel::class, ['category' => 'category1'], ['name' => 'ASC']);
@@ -303,25 +249,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         $models = $resolver->findBy(
             MyModel::class,
@@ -394,25 +322,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         $closure = $resolver->lazyFind(MyModel::class, $modelEntries[0]['id']);
 
@@ -430,6 +340,24 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[0]->getId());
         self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[1]->getId());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Resolver::__construct
+     * @covers \Chubbyphp\Model\Resolver::lazyFind
+     */
+    public function testLazyFindWithNull()
+    {
+        $container = new Container();
+
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), []);
+        };
+
+        /** @var Resolver $resolver */
+        $resolver = $container['resolver'];
+
+        self::assertInstanceOf(\Closure::class, $resolver->lazyFind(MyModel::class, null));
     }
 
     /**
@@ -478,25 +406,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         $closure = $resolver->lazyFindOneBy(MyModel::class, ['category' => 'category1'], ['name' => 'ASC']);
 
@@ -561,25 +471,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         $closure = $resolver->lazyFindBy(
             MyModel::class,
@@ -615,35 +507,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsert()
     {
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container) {
-            return new MyModelRepository([], $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container) {
-            return new MyEmbeddedRepository([], $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver();
 
         self::assertNull($resolver->find(MyModel::class, 'id1'));
 
-        $model = (new MyModel('id1'))
+        $model = MyModel::create('id1')
             ->setName('name1')
             ->setCategory('category1')
-            ->setOneToOne((new MyEmbeddedModel('id1', 'id1'))->setName('name1'))
+            ->setOneToOne(MyEmbeddedModel::create('id1', 'id1')->setName('name1'))
             ->setOneToMany([
-                (new MyEmbeddedModel('id1', 'id1'))->setName('name1'),
-                (new MyEmbeddedModel('id1', 'id2'))->setName('name2')
+                MyEmbeddedModel::create('id1', 'id1')->setName('name1'),
+                MyEmbeddedModel::create('id1', 'id2')->setName('name2')
             ])
         ;
 
@@ -707,25 +581,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         /** @var MyModel $model */
         $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
@@ -790,25 +646,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $container = new Container();
-
-        $container['resolver'] = function () use ($container) {
-            return new Resolver($this->getInteropContainer($container), [
-                MyModelRepository::class,
-                MyEmbeddedRepository::class
-            ]);
-        };
-
-        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
-            return new MyModelRepository($modelEntries, $container['resolver']);
-        };
-
-        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
-            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
-        };
-
-        /** @var Resolver $resolver */
-        $resolver = $container['resolver'];
+        $resolver = $this->getResolver($modelEntries, $embeddedModelEntries);
 
         /** @var MyModel $model */
         $model = $resolver->find(MyModel::class, $modelEntries[0]['id']);
@@ -859,5 +697,32 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             });
 
         return $interopContainer;
+    }
+
+    /**
+     * @param array $modelEntries
+     * @param array $embeddedModelEntries
+     * @return Resolver
+     */
+    private function getResolver(array $modelEntries = [], array $embeddedModelEntries = []): Resolver
+    {
+        $container = new Container();
+
+        $container['resolver'] = function () use ($container) {
+            return new Resolver($this->getInteropContainer($container), [
+                MyModelRepository::class,
+                MyEmbeddedRepository::class
+            ]);
+        };
+
+        $container[MyModelRepository::class] = function () use ($container, $modelEntries) {
+            return new MyModelRepository($modelEntries, $container['resolver']);
+        };
+
+        $container[MyEmbeddedRepository::class] = function () use ($container, $embeddedModelEntries) {
+            return new MyEmbeddedRepository($embeddedModelEntries, $container['resolver']);
+        };
+
+        return $container['resolver'];
     }
 }

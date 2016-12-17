@@ -36,12 +36,16 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param string $id
+     * @param string|null $id
      *
      * @return ModelInterface|null
      */
-    public function find(string $id)
+    public function find(string $id = null)
     {
+        if (null === $id) {
+            return null;
+        }
+
         if (!isset($this->modelEntries[$id])) {
             return null;
         }
