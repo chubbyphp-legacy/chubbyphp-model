@@ -50,7 +50,9 @@ final class MyModel implements ModelInterface
         return $myModel;
     }
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * @param array $data

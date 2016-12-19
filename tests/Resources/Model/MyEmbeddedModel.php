@@ -38,7 +38,9 @@ final class MyEmbeddedModel implements ModelInterface
         return $myEmbeddedModel;
     }
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * @param array $data
