@@ -131,8 +131,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
             return [$model];
         });
 
-        foreach ($modelCollection as $key => $model) {
-            self::assertSame('id1', $key);
+        foreach ($modelCollection as $model) {
             self::assertSame($model, $model);
 
             return;

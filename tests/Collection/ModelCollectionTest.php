@@ -113,8 +113,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 
         $modelCollection = new ModelCollection([$model]);
 
-        foreach ($modelCollection as $key => $model) {
-            self::assertSame('id1', $key);
+        foreach ($modelCollection as $model) {
             self::assertSame($model, $model);
 
             return;

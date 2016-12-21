@@ -81,7 +81,7 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getInitialModels(): array
     {
-        return $this->initialModels;
+        return array_values($this->initialModels);
     }
 
     /**
@@ -89,7 +89,7 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->models);
+        return new \ArrayIterator($this->getModels());
     }
 
     /**

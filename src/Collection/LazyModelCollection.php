@@ -109,7 +109,7 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
-        return $this->initialModels;
+        return array_values($this->initialModels);
     }
 
     /**
@@ -119,7 +119,7 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
-        return new \ArrayIterator($this->models);
+        return new \ArrayIterator($this->getModels());
     }
 
     /**
