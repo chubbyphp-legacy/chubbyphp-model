@@ -38,14 +38,6 @@ final class Resolver implements ResolverInterface
     {
         $modelClass = array_shift($arguments);
 
-        if (substr($name, 0, 4) === 'lazy') {
-            $name = substr($name, 4);
-
-            return function () use ($modelClass, $name, $arguments) {
-                return $this->getRepositoryByClass($modelClass)->$name(...$arguments);
-            };
-        }
-
         return $this->getRepositoryByClass($modelClass)->$name(...$arguments);
     }
 
@@ -93,54 +85,6 @@ final class Resolver implements ResolverInterface
         int $offset = null
     ): array {
         return $this->getRepositoryByClass($modelClass)->findBy($criteria, $orderBy, $limit, $offset);
-    }
-
-    /**
-     * @param string $modelClass
-     * @param string|null $id
-     *
-     * @return \Closure
-     */
-    public function lazyFind(string $modelClass, string $id = null): \Closure
-    {
-        return function () use ($modelClass, $id) {
-            return $this->find($modelClass, $id);
-        };
-    }
-
-    /**
-     * @param string     $modelClass
-     * @param array      $criteria
-     * @param array|null $orderBy
-     *
-     * @return \Closure
-     */
-    public function lazyFindOneBy(string $modelClass, array $criteria, array $orderBy = null): \Closure
-    {
-        return function () use ($modelClass, $criteria, $orderBy) {
-            return $this->findOneBy($modelClass, $criteria, $orderBy);
-        };
-    }
-
-    /**
-     * @param string     $modelClass
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
-     *
-     * @return \Closure
-     */
-    public function lazyFindBy(
-        string $modelClass,
-        array $criteria,
-        array $orderBy = null,
-        int $limit = null,
-        int $offset = null
-    ): \Closure {
-        return function () use ($modelClass, $criteria, $orderBy, $limit, $offset) {
-            return $this->findBy($modelClass, $criteria, $orderBy, $limit, $offset);
-        };
     }
 
     /**

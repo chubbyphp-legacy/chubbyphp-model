@@ -5,13 +5,29 @@ declare(strict_types=1);
 namespace Chubbyphp\Model\Reference;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\ResolverInterface;
 
 final class LazyModelReference implements ModelReferenceInterface
 {
     /**
-     * @var \Closure
+     * @var ResolverInterface
      */
     private $resolver;
+
+    /**
+     * @var string
+     */
+    private $modelClass;
+
+    /**
+     * @var string|null
+     */
+    private $id;
+
+    /**
+     * @var bool
+     */
+    private $resolved = false;
 
     /**
      * @var ModelInterface|null
@@ -24,25 +40,27 @@ final class LazyModelReference implements ModelReferenceInterface
     private $model;
 
     /**
-     * @param \Closure $resolver
+     * @param ResolverInterface $resolver
+     * @param string $modelClass
+     * @param string|null $id
      */
-    public function __construct(\Closure $resolver)
+    public function __construct(ResolverInterface $resolver, string $modelClass, string $id = null)
     {
         $this->resolver = $resolver;
+        $this->modelClass = $modelClass;
+        $this->id = $id;
     }
 
     private function resolveModel()
     {
-        if (null === $this->resolver) {
+        if ($this->resolved) {
             return;
         }
 
-        $resolver = $this->resolver;
+        $this->resolved = true;
 
-        $this->resolver = null;
-
-        $this->model = $resolver();
-        $this->initialModel = $this->model;
+        $this->initialModel = $this->resolver->find($this->modelClass, $this->id);
+        $this->model = $this->initialModel;
     }
 
     /**
@@ -54,6 +72,7 @@ final class LazyModelReference implements ModelReferenceInterface
         $this->resolveModel();
 
         $this->model = $model;
+        $this->id = null !== $model ? $model->getId() : null;
 
         return $this;
     }
@@ -73,13 +92,7 @@ final class LazyModelReference implements ModelReferenceInterface
      */
     public function getId()
     {
-        $this->resolveModel();
-
-        if (null === $this->model) {
-            return null;
-        }
-
-        return $this->model->getId();
+        return $this->id;
     }
 
     /**

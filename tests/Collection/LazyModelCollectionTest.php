@@ -3,7 +3,8 @@
 namespace Chubbyphp\Tests\Model\Collection;
 
 use Chubbyphp\Model\Collection\LazyModelCollection;
-use MyProject\Model\MyModel;
+use Chubbyphp\Model\ResolverInterface;
+use MyProject\Model\MyEmbeddedModel;
 
 final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,13 +15,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () {
-            return [];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         $modelCollection->addModel($model);
 
@@ -34,13 +42,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () use ($model) {
-            return [$model];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [$model];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         self::assertCount(1, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
@@ -60,13 +75,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () {
-            return [];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         $modelCollection->setModels([$model]);
 
@@ -81,13 +103,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () {
-            return [];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         $modelCollection->setModels([$model]);
 
@@ -102,13 +131,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () {
-            return [];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         $modelCollection->setModels([$model]);
 
@@ -123,13 +159,20 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteratable()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () use ($model) {
-            return [$model];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [$model];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         foreach ($modelCollection as $model) {
             self::assertSame($model, $model);
@@ -147,19 +190,111 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new LazyModelCollection(function () use ($model) {
-            return [$model];
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [$model];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
 
         $modelsAsArray = json_decode(json_encode($modelCollection), true);
 
         self::assertCount(1, $modelsAsArray);
 
         self::assertSame('name1', $modelsAsArray[0]['name']);
-        self::assertSame('category', $modelsAsArray[0]['category']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getCriteria()
+     */
+    public function testGetCriteria()
+    {
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
+
+        self::assertSame($criteria, $modelCollection->getCriteria());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getOrderBy()
+     */
+    public function testGetOrderBy()
+    {
+        $modelClass = MyEmbeddedModel::class;
+        $criteria = ['modelId' => 'id1'];
+        $orderBy = ['name' => 'ASC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $modelClass,
+            $criteria,
+            $orderBy
+        );
+
+        self::assertSame($orderBy, $modelCollection->getOrderBy());
+    }
+
+    /**
+     * @param string $expectedModelClass
+     * @param array $expectedCriteria
+     * @param array $expectedOrderBy
+     * @param array $return
+     * @return ResolverInterface
+     */
+    private function getResolver(
+        string $expectedModelClass,
+        array $expectedCriteria,
+        array $expectedOrderBy,
+        array $return
+    ): ResolverInterface {
+        /** @var ResolverInterface|\PHPUnit_Framework_MockObject_MockObject $resolver */
+        $resolver = $this->getMockBuilder(ResolverInterface::class)
+            ->setMethods(['findBy'])
+            ->getMockForAbstractClass();
+
+        $resolver->expects(self::any())
+            ->method('findBy')
+            ->willReturnCallback(
+                function (
+                    string $modelClass,
+                    array $criteria,
+                    array $orderBy
+                ) use (
+                    $expectedModelClass,
+                    $expectedCriteria,
+                    $expectedOrderBy,
+                    $return
+                ) {
+                    self::assertSame($expectedModelClass, $modelClass);
+                    self::assertSame($expectedCriteria, $criteria);
+                    self::assertSame($expectedOrderBy, $orderBy);
+
+                    return $return;
+                }
+            );
+
+        return $resolver;
     }
 }

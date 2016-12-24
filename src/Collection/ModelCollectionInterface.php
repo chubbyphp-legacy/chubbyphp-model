@@ -38,4 +38,14 @@ interface ModelCollectionInterface extends \IteratorAggregate, \JsonSerializable
      * @return ModelInterface[]|array
      */
     public function getInitialModels(): array;
+
+    /**
+     * @return string
+     */
+    public function getForeignField(): string;
+
+    /**
+     * @return string
+     */
+    public function getForeignId(): string;
 }

@@ -49,40 +49,6 @@ interface ResolverInterface
     ): array;
 
     /**
-     * @param string $modelClass
-     * @param string|null $id
-     *
-     * @return \Closure
-     */
-    public function lazyFind(string $modelClass, string $id = null): \Closure;
-
-    /**
-     * @param string     $modelClass
-     * @param array      $criteria
-     * @param array|null $orderBy
-     *
-     * @return \Closure
-     */
-    public function lazyFindOneBy(string $modelClass, array $criteria, array $orderBy = null): \Closure;
-
-    /**
-     * @param string     $modelClass
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
-     *
-     * @return \Closure
-     */
-    public function lazyFindBy(
-        string $modelClass,
-        array $criteria,
-        array $orderBy = null,
-        int $limit = null,
-        int $offset = null
-    ): \Closure;
-
-    /**
      * @param ModelInterface $model
      */
     public function persist(ModelInterface $model);

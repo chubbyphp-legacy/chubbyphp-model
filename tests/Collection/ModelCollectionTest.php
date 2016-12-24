@@ -3,7 +3,7 @@
 namespace Chubbyphp\Tests\Model\Collection;
 
 use Chubbyphp\Model\Collection\ModelCollection;
-use MyProject\Model\MyModel;
+use MyProject\Model\MyEmbeddedModel;
 
 final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,11 +13,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
 
         $modelCollection->addModel($model);
 
@@ -30,18 +29,18 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([$model]);
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection->addModel($model);
 
-        self::assertCount(1, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(1, $modelCollection->getModels());
 
         $modelCollection->removeModel($model);
 
-        self::assertCount(1, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(0, $modelCollection->getModels());
 
         $modelCollection->removeModel($model);
@@ -53,11 +52,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
 
         $modelCollection->setModels([$model]);
 
@@ -71,11 +69,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
 
         $modelCollection->setModels([$model]);
 
@@ -89,11 +86,10 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModels()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection();
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
 
         $modelCollection->setModels([$model]);
 
@@ -107,11 +103,11 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteratable()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([$model]);
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection->addModel($model);
 
         foreach ($modelCollection as $model) {
             self::assertSame($model, $model);
@@ -128,17 +124,38 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelCollection = new ModelCollection([$model]);
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection->addModel($model);
 
         $modelsAsArray = json_decode(json_encode($modelCollection), true);
 
         self::assertCount(1, $modelsAsArray);
 
         self::assertSame('name1', $modelsAsArray[0]['name']);
-        self::assertSame('category', $modelsAsArray[0]['category']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getCriteria()
+     */
+    public function testGetCriteria()
+    {
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+
+        self::assertSame(['modelId', 'id1'], $modelCollection->getCriteria());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getOrderBy()
+     */
+    public function testGetOrderBy()
+    {
+        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+
+        self::assertSame(['name' => 'ASC'], $modelCollection->getOrderBy());
     }
 }

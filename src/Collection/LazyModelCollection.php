@@ -5,13 +5,39 @@ declare(strict_types=1);
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\ResolverInterface;
 
 final class LazyModelCollection implements ModelCollectionInterface
 {
     /**
-     * @var \Closure;
+     * @var ResolverInterface
      */
     private $resolver;
+
+    /**
+     * @var string
+     */
+    private $modelClass;
+
+    /**
+     * @var string
+     */
+    private $foreignField;
+
+    /**
+     * @var string
+     */
+    private $foreignId;
+
+    /**
+     * @var array|null
+     */
+    private $orderBy;
+
+    /**
+     * @var bool
+     */
+    private $resolved = false;
 
     /**
      * @var ModelInterface[]|array
@@ -24,25 +50,42 @@ final class LazyModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * @param \Closure $resolver
+     * @param ResolverInterface $resolver
+     * @param string $modelClass
+     * @param string $foreignField
+     * @param string $foreignId
+     * @param array|null $orderBy
      */
-    public function __construct(\Closure $resolver)
-    {
+    public function __construct(
+        ResolverInterface $resolver,
+        string $modelClass,
+        string $foreignField,
+        string $foreignId,
+        array $orderBy = null
+    ) {
         $this->resolver = $resolver;
+        $this->modelClass = $modelClass;
+        $this->foreignField = $foreignField;
+        $this->foreignId = $foreignId;
     }
 
     private function resolveModels()
     {
-        if (null === $this->resolver) {
+        if ($this->resolved) {
             return;
         }
 
-        $resolver = $this->resolver;
+        $this->resolved = true;
 
-        $this->resolver = null;
+        $criteria = [$this->foreignField => $this->foreignId];
 
-        $this->setModels((array) $resolver());
-        $this->initialModels = $this->models;
+        $models = [];
+        foreach ($this->resolver->findBy($this->modelClass, $criteria, $this->orderBy) as $model) {
+            $models[$model->getId()] = $model;
+        }
+
+        $this->initialModels = $models;
+        $this->models = $models;
     }
 
     /**
@@ -99,7 +142,7 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
-        return array_values($this->models);
+        return $this->sort(array_values($this->models));
     }
 
     /**
@@ -110,6 +153,47 @@ final class LazyModelCollection implements ModelCollectionInterface
         $this->resolveModels();
 
         return array_values($this->initialModels);
+    }
+
+    /**
+     * @param array $models
+     * @return array
+     */
+    private function sort(array $models): array
+    {
+        if ([] === $models) {
+            return [];
+        }
+
+        if (null === $this->orderBy) {
+            return $models;
+        }
+
+        $reflections = [];
+        foreach ($this->orderBy as $property => $sortingDirection) {
+            $reflection = new \ReflectionProperty($this->modelClass, $property);
+            $reflection->setAccessible(true);
+
+            $reflections[$property] = $reflection;
+        }
+
+        usort($models, function (ModelInterface $a, ModelInterface $b) use ($reflections) {
+            foreach ($this->orderBy as $property => $sortingDirection) {
+                $reflection = $reflections[$property];
+                $sorting = strcmp($reflection->getValue($a), $reflection->getValue($b));
+                if ($sortingDirection === 'DESC') {
+                    $sorting = $sorting * -1;
+                }
+
+                if (0 !== $sorting) {
+                    return $sorting;
+                }
+            }
+
+            return 0;
+        });
+
+        return $models;
     }
 
     /**
@@ -130,10 +214,26 @@ final class LazyModelCollection implements ModelCollectionInterface
         $this->resolveModels();
 
         $serializedModels = [];
-        foreach ($this->models as $model) {
+        foreach ($this->getModels() as $model) {
             $serializedModels[] = $model->jsonSerialize();
         }
 
         return $serializedModels;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignField(): string
+    {
+        return $this->foreignField;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignId(): string
+    {
+        return $this->foreignId;
     }
 }

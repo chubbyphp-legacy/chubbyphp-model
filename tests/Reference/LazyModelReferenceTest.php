@@ -4,7 +4,8 @@ namespace Chubbyphp\Tests\Model\Reference;
 
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\LazyModelReference;
-use MyProject\Model\MyModel;
+use Chubbyphp\Model\ResolverInterface;
+use MyProject\Model\MyEmbeddedModel;
 
 final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,13 +16,18 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         $modelReference->setModel($model);
 
@@ -36,13 +42,18 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInitialModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         $modelReference->setModel($model);
 
@@ -57,13 +68,18 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetModel()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         $modelReference->setModel($model);
 
@@ -78,13 +94,18 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         $modelReference->setModel($model);
 
@@ -99,9 +120,15 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetIdNullReference()
     {
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         self::assertNull($modelReference->getInitialModel());
         self::assertNull($modelReference->getId());
@@ -114,18 +141,22 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $model = MyModel::create('id1');
+        $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
-        $model->setCategory('category');
 
-        $modelReference = new LazyModelReference(function () use ($model) {
-            return $model;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = $model->getId();
+        $return = $model;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         $modelAsArray = json_decode(json_encode($modelReference), true);
 
         self::assertSame('name1', $modelAsArray['name']);
-        self::assertSame('category', $modelAsArray['category']);
     }
 
     /**
@@ -135,10 +166,53 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerializeNullReference()
     {
-        $modelReference = new LazyModelReference(function () {
-            return null;
-        });
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
 
         self::assertNull(json_decode(json_encode($modelReference), true));
+    }
+
+    /**
+     * @param string $expectedModelClass
+     * @param string|null $expectedId
+     * @param ModelInterface|null $return
+     * @return ResolverInterface
+     */
+    private function getResolver(
+        string $expectedModelClass,
+        string $expectedId = null,
+        $return
+    ): ResolverInterface {
+        /** @var ResolverInterface|\PHPUnit_Framework_MockObject_MockObject $resolver */
+        $resolver = $this->getMockBuilder(ResolverInterface::class)
+            ->setMethods(['find'])
+            ->getMockForAbstractClass();
+
+        $resolver->expects(self::any())
+            ->method('find')
+            ->willReturnCallback(
+                function (
+                    string $modelClass,
+                    string $id = null
+                ) use (
+                    $expectedModelClass,
+                    $expectedId,
+                    $return
+                ) {
+                    self::assertSame($expectedModelClass, $modelClass);
+                    self::assertSame($expectedId, $id);
+
+                    return $return;
+                }
+            );
+
+        return $resolver;
     }
 }

@@ -9,9 +9,24 @@ use Chubbyphp\Model\ModelInterface;
 final class ModelCollection implements ModelCollectionInterface
 {
     /**
-     * @var ModelInterface[]|array
+     * @var string
      */
-    private $initialModels;
+    private $modelClass;
+
+    /**
+     * @var string
+     */
+    private $foreignField;
+
+    /**
+     * @var string
+     */
+    private $foreignId;
+
+    /**
+     * @var array|null
+     */
+    private $orderBy;
 
     /**
      * @var ModelInterface[]|array
@@ -19,12 +34,20 @@ final class ModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
-     * @param ModelInterface[]|array $models
+     * @param string $modelClass
+     * @param string $foreignField
+     * @param string $foreignId
+     * @param array|null $orderBy
      */
-    public function __construct(array $models = [])
-    {
-        $this->setModels($models);
-        $this->initialModels = $this->models;
+    public function __construct(
+        string $modelClass,
+        string $foreignField,
+        string $foreignId,
+        array $orderBy = null
+    ) {
+        $this->modelClass = $modelClass;
+        $this->foreignField = $foreignField;
+        $this->foreignId = $foreignId;
     }
 
     /**
@@ -73,7 +96,7 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getModels(): array
     {
-        return array_values($this->models);
+        return $this->sort(array_values($this->models));
     }
 
     /**
@@ -81,7 +104,48 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getInitialModels(): array
     {
-        return array_values($this->initialModels);
+        return [];
+    }
+
+    /**
+     * @param array $models
+     * @return array
+     */
+    private function sort(array $models): array
+    {
+        if ([] === $models) {
+            return [];
+        }
+
+        if (null === $this->orderBy) {
+            return $models;
+        }
+
+        $reflections = [];
+        foreach ($this->orderBy as $property => $sortingDirection) {
+            $reflection = new \ReflectionProperty($this->modelClass, $property);
+            $reflection->setAccessible(true);
+
+            $reflections[$property] = $reflection;
+        }
+
+        usort($models, function (ModelInterface $a, ModelInterface $b) use ($reflections) {
+            foreach ($this->orderBy as $property => $sortingDirection) {
+                $reflection = $reflections[$property];
+                $sorting = strcmp($reflection->getValue($a), $reflection->getValue($b));
+                if ($sortingDirection === 'DESC') {
+                    $sorting = $sorting * -1;
+                }
+
+                if (0 !== $sorting) {
+                    return $sorting;
+                }
+            }
+
+            return 0;
+        });
+
+        return $models;
     }
 
     /**
@@ -98,10 +162,26 @@ final class ModelCollection implements ModelCollectionInterface
     public function jsonSerialize(): array
     {
         $serializedModels = [];
-        foreach ($this->models as $model) {
+        foreach ($this->getModels() as $model) {
             $serializedModels[] = $model->jsonSerialize();
         }
 
         return $serializedModels;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignField(): string
+    {
+        return $this->foreignField;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignId(): string
+    {
+        return $this->foreignId;
     }
 }

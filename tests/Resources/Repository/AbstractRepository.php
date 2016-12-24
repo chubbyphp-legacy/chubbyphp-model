@@ -7,8 +7,10 @@ namespace MyProject\Repository;
 use Chubbyphp\Model\Collection\ModelCollectionInterface;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\ModelReferenceInterface;
+use Chubbyphp\Model\RelatedModelManipulationStack;
 use Chubbyphp\Model\RepositoryInterface;
 use Chubbyphp\Model\ResolverInterface;
+use Chubbyphp\Model\Sorter\ModelSorter;
 
 abstract class AbstractRepository implements RepositoryInterface
 {
@@ -23,6 +25,11 @@ abstract class AbstractRepository implements RepositoryInterface
     protected $resolver;
 
     /**
+     * @var ModelSorter
+     */
+    protected $modelSorter;
+
+    /**
      * @param array $modelEntries
      * @param ResolverInterface $resolver
      */
@@ -32,7 +39,9 @@ abstract class AbstractRepository implements RepositoryInterface
         foreach ($modelEntries as $modelEntry) {
             $this->modelEntries[$modelEntry['id']] = $modelEntry;
         }
+
         $this->resolver = $resolver;
+        $this->modelSorter = new ModelSorter();
     }
 
     /**
@@ -135,58 +144,34 @@ abstract class AbstractRepository implements RepositoryInterface
         $id = $model->getId();
         $modelEntry = $model->toPersistence();
 
-        /** @var ModelInterface[] $toPersistModels */
-        $toPersistModels = [];
+        if (!$alreadyExists = (bool) $this->find($id)) {
+            $alreadyExists = $this->callbackIfReference($id, $modelEntry, function (string $id, array $modelEntry) {
+                $this->insert($id, $modelEntry);
+            });
+        }
 
-        /** @var ModelInterface[] $toRemoveRelatedModels */
-        $toRemoveRelatedModels = [];
-
-        /** @var ModelCollectionInterface[] $modelCollections */
-        $modelCollections = [];
+        $stack = new RelatedModelManipulationStack();
 
         foreach ($modelEntry as $field => $value) {
             if ($value instanceof ModelCollectionInterface) {
-                $modelCollections[] = $value;
+                $stack->addToRemoveModels($value->getInitialModels());
+                $stack->addToPersistModels($value->getModels());
                 unset($modelEntry[$field]);
-            } elseif ($value instanceof ModelReferenceInterface) {
-                $initialModel = $value->getInitialModel();
-                $model = $value->getModel();
-
-                if (null !== $initialModel && (null === $model || $model->getId() !== $initialModel->getId())) {
-                    $toRemoveRelatedModels[$initialModel->getId()] = $initialModel;
-                }
-
-                if (null !== $model) {
-                    $this->persistRelatedModel($model);
-                    $modelEntry[$field.'Id'] = $model->getId();
-                } else {
-                    $modelEntry[$field.'Id'] = null;
-                }
+            } else if ($value instanceof ModelReferenceInterface) {
+                $modelEntry[$field.'Id'] = $this->persistModelReference($value, $stack);
 
                 unset($modelEntry[$field]);
             }
         }
 
-        $this->modelEntries[$id] = $modelEntry;
-
-        foreach ($modelCollections as $modelCollection) {
-            $initialModels = $modelCollection->getInitialModels();
-            $models = $modelCollection->getModels();
-
-            foreach ($initialModels as $initialModel) {
-                $toRemoveRelatedModels[$initialModel->getId()] = $initialModel;
-            }
-
-            foreach ($models as $model) {
-                if (isset($toRemoveRelatedModels[$model->getId()])) {
-                    unset($toRemoveRelatedModels[$model->getId()]);
-                }
-                $toPersistModels[$model->getId()] = $model;
-            }
+        if (!$alreadyExists) {
+            $this->insert($id, $modelEntry);
+        } else {
+            $this->update($id, $modelEntry);
         }
 
-        $this->persistRelatedModels($toPersistModels);
-        $this->removeRelatedModels($toRemoveRelatedModels);
+        $this->persistRelatedModels($stack->getToPersistModels());
+        $this->removeRelatedModels($stack->getToRemoveModels());
 
         return $this;
     }
@@ -198,19 +183,29 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function remove(ModelInterface $model): RepositoryInterface
     {
+        $id = $model->getId();
+
+        if (null === $this->find($id)) {
+            return $this;
+        }
+
         $modelEntry = $model->toPersistence();
+
+        $this->callbackIfReference($id, $modelEntry, function (string $id, array $modelEntry) {
+            $this->update($id, $modelEntry);
+        });
 
         foreach ($modelEntry as $field => $value) {
             if ($value instanceof ModelCollectionInterface) {
                 $this->removeRelatedModels($value->getInitialModels());
-            } elseif ($value instanceof ModelReferenceInterface) {
+            } else if ($value instanceof ModelReferenceInterface) {
                 if (null !== $initialModel = $value->getInitialModel()) {
                     $this->removeRelatedModel($initialModel);
                 }
             }
         }
 
-        unset($this->modelEntries[$model->getId()]);
+        unset($this->modelEntries[$id]);
 
         return $this;
     }
@@ -224,11 +219,79 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface[]|array $toRemoveRelatedModels
+     * @param string $id
+     * @param array  $modelEntry
      */
-    private function persistRelatedModels(array $toRemoveRelatedModels)
+    protected function insert(string $id, array $modelEntry)
     {
-        foreach ($toRemoveRelatedModels as $toRemoveRelatedModel) {
+        $this->modelEntries[$id] = $modelEntry;
+    }
+
+    /**
+     * @param string $id
+     * @param array  $modelEntry
+     */
+    protected function update(string $id, array $modelEntry)
+    {
+        $this->modelEntries[$id] = $modelEntry;
+    }
+
+    /**
+     * @param string $id
+     * @param array $modelEntry
+     * @return bool
+     */
+    private function callbackIfReference(string $id, array $modelEntry, \Closure $callback): bool
+    {
+        $gotReference = false;
+        foreach ($modelEntry as $field => $value) {
+            if ($value instanceof ModelCollectionInterface) {
+                unset($modelEntry[$field]);
+            } else if ($value instanceof ModelReferenceInterface) {
+                $modelEntry[$field.'Id'] = null;
+                $gotReference = true;
+                unset($modelEntry[$field]);
+            }
+        }
+
+        if ($gotReference) {
+            $callback($id, $modelEntry);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param ModelReferenceInterface $reference
+     * @param RelatedModelManipulationStack $stack
+     * @return null|string
+     */
+    private function persistModelReference(ModelReferenceInterface $reference, RelatedModelManipulationStack $stack)
+    {
+        $initialModel = $reference->getInitialModel();
+        $model = $reference->getModel();
+
+        if (null !== $initialModel && (null === $model || $model->getId() !== $initialModel->getId())) {
+            $stack->addToRemoveModel($initialModel);
+        }
+
+        if (null !== $model) {
+            $this->persistRelatedModel($model);
+
+            return $model->getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param ModelInterface[]|array $toRemoveModels
+     */
+    private function persistRelatedModels(array $toRemoveModels)
+    {
+        foreach ($toRemoveModels as $toRemoveRelatedModel) {
             $this->persistRelatedModel($toRemoveRelatedModel);
         }
     }
@@ -242,11 +305,11 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelInterface[]|array $toRemoveRelatedModels
+     * @param ModelInterface[]|array $toRemoveModels
      */
-    private function removeRelatedModels(array $toRemoveRelatedModels)
+    private function removeRelatedModels(array $toRemoveModels)
     {
-        foreach ($toRemoveRelatedModels as $toRemoveRelatedModel) {
+        foreach ($toRemoveModels as $toRemoveRelatedModel) {
             $this->removeRelatedModel($toRemoveRelatedModel);
         }
     }

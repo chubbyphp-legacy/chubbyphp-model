@@ -9,9 +9,9 @@ use Chubbyphp\Model\ModelInterface;
 final class ModelReference implements ModelReferenceInterface
 {
     /**
-     * @var ModelInterface|null
+     * @var string|null
      */
-    private $initialModel;
+    private $id;
 
     /**
      * @var ModelInterface|null
@@ -20,16 +20,12 @@ final class ModelReference implements ModelReferenceInterface
 
     /**
      * @param ModelInterface|null $model
+     * @return ModelReferenceInterface
      */
-    public function __construct(ModelInterface $model = null)
-    {
-        $this->initialModel = $model;
-        $this->model = $model;
-    }
-
     public function setModel(ModelInterface $model = null): ModelReferenceInterface
     {
         $this->model = $model;
+        $this->id = null !== $model ? $model->getId() : null;
 
         return $this;
     }
@@ -47,11 +43,7 @@ final class ModelReference implements ModelReferenceInterface
      */
     public function getId()
     {
-        if (null === $this->model) {
-            return null;
-        }
-
-        return $this->model->getId();
+        return $this->id;
     }
 
     /**
@@ -59,7 +51,7 @@ final class ModelReference implements ModelReferenceInterface
      */
     public function getInitialModel()
     {
-        return $this->initialModel;
+        return null;
     }
 
     /**

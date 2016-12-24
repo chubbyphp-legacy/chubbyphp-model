@@ -25,15 +25,13 @@ final class MyEmbeddedModel implements ModelInterface
     private $name;
 
     /**
-     * @param string $modelId
      * @param string|null $id
      * @return MyEmbeddedModel
      */
-    public static function create(string $modelId, string $id = null): MyEmbeddedModel
+    public static function create(string $id = null): MyEmbeddedModel
     {
         $myEmbeddedModel = new self;
         $myEmbeddedModel->id = $id ?? (string) Uuid::uuid4();
-        $myEmbeddedModel->modelId = $modelId;
 
         return $myEmbeddedModel;
     }
