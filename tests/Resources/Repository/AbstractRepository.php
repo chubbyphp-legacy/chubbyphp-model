@@ -6,6 +6,7 @@ namespace MyProject\Repository;
 
 use Chubbyphp\Model\Collection\ModelCollectionInterface;
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\ModelSortTrait;
 use Chubbyphp\Model\Reference\ModelReferenceInterface;
 use Chubbyphp\Model\RelatedModelManipulationStack;
 use Chubbyphp\Model\RepositoryInterface;
@@ -14,6 +15,8 @@ use Chubbyphp\Model\Sorter\ModelSorter;
 
 abstract class AbstractRepository implements RepositoryInterface
 {
+    use ModelSortTrait;
+
     /**
      * @var ModelInterface[]|array
      */
@@ -23,11 +26,6 @@ abstract class AbstractRepository implements RepositoryInterface
      * @var ResolverInterface
      */
     protected $resolver;
-
-    /**
-     * @var ModelSorter
-     */
-    protected $modelSorter;
 
     /**
      * @param array $modelEntries
@@ -41,7 +39,6 @@ abstract class AbstractRepository implements RepositoryInterface
         }
 
         $this->resolver = $resolver;
-        $this->modelSorter = new ModelSorter();
     }
 
     /**
@@ -104,24 +101,14 @@ abstract class AbstractRepository implements RepositoryInterface
             $models[] = $this->fromPersistence($modelEntry);
         }
 
-        if (null !== $orderBy) {
-            usort($models, function (ModelInterface $a, ModelInterface $b) use ($orderBy) {
-                foreach ($orderBy as $key => $value) {
-                    $reflectionProperty = new \ReflectionProperty(get_class($a), $key);
-                    $reflectionProperty->setAccessible(true);
-                    $sorting = strcmp($reflectionProperty->getValue($a), $reflectionProperty->getValue($b));
-                    if ($value === 'DESC') {
-                        $sorting = $sorting * -1;
-                    }
-
-                    if (0 !== $sorting) {
-                        return $sorting;
-                    }
-                }
-
-                return 0;
-            });
+        if ([] === $models) {
+            return [];
         }
+
+        $model = reset($models);
+        $modelClass = get_class($model);
+
+        $models = $this->sort($modelClass,  $models, $orderBy);
 
         if (null !== $limit && null !== $offset) {
             return array_slice($models, $offset, $limit);

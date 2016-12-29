@@ -40,7 +40,7 @@ final class MyModelRepository extends AbstractRepository
         );
 
         $modelEntry['oneToMany'] = new LazyModelCollection(
-            $this->resolver, MyEmbeddedModel::class, ['modelId' => $modelEntry['id']], ['name' => 'ASC']
+            $this->resolver, MyEmbeddedModel::class, 'modelId', $modelEntry['id'], ['name' => 'ASC']
         );
 
         return MyModel::fromPersistence($modelEntry);

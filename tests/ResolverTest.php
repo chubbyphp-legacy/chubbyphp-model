@@ -4,6 +4,7 @@ namespace Chubbyphp\Tests\Model;
 
 use Chubbyphp\Model\MissingRepositoryException;
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\RelatedModelManipulationStack;
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
 use MyProject\Model\MyEmbeddedModel;
@@ -94,8 +95,8 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertCount(2, $model->getOneToMany());
 
-        self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[0]->getId());
-        self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[1]->getId());
+        self::assertSame($embeddedModelEntries[2]['id'], $model->getOneToMany()[0]->getId());
+        self::assertSame($embeddedModelEntries[0]['id'], $model->getOneToMany()[1]->getId());
     }
 
     /**
@@ -256,6 +257,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Resolver::__construct
      * @covers \Chubbyphp\Model\Resolver::persist
      * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     * @covers \Chubbyphp\Model\RelatedModelManipulationStack
      */
     public function testInsert()
     {
@@ -266,10 +268,10 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $model = MyModel::create('id1')
             ->setName('name1')
             ->setCategory('category1')
-            ->setOneToOne(MyEmbeddedModel::create('id1', 'id1')->setName('name1'))
+            ->setOneToOne(MyEmbeddedModel::create('id1')->setName('name1'))
             ->setOneToMany([
-                MyEmbeddedModel::create('id1', 'id1')->setName('name1'),
-                MyEmbeddedModel::create('id1', 'id2')->setName('name2')
+                MyEmbeddedModel::create('id1')->setName('name1'),
+                MyEmbeddedModel::create('id2')->setName('name2')
             ])
         ;
 
@@ -291,6 +293,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Resolver::__construct
      * @covers \Chubbyphp\Model\Resolver::persist
      * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     * @covers \Chubbyphp\Model\RelatedModelManipulationStack
      */
     public function testUpdate()
     {
@@ -356,6 +359,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Resolver::__construct
      * @covers \Chubbyphp\Model\Resolver::remove
      * @covers \Chubbyphp\Model\Resolver::getRepositoryByClass
+     * @covers \Chubbyphp\Model\RelatedModelManipulationStack
      */
     public function testRemove()
     {

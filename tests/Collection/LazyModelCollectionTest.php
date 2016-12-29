@@ -19,14 +19,16 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
@@ -46,14 +48,16 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [$model];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
@@ -79,14 +83,16 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
@@ -107,16 +113,52 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
+        $orderBy = ['name' => 'ASC'];
+        $return = [$model];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
+            $modelClass,
+            $foreignField,
+            $foreignId,
+            $orderBy
+        );
+
+        $modelCollection->setModels([]);
+
+        self::assertCount(1, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getModels
+     * @covers \Chubbyphp\Model\ModelSortTrait::sort
+     */
+    public function testGetModels()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelClass = MyEmbeddedModel::class;
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getModels());
 
         $modelCollection->setModels([$model]);
 
@@ -128,23 +170,28 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getModels
+     * @covers \Chubbyphp\Model\ModelSortTrait::sort
      */
-    public function testGetModels()
+    public function testGetModelsWithoutOrderBy()
     {
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
-        $orderBy = ['name' => 'ASC'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], null, $return),
             $modelClass,
-            $criteria,
-            $orderBy
+            $foreignField,
+            $foreignId,
+            null
         );
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getModels());
 
         $modelCollection->setModels([$model]);
 
@@ -163,14 +210,16 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [$model];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
@@ -194,14 +243,16 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model->setName('name1');
 
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [$model];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
@@ -215,45 +266,49 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
-     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getCriteria()
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getForeignField
      */
-    public function testGetCriteria()
+    public function testGetForeignField()
     {
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
-        self::assertSame($criteria, $modelCollection->getCriteria());
+        self::assertSame('modelId', $modelCollection->getForeignField());
     }
 
     /**
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
-     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getOrderBy()
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getForeignId
      */
-    public function testGetOrderBy()
+    public function testGetForeignId()
     {
         $modelClass = MyEmbeddedModel::class;
-        $criteria = ['modelId' => 'id1'];
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
         $orderBy = ['name' => 'ASC'];
         $return = [];
 
         $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, $criteria, $orderBy, $return),
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
             $modelClass,
-            $criteria,
+            $foreignField,
+            $foreignId,
             $orderBy
         );
 
-        self::assertSame($orderBy, $modelCollection->getOrderBy());
+        self::assertSame('id1', $modelCollection->getForeignId());
     }
 
     /**
@@ -266,7 +321,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
     private function getResolver(
         string $expectedModelClass,
         array $expectedCriteria,
-        array $expectedOrderBy,
+        array $expectedOrderBy = null,
         array $return
     ): ResolverInterface {
         /** @var ResolverInterface|\PHPUnit_Framework_MockObject_MockObject $resolver */
@@ -280,7 +335,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
                 function (
                     string $modelClass,
                     array $criteria,
-                    array $orderBy
+                    array $orderBy = null
                 ) use (
                     $expectedModelClass,
                     $expectedCriteria,

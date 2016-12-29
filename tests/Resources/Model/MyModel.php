@@ -45,7 +45,7 @@ final class MyModel implements ModelInterface
         $myModel = new self;
         $myModel->id = $id ?? (string) Uuid::uuid4();
         $myModel->oneToOne = new ModelReference();
-        $myModel->oneToMany = new ModelCollection(['modelId', $myModel->id], ['name' => 'ASC']);
+        $myModel->oneToMany = new ModelCollection(MyEmbeddedModel::class, 'modelId', $myModel->id, ['name' => 'ASC']);
 
         return $myModel;
     }

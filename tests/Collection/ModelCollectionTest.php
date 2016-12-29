@@ -16,7 +16,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
 
         $modelCollection->addModel($model);
 
@@ -32,7 +32,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
         $modelCollection->addModel($model);
 
         self::assertCount(0, $modelCollection->getInitialModels());
@@ -55,7 +55,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
 
         $modelCollection->setModels([$model]);
 
@@ -72,7 +72,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
 
         $modelCollection->setModels([$model]);
 
@@ -83,13 +83,38 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\ModelCollection::getModels
+     * @covers \Chubbyphp\Model\ModelSortTrait::sort
      */
     public function testGetModels()
     {
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getModels());
+
+        $modelCollection->setModels([$model]);
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getModels
+     * @covers \Chubbyphp\Model\ModelSortTrait::sort
+     */
+    public function testGetModelsWithoutOrderBy()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1');
+
+        self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(0, $modelCollection->getModels());
 
         $modelCollection->setModels([$model]);
 
@@ -106,7 +131,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
         $modelCollection->addModel($model);
 
         foreach ($modelCollection as $model) {
@@ -127,7 +152,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
         $model = MyEmbeddedModel::create('id1');
         $model->setName('name1');
 
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
         $modelCollection->addModel($model);
 
         $modelsAsArray = json_decode(json_encode($modelCollection), true);
@@ -139,23 +164,23 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
-     * @covers \Chubbyphp\Model\Collection\ModelCollection::getCriteria()
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getForeignField()
      */
     public function testGetCriteria()
     {
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
 
-        self::assertSame(['modelId', 'id1'], $modelCollection->getCriteria());
+        self::assertSame('modelId', $modelCollection->getForeignField());
     }
 
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
-     * @covers \Chubbyphp\Model\Collection\ModelCollection::getOrderBy()
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::getForeignId()
      */
     public function testGetOrderBy()
     {
-        $modelCollection = new ModelCollection(['modelId', 'id1'], ['name' => 'ASC']);
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
 
-        self::assertSame(['name' => 'ASC'], $modelCollection->getOrderBy());
+        self::assertSame('id1', $modelCollection->getForeignId());
     }
 }

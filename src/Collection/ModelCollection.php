@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Chubbyphp\Model\Collection;
 
 use Chubbyphp\Model\ModelInterface;
+use Chubbyphp\Model\ModelSortTrait;
 
 final class ModelCollection implements ModelCollectionInterface
 {
+    use ModelSortTrait;
+
     /**
      * @var string
      */
@@ -48,6 +51,9 @@ final class ModelCollection implements ModelCollectionInterface
         $this->modelClass = $modelClass;
         $this->foreignField = $foreignField;
         $this->foreignId = $foreignId;
+        $this->orderBy = $orderBy;
+
+        $this->models = [];
     }
 
     /**
@@ -96,7 +102,7 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function getModels(): array
     {
-        return $this->sort(array_values($this->models));
+        return $this->sort($this->modelClass, array_values($this->models), $this->orderBy);
     }
 
     /**
@@ -107,46 +113,6 @@ final class ModelCollection implements ModelCollectionInterface
         return [];
     }
 
-    /**
-     * @param array $models
-     * @return array
-     */
-    private function sort(array $models): array
-    {
-        if ([] === $models) {
-            return [];
-        }
-
-        if (null === $this->orderBy) {
-            return $models;
-        }
-
-        $reflections = [];
-        foreach ($this->orderBy as $property => $sortingDirection) {
-            $reflection = new \ReflectionProperty($this->modelClass, $property);
-            $reflection->setAccessible(true);
-
-            $reflections[$property] = $reflection;
-        }
-
-        usort($models, function (ModelInterface $a, ModelInterface $b) use ($reflections) {
-            foreach ($this->orderBy as $property => $sortingDirection) {
-                $reflection = $reflections[$property];
-                $sorting = strcmp($reflection->getValue($a), $reflection->getValue($b));
-                if ($sortingDirection === 'DESC') {
-                    $sorting = $sorting * -1;
-                }
-
-                if (0 !== $sorting) {
-                    return $sorting;
-                }
-            }
-
-            return 0;
-        });
-
-        return $models;
-    }
 
     /**
      * @return \ArrayIterator
