@@ -108,7 +108,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $model = reset($models);
         $modelClass = get_class($model);
 
-        $models = $this->sort($modelClass,  $models, $orderBy);
+        $models = $this->sort($modelClass, $models, $orderBy);
 
         if (null !== $limit && null !== $offset) {
             return array_slice($models, $offset, $limit);

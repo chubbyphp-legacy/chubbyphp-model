@@ -265,14 +265,14 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
         self::assertNull($resolver->find(MyModel::class, 'id1'));
 
+        $myEmbeddedModel1 = MyEmbeddedModel::create('id1')->setName('name1');
+        $myEmbeddedModel2 = MyEmbeddedModel::create('id2')->setName('name2');
+
         $model = MyModel::create('id1')
             ->setName('name1')
             ->setCategory('category1')
-            ->setOneToOne(MyEmbeddedModel::create('id1')->setName('name1'))
-            ->setOneToMany([
-                MyEmbeddedModel::create('id1')->setName('name1'),
-                MyEmbeddedModel::create('id2')->setName('name2')
-            ])
+            ->setOneToOne($myEmbeddedModel1)
+            ->setOneToMany([$myEmbeddedModel1, $myEmbeddedModel2])
         ;
 
         $resolver->persist($model);

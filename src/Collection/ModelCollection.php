@@ -37,6 +37,11 @@ final class ModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
+     * @var \ReflectionProperty
+     */
+    private $propertyReflection;
+
+    /**
      * @param string $modelClass
      * @param string $foreignField
      * @param string $foreignId
@@ -54,6 +59,9 @@ final class ModelCollection implements ModelCollectionInterface
         $this->orderBy = $orderBy;
 
         $this->models = [];
+
+        $this->propertyReflection = new \ReflectionProperty($this->modelClass, $this->foreignField);
+        $this->propertyReflection->setAccessible(true);
     }
 
     /**
@@ -63,6 +71,8 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function addModel(ModelInterface $model): ModelCollectionInterface
     {
+        $this->propertyReflection->setValue($model, $this->foreignId);
+
         $this->models[$model->getId()] = $model;
 
         return $this;
@@ -76,6 +86,8 @@ final class ModelCollection implements ModelCollectionInterface
     public function removeModel(ModelInterface $model): ModelCollectionInterface
     {
         if (isset($this->models[$model->getId()])) {
+            $this->propertyReflection->setValue($model, null);
+
             unset($this->models[$model->getId()]);
         }
 
@@ -112,7 +124,6 @@ final class ModelCollection implements ModelCollectionInterface
     {
         return [];
     }
-
 
     /**
      * @return \ArrayIterator

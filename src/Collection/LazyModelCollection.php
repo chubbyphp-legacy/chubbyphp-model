@@ -53,6 +53,11 @@ final class LazyModelCollection implements ModelCollectionInterface
     private $models;
 
     /**
+     * @var \ReflectionProperty
+     */
+    private $propertyReflection;
+
+    /**
      * @param ResolverInterface $resolver
      * @param string $modelClass
      * @param string $foreignField
@@ -71,6 +76,9 @@ final class LazyModelCollection implements ModelCollectionInterface
         $this->foreignField = $foreignField;
         $this->foreignId = $foreignId;
         $this->orderBy = $orderBy;
+
+        $this->propertyReflection = new \ReflectionProperty($this->modelClass, $this->foreignField);
+        $this->propertyReflection->setAccessible(true);
     }
 
     private function resolveModels()
@@ -101,6 +109,8 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
+        $this->propertyReflection->setValue($model, $this->foreignId);
+
         $this->models[$model->getId()] = $model;
 
         return $this;
@@ -116,6 +126,8 @@ final class LazyModelCollection implements ModelCollectionInterface
         $this->resolveModels();
 
         if (isset($this->models[$model->getId()])) {
+            $this->propertyReflection->setValue($model, null);
+
             unset($this->models[$model->getId()]);
         }
 
