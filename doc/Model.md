@@ -50,12 +50,14 @@ final class MyModel implements ModelInterface
         $myModel = new self;
         $myModel->id = $id ?? (string) Uuid::uuid4();
         $myModel->oneToOne = new ModelReference();
-        $myModel->oneToMany = new ModelCollection();
+        $myModel->oneToMany = new ModelCollection(MyEmbeddedModel::class, 'modelId', $myModel->id, ['name' => 'ASC']);
 
         return $myModel;
     }
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * @param array $data
@@ -218,20 +220,20 @@ final class MyEmbeddedModel implements ModelInterface
     private $name;
 
     /**
-     * @param string $modelId
      * @param string|null $id
      * @return MyEmbeddedModel
      */
-    public function create(string $modelId, string $id = null): MyEmbeddedModel
+    public static function create(string $id = null): MyEmbeddedModel
     {
         $myEmbeddedModel = new self;
         $myEmbeddedModel->id = $id ?? (string) Uuid::uuid4();
-        $myEmbeddedModel->modelId = $modelId;
 
         return $myEmbeddedModel;
     }
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * @param array $data
