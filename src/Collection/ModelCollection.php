@@ -134,6 +134,14 @@ final class ModelCollection implements ModelCollectionInterface
     }
 
     /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->getModels());
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array

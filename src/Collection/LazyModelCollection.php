@@ -182,6 +182,16 @@ final class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
+     * @return int
+     */
+    public function count()
+    {
+        $this->resolveModels();
+
+        return count($this->getModels());
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array

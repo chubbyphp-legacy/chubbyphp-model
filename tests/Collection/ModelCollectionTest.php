@@ -145,6 +145,21 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::count()
+     */
+    public function testCountable()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
+        $modelCollection->addModel($model);
+
+        self::assertCount(1, $modelCollection);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\ModelCollection::jsonSerialize
      */
     public function testJsonSerialize()
