@@ -143,7 +143,9 @@ final class LazyModelCollection implements ModelCollectionInterface
     {
         $this->resolveModels();
 
-        $this->models = [];
+        foreach ($this->models as $model) {
+            $this->removeModel($model);
+        }
         foreach ($models as $model) {
             $this->addModel($model);
         }

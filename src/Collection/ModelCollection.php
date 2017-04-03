@@ -101,7 +101,9 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function setModels(array $models): ModelCollectionInterface
     {
-        $this->models = [];
+        foreach ($this->models as $model) {
+            $this->removeModel($model);
+        }
         foreach ($models as $model) {
             $this->addModel($model);
         }
