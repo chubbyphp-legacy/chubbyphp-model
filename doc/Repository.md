@@ -2,7 +2,7 @@
 
 #### MyModelRepository
 
-```{.php}
+```php
 <?php
 
 declare(strict_types=1);
@@ -55,7 +55,7 @@ final class MyModelRepository extends AbstractRepository
 
 #### MyEmbeddedRepository
 
-```{.php}
+```php
 <?php
 
 declare(strict_types=1);

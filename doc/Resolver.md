@@ -1,6 +1,6 @@
 ### Resolver
 
-```{.php}
+```php
 <?php
 
 use Chubbyphp\Model\Resolver;
