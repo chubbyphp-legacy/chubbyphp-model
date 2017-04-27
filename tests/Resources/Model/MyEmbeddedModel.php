@@ -93,15 +93,4 @@ final class MyEmbeddedModel implements ModelInterface
             'name' => $this->name
         ];
     }
-
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name
-        ];
-    }
 }

@@ -262,37 +262,6 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
-     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerialize
-     */
-    public function testJsonSerialize()
-    {
-        $model = MyEmbeddedModel::create('id1');
-        $model->setName('name1');
-
-        $modelClass = MyEmbeddedModel::class;
-        $foreignField = 'modelId';
-        $foreignId = 'id1';
-        $orderBy = ['name' => 'ASC'];
-        $return = [$model];
-
-        $modelCollection = new LazyModelCollection(
-            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
-            $modelClass,
-            $foreignField,
-            $foreignId,
-            $orderBy
-        );
-
-        $modelsAsArray = json_decode(json_encode($modelCollection), true);
-
-        self::assertCount(1, $modelsAsArray);
-
-        self::assertSame('name1', $modelsAsArray[0]['name']);
-    }
-
-    /**
-     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
-     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getForeignField
      */
     public function testGetForeignField()

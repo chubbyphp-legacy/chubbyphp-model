@@ -53,16 +53,4 @@ final class ModelReference implements ModelReferenceInterface
     {
         return null;
     }
-
-    /**
-     * @return array|null
-     */
-    public function jsonSerialize()
-    {
-        if (null === $this->model) {
-            return null;
-        }
-
-        return $this->model->jsonSerialize();
-    }
 }

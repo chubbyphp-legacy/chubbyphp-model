@@ -194,21 +194,6 @@ final class LazyModelCollection implements ModelCollectionInterface
     }
 
     /**
-     * @return array
-     */
-    public function jsonSerialize(): array
-    {
-        $this->resolveModels();
-
-        $serializedModels = [];
-        foreach ($this->getModels() as $model) {
-            $serializedModels[] = $model->jsonSerialize();
-        }
-
-        return $serializedModels;
-    }
-
-    /**
      * @return string
      */
     public function getForeignField(): string
