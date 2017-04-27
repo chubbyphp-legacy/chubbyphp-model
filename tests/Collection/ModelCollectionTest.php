@@ -160,6 +160,25 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::jsonSerialize
+     */
+    public function testJsonSerialize()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelCollection = new ModelCollection(MyEmbeddedModel::class, 'modelId', 'id1', ['name' => 'ASC']);
+        $modelCollection->addModel($model);
+
+        $modelsAsArray = json_decode(json_encode($modelCollection), true);
+
+        self::assertCount(1, $modelsAsArray);
+
+        self::assertSame('name1', $modelsAsArray[0]['name']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\ModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\ModelCollection::getForeignField()
      */
     public function testGetCriteria()

@@ -135,6 +135,51 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::__construct
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerialize
+     */
+    public function testJsonSerialize()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelClass = MyEmbeddedModel::class;
+        $id = $model->getId();
+        $return = $model;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
+
+        $modelAsArray = json_decode(json_encode($modelReference), true);
+
+        self::assertSame('name1', $modelAsArray['name']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::__construct
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerialize
+     */
+    public function testJsonSerializeNullReference()
+    {
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
+
+        self::assertNull(json_decode(json_encode($modelReference), true));
+    }
+
+    /**
      * @param string $expectedModelClass
      * @param string|null $expectedId
      * @param ModelInterface|null $return

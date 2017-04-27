@@ -81,4 +81,30 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
         self::assertNull($modelReference->getInitialModel());
         self::assertNull($modelReference->getId());
     }
+
+    /**
+     * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerialize
+     */
+    public function testJsonSerialize()
+    {
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
+        $modelReference = new ModelReference();
+        $modelReference->setModel($model);
+
+        $modelAsArray = json_decode(json_encode($modelReference), true);
+
+        self::assertSame('name1', $modelAsArray['name']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerialize
+     */
+    public function testJsonSerializeNullReference()
+    {
+        $modelReference = new ModelReference();
+
+        self::assertNull(json_decode(json_encode($modelReference), true));
+    }
 }

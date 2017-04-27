@@ -104,4 +104,18 @@ final class LazyModelReference implements ModelReferenceInterface
 
         return $this->initialModel;
     }
+
+    /**
+     * @return array|null
+     */
+    public function jsonSerialize()
+    {
+        $this->resolveModel();
+
+        if (null === $this->model) {
+            return null;
+        }
+
+        return $this->model->jsonSerialize();
+    }
 }

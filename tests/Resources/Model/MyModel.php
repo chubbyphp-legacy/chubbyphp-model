@@ -168,4 +168,18 @@ final class MyModel implements ModelInterface
             'oneToMany' => $this->oneToMany
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'category' => $this->category,
+            'oneToOne' => $this->oneToOne->jsonSerialize(),
+            'oneToMany' => $this->oneToMany->jsonSerialize()
+        ];
+    }
 }

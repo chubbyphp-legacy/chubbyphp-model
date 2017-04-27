@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chubbyphp\Model;
 
-interface ModelInterface
+interface ModelInterface extends \JsonSerializable
 {
     /**
      * @param array $data

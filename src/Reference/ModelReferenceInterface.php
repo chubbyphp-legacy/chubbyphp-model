@@ -6,7 +6,7 @@ namespace Chubbyphp\Model\Reference;
 
 use Chubbyphp\Model\ModelInterface;
 
-interface ModelReferenceInterface
+interface ModelReferenceInterface extends \JsonSerializable
 {
     /**
      * @param ModelInterface|null $model

@@ -144,6 +144,19 @@ final class ModelCollection implements ModelCollectionInterface
     }
 
     /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        $serializedModels = [];
+        foreach ($this->getModels() as $model) {
+            $serializedModels[] = $model->jsonSerialize();
+        }
+
+        return $serializedModels;
+    }
+
+    /**
      * @return string
      */
     public function getForeignField(): string
