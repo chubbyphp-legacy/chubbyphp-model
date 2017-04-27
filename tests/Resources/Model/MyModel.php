@@ -9,7 +9,7 @@ use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\ModelReference;
 use Ramsey\Uuid\Uuid;
 
-final class MyModel implements ModelInterface
+final class MyModel implements ModelInterface, \JsonSerializable
 {
     /**
      * @var string

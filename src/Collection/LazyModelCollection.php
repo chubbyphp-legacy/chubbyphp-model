@@ -198,6 +198,8 @@ final class LazyModelCollection implements ModelCollectionInterface
      */
     public function jsonSerialize(): array
     {
+        $this->jsonSerializableOrException();
+
         $this->resolveModels();
 
         $serializedModels = [];
@@ -206,6 +208,18 @@ final class LazyModelCollection implements ModelCollectionInterface
         }
 
         return $serializedModels;
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    private function jsonSerializableOrException()
+    {
+        if (!in_array(\JsonSerializable::class, class_implements($this->modelClass), true)) {
+            throw new \LogicException(
+                sprintf('Model %s does not implement %s', $this->modelClass, \JsonSerializable::class)
+            );
+        }
     }
 
     /**

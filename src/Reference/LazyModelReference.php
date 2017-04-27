@@ -116,6 +116,20 @@ final class LazyModelReference implements ModelReferenceInterface
             return null;
         }
 
+        $this->jsonSerializableOrException();
+
         return $this->model->jsonSerialize();
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    private function jsonSerializableOrException()
+    {
+        if (!$this->model instanceof \JsonSerializable) {
+            throw new \LogicException(
+                sprintf('Model %s does not implement %s', get_class($this->model), \JsonSerializable::class)
+            );
+        }
     }
 }

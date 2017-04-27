@@ -7,7 +7,7 @@ namespace MyProject\Model;
 use Chubbyphp\Model\ModelInterface;
 use Ramsey\Uuid\Uuid;
 
-final class MyEmbeddedModel implements ModelInterface
+final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
 {
     /**
      * @var string

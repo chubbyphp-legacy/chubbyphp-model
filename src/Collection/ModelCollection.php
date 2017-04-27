@@ -148,12 +148,26 @@ final class ModelCollection implements ModelCollectionInterface
      */
     public function jsonSerialize(): array
     {
+        $this->jsonSerializableOrException();
+
         $serializedModels = [];
         foreach ($this->getModels() as $model) {
             $serializedModels[] = $model->jsonSerialize();
         }
 
         return $serializedModels;
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    private function jsonSerializableOrException()
+    {
+        if (!in_array(\JsonSerializable::class, class_implements($this->modelClass), true)) {
+            throw new \LogicException(
+                sprintf('Model %s does not implement %s', $this->modelClass, \JsonSerializable::class)
+            );
+        }
     }
 
     /**
