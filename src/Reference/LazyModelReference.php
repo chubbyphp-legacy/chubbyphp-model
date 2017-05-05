@@ -41,8 +41,8 @@ final class LazyModelReference implements ModelReferenceInterface
 
     /**
      * @param ResolverInterface $resolver
-     * @param string $modelClass
-     * @param string|null $id
+     * @param string            $modelClass
+     * @param string|null       $id
      */
     public function __construct(ResolverInterface $resolver, string $modelClass, string $id = null)
     {
@@ -65,6 +65,7 @@ final class LazyModelReference implements ModelReferenceInterface
 
     /**
      * @param ModelInterface|null $model
+     *
      * @return ModelReferenceInterface
      */
     public function setModel(ModelInterface $model = null): ModelReferenceInterface

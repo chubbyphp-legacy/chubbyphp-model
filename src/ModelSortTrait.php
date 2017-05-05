@@ -7,9 +7,10 @@ namespace Chubbyphp\Model;
 trait ModelSortTrait
 {
     /**
-     * @param string $modelClass
-     * @param array $models
+     * @param string     $modelClass
+     * @param array      $models
      * @param array|null $orderBy
+     *
      * @return array
      */
     private function sort(string $modelClass, array $models, array $orderBy = null): array

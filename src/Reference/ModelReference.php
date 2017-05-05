@@ -20,6 +20,7 @@ final class ModelReference implements ModelReferenceInterface
 
     /**
      * @param ModelInterface|null $model
+     *
      * @return ModelReferenceInterface
      */
     public function setModel(ModelInterface $model = null): ModelReferenceInterface

@@ -11,7 +11,6 @@ use Chubbyphp\Model\Reference\ModelReferenceInterface;
 use Chubbyphp\Model\RelatedModelManipulationStack;
 use Chubbyphp\Model\RepositoryInterface;
 use Chubbyphp\Model\ResolverInterface;
-use Chubbyphp\Model\Sorter\ModelSorter;
 
 abstract class AbstractRepository implements RepositoryInterface
 {
@@ -28,7 +27,7 @@ abstract class AbstractRepository implements RepositoryInterface
     protected $resolver;
 
     /**
-     * @param array $modelEntries
+     * @param array             $modelEntries
      * @param ResolverInterface $resolver
      */
     public function __construct(array $modelEntries, ResolverInterface $resolver)
@@ -144,7 +143,7 @@ abstract class AbstractRepository implements RepositoryInterface
                 $stack->addToRemoveModels($value->getInitialModels());
                 $stack->addToPersistModels($value->getModels());
                 unset($modelEntry[$field]);
-            } else if ($value instanceof ModelReferenceInterface) {
+            } elseif ($value instanceof ModelReferenceInterface) {
                 $modelEntry[$field.'Id'] = $this->persistModelReference($value, $stack);
 
                 unset($modelEntry[$field]);
@@ -185,7 +184,7 @@ abstract class AbstractRepository implements RepositoryInterface
         foreach ($modelEntry as $field => $value) {
             if ($value instanceof ModelCollectionInterface) {
                 $this->removeRelatedModels($value->getInitialModels());
-            } else if ($value instanceof ModelReferenceInterface) {
+            } elseif ($value instanceof ModelReferenceInterface) {
                 if (null !== $initialModel = $value->getInitialModel()) {
                     $this->removeRelatedModel($initialModel);
                 }
@@ -225,7 +224,8 @@ abstract class AbstractRepository implements RepositoryInterface
 
     /**
      * @param string $id
-     * @param array $modelEntry
+     * @param array  $modelEntry
+     *
      * @return bool
      */
     private function callbackIfReference(string $id, array $modelEntry, \Closure $callback): bool
@@ -234,7 +234,7 @@ abstract class AbstractRepository implements RepositoryInterface
         foreach ($modelEntry as $field => $value) {
             if ($value instanceof ModelCollectionInterface) {
                 unset($modelEntry[$field]);
-            } else if ($value instanceof ModelReferenceInterface) {
+            } elseif ($value instanceof ModelReferenceInterface) {
                 $modelEntry[$field.'Id'] = null;
                 $gotReference = true;
                 unset($modelEntry[$field]);
@@ -251,8 +251,9 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param ModelReferenceInterface $reference
+     * @param ModelReferenceInterface       $reference
      * @param RelatedModelManipulationStack $stack
+     *
      * @return null|string
      */
     private function persistModelReference(ModelReferenceInterface $reference, RelatedModelManipulationStack $stack)

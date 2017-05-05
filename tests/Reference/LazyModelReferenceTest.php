@@ -180,9 +180,10 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $expectedModelClass
-     * @param string|null $expectedId
+     * @param string              $expectedModelClass
+     * @param string|null         $expectedId
      * @param ModelInterface|null $return
+     *
      * @return ResolverInterface
      */
     private function getResolver(

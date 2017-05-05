@@ -59,10 +59,10 @@ final class LazyModelCollection implements ModelCollectionInterface
 
     /**
      * @param ResolverInterface $resolver
-     * @param string $modelClass
-     * @param string $foreignField
-     * @param string $foreignId
-     * @param array|null $orderBy
+     * @param string            $modelClass
+     * @param string            $foreignField
+     * @param string            $foreignId
+     * @param array|null        $orderBy
      */
     public function __construct(
         ResolverInterface $resolver,

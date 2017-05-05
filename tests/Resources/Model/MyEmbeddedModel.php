@@ -26,11 +26,12 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param string|null $id
+     *
      * @return MyEmbeddedModel
      */
     public static function create(string $id = null): MyEmbeddedModel
     {
-        $myEmbeddedModel = new self;
+        $myEmbeddedModel = new self();
         $myEmbeddedModel->id = $id ?? (string) Uuid::uuid4();
 
         return $myEmbeddedModel;
@@ -47,7 +48,7 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
      */
     public static function fromPersistence(array $data): ModelInterface
     {
-        $model = new self;
+        $model = new self();
         $model->id = $data['id'];
         $model->modelId = $data['modelId'];
         $model->name = $data['name'];
@@ -65,6 +66,7 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param string $name
+     *
      * @return MyEmbeddedModel
      */
     public function setName(string $name): MyEmbeddedModel
@@ -90,7 +92,7 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
         return [
             'id' => $this->id,
             'modelId' => $this->modelId,
-            'name' => $this->name
+            'name' => $this->name,
         ];
     }
 
@@ -101,7 +103,7 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
         ];
     }
 }

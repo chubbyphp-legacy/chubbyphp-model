@@ -340,9 +340,10 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $expectedModelClass
-     * @param array $expectedCriteria
-     * @param array $expectedOrderBy
-     * @param array $return
+     * @param array  $expectedCriteria
+     * @param array  $expectedOrderBy
+     * @param array  $return
+     *
      * @return ResolverInterface
      */
     private function getResolver(

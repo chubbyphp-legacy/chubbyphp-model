@@ -4,7 +4,6 @@ namespace Chubbyphp\Tests\Model;
 
 use Chubbyphp\Model\MissingRepositoryException;
 use Chubbyphp\Model\ModelInterface;
-use Chubbyphp\Model\RelatedModelManipulationStack;
 use Chubbyphp\Model\Resolver;
 use Interop\Container\ContainerInterface;
 use MyProject\Model\MyEmbeddedModel;
@@ -47,19 +46,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
-                'oneToOneId' => 'id1'
+                'oneToOneId' => 'id1',
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
-                'oneToOneId' => null
+                'oneToOneId' => null,
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
-                'oneToOneId' => 'id3'
+                'oneToOneId' => 'id3',
             ],
         ];
 
@@ -67,17 +66,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             [
                 'id' => 'id1',
                 'modelId' => 'id1',
-                'name' => 'name3'
+                'name' => 'name3',
             ],
             [
                 'id' => 'id2',
                 'modelId' => 'id3',
-                'name' => 'name2'
+                'name' => 'name2',
             ],
             [
                 'id' => 'id3',
                 'modelId' => 'id1',
-                'name' => 'name1'
+                'name' => 'name1',
             ],
         ];
 
@@ -129,19 +128,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
-                'oneToOneId' => 'id1'
+                'oneToOneId' => 'id1',
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
-                'oneToOneId' => null
+                'oneToOneId' => null,
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
-                'oneToOneId' => 'id3'
+                'oneToOneId' => 'id3',
             ],
         ];
 
@@ -149,17 +148,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             [
                 'id' => 'id1',
                 'modelId' => 'id1',
-                'name' => 'name3'
+                'name' => 'name3',
             ],
             [
                 'id' => 'id2',
                 'modelId' => 'id3',
-                'name' => 'name2'
+                'name' => 'name2',
             ],
             [
                 'id' => 'id3',
                 'modelId' => 'id1',
-                'name' => 'name1'
+                'name' => 'name1',
             ],
         ];
 
@@ -192,19 +191,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
-                'oneToOneId' => 'id1'
+                'oneToOneId' => 'id1',
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
-                'oneToOneId' => null
+                'oneToOneId' => null,
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
-                'oneToOneId' => 'id3'
+                'oneToOneId' => 'id3',
             ],
         ];
 
@@ -212,17 +211,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             [
                 'id' => 'id1',
                 'modelId' => 'id1',
-                'name' => 'name3'
+                'name' => 'name3',
             ],
             [
                 'id' => 'id2',
                 'modelId' => 'id3',
-                'name' => 'name2'
+                'name' => 'name2',
             ],
             [
                 'id' => 'id3',
                 'modelId' => 'id1',
-                'name' => 'name1'
+                'name' => 'name1',
             ],
         ];
 
@@ -302,19 +301,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
-                'oneToOneId' => 'id1'
+                'oneToOneId' => 'id1',
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
-                'oneToOneId' => null
+                'oneToOneId' => null,
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
-                'oneToOneId' => 'id3'
+                'oneToOneId' => 'id3',
             ],
         ];
 
@@ -322,17 +321,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             [
                 'id' => 'id1',
                 'modelId' => 'id1',
-                'name' => 'name3'
+                'name' => 'name3',
             ],
             [
                 'id' => 'id2',
                 'modelId' => 'id3',
-                'name' => 'name2'
+                'name' => 'name2',
             ],
             [
                 'id' => 'id3',
                 'modelId' => 'id1',
-                'name' => 'name1'
+                'name' => 'name1',
             ],
         ];
 
@@ -368,19 +367,19 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
                 'id' => 'id1',
                 'name' => 'name3',
                 'category' => 'category1',
-                'oneToOneId' => 'id1'
+                'oneToOneId' => 'id1',
             ],
             [
                 'id' => 'id2',
                 'name' => 'name2',
                 'category' => 'category2',
-                'oneToOneId' => null
+                'oneToOneId' => null,
             ],
             [
                 'id' => 'id3',
                 'name' => 'name1',
                 'category' => 'category1',
-                'oneToOneId' => 'id3'
+                'oneToOneId' => 'id3',
             ],
         ];
 
@@ -388,17 +387,17 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
             [
                 'id' => 'id1',
                 'modelId' => 'id1',
-                'name' => 'name3'
+                'name' => 'name3',
             ],
             [
                 'id' => 'id2',
                 'modelId' => 'id3',
-                'name' => 'name2'
+                'name' => 'name2',
             ],
             [
                 'id' => 'id3',
                 'modelId' => 'id1',
-                'name' => 'name1'
+                'name' => 'name1',
             ],
         ];
 
@@ -434,6 +433,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Container $container
+     *
      * @return ContainerInterface
      */
     private function getInteropContainer(Container $container): ContainerInterface
@@ -458,6 +458,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
     /**
      * @param array $modelEntries
      * @param array $embeddedModelEntries
+     *
      * @return Resolver
      */
     private function getResolver(array $modelEntries = [], array $embeddedModelEntries = []): Resolver
@@ -467,7 +468,7 @@ final class ResolverTest extends \PHPUnit_Framework_TestCase
         $container['resolver'] = function () use ($container) {
             return new Resolver($this->getInteropContainer($container), [
                 MyModelRepository::class,
-                MyEmbeddedRepository::class
+                MyEmbeddedRepository::class,
             ]);
         };
 

@@ -42,7 +42,7 @@ final class Resolver implements ResolverInterface
     }
 
     /**
-     * @param string $modelClass
+     * @param string      $modelClass
      * @param string|null $id
      *
      * @return ModelInterface|null

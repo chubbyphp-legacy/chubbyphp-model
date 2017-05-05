@@ -18,6 +18,7 @@ final class RelatedModelManipulationStack
 
     /**
      * @param ModelInterface[]|array $models
+     *
      * @return RelatedModelManipulationStack
      */
     public function addToPersistModels(array $models): RelatedModelManipulationStack
@@ -31,6 +32,7 @@ final class RelatedModelManipulationStack
 
     /**
      * @param ModelInterface $model
+     *
      * @return RelatedModelManipulationStack
      */
     public function addToPersistModel(ModelInterface $model): RelatedModelManipulationStack
@@ -42,6 +44,7 @@ final class RelatedModelManipulationStack
 
     /**
      * @param ModelInterface[]|array $models
+     *
      * @return RelatedModelManipulationStack
      */
     public function addToRemoveModels(array $models): RelatedModelManipulationStack
@@ -55,6 +58,7 @@ final class RelatedModelManipulationStack
 
     /**
      * @param ModelInterface $model
+     *
      * @return RelatedModelManipulationStack
      */
     public function addToRemoveModel(ModelInterface $model): RelatedModelManipulationStack

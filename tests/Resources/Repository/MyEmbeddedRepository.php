@@ -11,6 +11,7 @@ final class MyEmbeddedRepository extends AbstractRepository
 {
     /**
      * @param string $modelClass
+     *
      * @return bool
      */
     public function isResponsible(string $modelClass): bool
@@ -20,6 +21,7 @@ final class MyEmbeddedRepository extends AbstractRepository
 
     /**
      * @param array $modelEntry
+     *
      * @return MyEmbeddedModel|ModelInterface
      */
     protected function fromPersistence(array $modelEntry): ModelInterface

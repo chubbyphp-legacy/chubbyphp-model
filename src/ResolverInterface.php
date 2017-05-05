@@ -15,7 +15,7 @@ interface ResolverInterface
     public function __call($name, $arguments);
 
     /**
-     * @param string $modelClass
+     * @param string      $modelClass
      * @param string|null $id
      *
      * @return ModelInterface|null

@@ -38,11 +38,12 @@ final class MyModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param string|null $id
+     *
      * @return MyModel
      */
     public static function create(string $id = null): MyModel
     {
-        $myModel = new self;
+        $myModel = new self();
         $myModel->id = $id ?? (string) Uuid::uuid4();
         $myModel->oneToOne = new ModelReference();
         $myModel->oneToMany = new ModelCollection(MyEmbeddedModel::class, 'modelId', $myModel->id, ['name' => 'ASC']);
@@ -61,7 +62,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
      */
     public static function fromPersistence(array $data): ModelInterface
     {
-        $model = new self;
+        $model = new self();
         $model->id = $data['id'];
         $model->name = $data['name'];
         $model->category = $data['category'];
@@ -81,6 +82,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param string $name
+     *
      * @return self
      */
     public function setName(string $name): MyModel
@@ -100,6 +102,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param string $category
+     *
      * @return self
      */
     public function setCategory(string $category): MyModel
@@ -119,6 +122,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param MyEmbeddedModel|null $oneToOne
+     *
      * @return self
      */
     public function setOneToOne(MyEmbeddedModel $oneToOne = null): MyModel
@@ -138,6 +142,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
 
     /**
      * @param MyEmbeddedModel[]|array $oneToMany
+     *
      * @return $this
      */
     public function setOneToMany(array $oneToMany)
@@ -165,7 +170,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
             'name' => $this->name,
             'category' => $this->category,
             'oneToOne' => $this->oneToOne,
-            'oneToMany' => $this->oneToMany
+            'oneToMany' => $this->oneToMany,
         ];
     }
 
@@ -179,7 +184,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
             'name' => $this->name,
             'category' => $this->category,
             'oneToOne' => $this->oneToOne->jsonSerialize(),
-            'oneToMany' => $this->oneToMany->jsonSerialize()
+            'oneToMany' => $this->oneToMany->jsonSerialize(),
         ];
     }
 }

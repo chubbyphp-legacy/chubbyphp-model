@@ -14,6 +14,7 @@ final class MyModelRepository extends AbstractRepository
 {
     /**
      * @param string $modelClass
+     *
      * @return bool
      */
     public function isResponsible(string $modelClass): bool
@@ -31,6 +32,7 @@ final class MyModelRepository extends AbstractRepository
 
     /**
      * @param array $modelEntry
+     *
      * @return MyModel|ModelInterface
      */
     protected function fromPersistence(array $modelEntry): ModelInterface

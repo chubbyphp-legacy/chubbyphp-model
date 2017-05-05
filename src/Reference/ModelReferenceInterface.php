@@ -10,6 +10,7 @@ interface ModelReferenceInterface extends \JsonSerializable
 {
     /**
      * @param ModelInterface|null $model
+     *
      * @return ModelReferenceInterface
      */
     public function setModel(ModelInterface $model = null): ModelReferenceInterface;

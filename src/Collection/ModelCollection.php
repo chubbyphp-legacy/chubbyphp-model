@@ -42,9 +42,9 @@ final class ModelCollection implements ModelCollectionInterface
     private $propertyReflection;
 
     /**
-     * @param string $modelClass
-     * @param string $foreignField
-     * @param string $foreignId
+     * @param string     $modelClass
+     * @param string     $foreignField
+     * @param string     $foreignId
      * @param array|null $orderBy
      */
     public function __construct(
