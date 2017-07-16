@@ -34,7 +34,10 @@ trait ModelSortTrait
         usort($models, function (ModelInterface $a, ModelInterface $b) use ($reflections, $orderBy) {
             foreach ($orderBy as $property => $sortingDirection) {
                 $reflection = $reflections[$property];
-                $sorting = strcmp($reflection->getValue($a), $reflection->getValue($b));
+                $valueA = $reflection->getValue($a);
+                $valueB = $reflection->getValue($b);
+
+                $sorting = $valueA <=> $valueB;
                 if ($sortingDirection === 'DESC') {
                     $sorting = $sorting * -1;
                 }
