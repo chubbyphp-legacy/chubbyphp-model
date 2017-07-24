@@ -24,7 +24,7 @@ Model and repository made simple.
 Through [Composer](http://getcomposer.org) as [chubbyphp/chubbyphp-model][1].
 
 ```sh
-composer require chubbyphp/chubbyphp-model "~3.0@dev"
+composer require chubbyphp/chubbyphp-model "~3.0"
 ```
 
 ## Usage
