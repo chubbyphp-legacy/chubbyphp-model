@@ -6,6 +6,7 @@ use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\LazyModelReference;
 use Chubbyphp\Model\ResolverInterface;
 use MyProject\Model\MyEmbeddedModel;
+use MyProject\Model\MyEmbeddedModelNoJsonSerialize;
 
 final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
 {
@@ -139,6 +140,27 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerialize
      */
+    public function testJsonSerializeNullReference()
+    {
+        $modelClass = MyEmbeddedModel::class;
+        $id = null;
+        $return = null;
+
+        $modelReference = new LazyModelReference(
+            $this->getResolver($modelClass, $id, $return),
+            $modelClass,
+            $id
+        );
+
+        self::assertNull(json_decode(json_encode($modelReference), true));
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::__construct
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerialize
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerializableOrException
+     */
     public function testJsonSerialize()
     {
         $model = MyEmbeddedModel::create('id1');
@@ -163,12 +185,19 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::__construct
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::resolveModel
      * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerialize
+     * @covers \Chubbyphp\Model\Reference\LazyModelReference::jsonSerializableOrException
      */
-    public function testJsonSerializeNullReference()
+    public function testJsonSerializeWithModelNotimplementingJsonSerialize()
     {
-        $modelClass = MyEmbeddedModel::class;
-        $id = null;
-        $return = null;
+        self::expectException(\LogicException::class);
+        self::expectExceptionMessage('does not implement JsonSerializable');
+
+        $model = MyEmbeddedModelNoJsonSerialize::create('id1');
+        $model->setName('name1');
+
+        $modelClass = MyEmbeddedModelNoJsonSerialize::class;
+        $id = $model->getId();
+        $return = $model;
 
         $modelReference = new LazyModelReference(
             $this->getResolver($modelClass, $id, $return),
@@ -176,7 +205,7 @@ final class LazyModelReferenceTest extends \PHPUnit_Framework_TestCase
             $id
         );
 
-        self::assertNull(json_decode(json_encode($modelReference), true));
+        json_encode($modelReference);
     }
 
     /**

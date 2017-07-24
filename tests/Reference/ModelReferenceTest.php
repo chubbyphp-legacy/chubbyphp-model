@@ -5,6 +5,7 @@ namespace Chubbyphp\Tests\Model\Reference;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\ModelReference;
 use MyProject\Model\MyEmbeddedModel;
+use MyProject\Model\MyEmbeddedModelNoJsonSerialize;
 
 final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
 {
@@ -85,6 +86,17 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerialize
      */
+    public function testJsonSerializeNullReference()
+    {
+        $modelReference = new ModelReference();
+
+        self::assertNull(json_decode(json_encode($modelReference), true));
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerialize
+     * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerializableOrException
+     */
     public function testJsonSerialize()
     {
         $model = MyEmbeddedModel::create('id1');
@@ -100,11 +112,19 @@ final class ModelReferenceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerialize
+     * @covers \Chubbyphp\Model\Reference\ModelReference::jsonSerializableOrException
      */
-    public function testJsonSerializeNullReference()
+    public function testJsonSerializeWithModelNotimplementingJsonSerialize()
     {
-        $modelReference = new ModelReference();
+        self::expectException(\LogicException::class);
+        self::expectExceptionMessage('does not implement JsonSerializable');
 
-        self::assertNull(json_decode(json_encode($modelReference), true));
+        $model = MyEmbeddedModelNoJsonSerialize::create('id1');
+        $model->setName('name1');
+
+        $modelReference = new ModelReference();
+        $modelReference->setModel($model);
+
+        json_encode($modelReference);
     }
 }

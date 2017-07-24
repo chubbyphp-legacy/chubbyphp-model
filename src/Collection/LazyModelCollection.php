@@ -215,7 +215,8 @@ final class LazyModelCollection implements ModelCollectionInterface
      */
     private function jsonSerializableOrException()
     {
-        if (!in_array(\JsonSerializable::class, class_implements($this->modelClass), true)) {
+        $reflectionClass = new \ReflectionClass($this->modelClass);
+        if (!$reflectionClass->implementsInterface(\JsonSerializable::class)) {
             throw new \LogicException(
                 sprintf('Model %s does not implement %s', $this->modelClass, \JsonSerializable::class)
             );

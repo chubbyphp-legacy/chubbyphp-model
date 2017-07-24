@@ -5,6 +5,7 @@ namespace Chubbyphp\Tests\Model\Collection;
 use Chubbyphp\Model\Collection\LazyModelCollection;
 use Chubbyphp\Model\ResolverInterface;
 use MyProject\Model\MyEmbeddedModel;
+use MyProject\Model\MyEmbeddedModelNoJsonSerialize;
 
 final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -79,9 +80,6 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetModels()
     {
-        $model = MyEmbeddedModel::create('id1');
-        $model->setName('name1');
-
         $modelClass = MyEmbeddedModel::class;
         $foreignField = 'modelId';
         $foreignId = 'id1';
@@ -96,9 +94,19 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
             $orderBy
         );
 
+        $model = MyEmbeddedModel::create('id1');
+        $model->setName('name1');
+
         $modelCollection->setModels([$model]);
 
         self::assertCount(0, $modelCollection->getInitialModels());
+        self::assertCount(1, $modelCollection->getModels());
+
+        $model = MyEmbeddedModel::create('id2');
+        $model->setName('name2');
+
+        $modelCollection->setModels([$model]);
+
         self::assertCount(1, $modelCollection->getModels());
     }
 
@@ -138,11 +146,8 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getModels
      * @covers \Chubbyphp\Model\ModelSortTrait::sort
      */
-    public function testGetModels()
+    public function testGetModelsSortingAsc()
     {
-        $model = MyEmbeddedModel::create('id1');
-        $model->setName('name1');
-
         $modelClass = MyEmbeddedModel::class;
         $foreignField = 'modelId';
         $foreignId = 'id1';
@@ -160,10 +165,69 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::assertCount(0, $modelCollection->getInitialModels());
         self::assertCount(0, $modelCollection->getModels());
 
-        $modelCollection->setModels([$model]);
+        $model1 = MyEmbeddedModel::create('id1');
+        $model1->setName('name1');
+
+        $model2 = MyEmbeddedModel::create('id2');
+        $model2->setName('name2');
+
+        $model3 = MyEmbeddedModel::create('id3');
+        $model3->setName('name1');
+
+        $modelCollection->setModels([$model1, $model2, $model3]);
+
+        $models = $modelCollection->getModels();
+
+        self::assertCount(3, $models);
+
+        self::assertSame('id1', $models[0]->getId());
+        self::assertSame('id3', $models[1]->getId());
+        self::assertSame('id2', $models[2]->getId());
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::getModels
+     * @covers \Chubbyphp\Model\ModelSortTrait::sort
+     */
+    public function testGetModelsSortingDesc()
+    {
+        $modelClass = MyEmbeddedModel::class;
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
+        $orderBy = ['name' => 'DESC'];
+        $return = [];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
+            $modelClass,
+            $foreignField,
+            $foreignId,
+            $orderBy
+        );
 
         self::assertCount(0, $modelCollection->getInitialModels());
-        self::assertCount(1, $modelCollection->getModels());
+        self::assertCount(0, $modelCollection->getModels());
+
+        $model1 = MyEmbeddedModel::create('id1');
+        $model1->setName('name1');
+
+        $model2 = MyEmbeddedModel::create('id2');
+        $model2->setName('name2');
+
+        $model3 = MyEmbeddedModel::create('id3');
+        $model3->setName('name1');
+
+        $modelCollection->setModels([$model1, $model2, $model3]);
+
+        $models = $modelCollection->getModels();
+
+        self::assertCount(3, $models);
+
+        self::assertSame('id2', $models[0]->getId());
+        self::assertSame('id1', $models[1]->getId());
+        self::assertSame('id3', $models[2]->getId());
     }
 
     /**
@@ -263,6 +327,7 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
      * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerialize
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerializableOrException
      */
     public function testJsonSerialize()
     {
@@ -288,6 +353,37 @@ final class LazyModelCollectionTest extends \PHPUnit_Framework_TestCase
         self::assertCount(1, $modelsAsArray);
 
         self::assertSame('name1', $modelsAsArray[0]['name']);
+    }
+
+    /**
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::__construct
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::resolveModels
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerialize
+     * @covers \Chubbyphp\Model\Collection\LazyModelCollection::jsonSerializableOrException
+     */
+    public function testJsonSerializeWithModelsNotimplementingJsonSerialize()
+    {
+        self::expectException(\LogicException::class);
+        self::expectExceptionMessage('does not implement JsonSerializable');
+
+        $model = MyEmbeddedModelNoJsonSerialize::create('id1');
+        $model->setName('name1');
+
+        $modelClass = MyEmbeddedModelNoJsonSerialize::class;
+        $foreignField = 'modelId';
+        $foreignId = 'id1';
+        $orderBy = ['name' => 'ASC'];
+        $return = [$model];
+
+        $modelCollection = new LazyModelCollection(
+            $this->getResolver($modelClass, [$foreignField => $foreignId], $orderBy, $return),
+            $modelClass,
+            $foreignField,
+            $foreignId,
+            $orderBy
+        );
+
+        json_encode($modelCollection);
     }
 
     /**

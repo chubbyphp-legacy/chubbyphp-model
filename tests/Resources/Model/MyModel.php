@@ -39,9 +39,9 @@ final class MyModel implements ModelInterface, \JsonSerializable
     /**
      * @param string|null $id
      *
-     * @return MyModel
+     * @return self
      */
-    public static function create(string $id = null): MyModel
+    public static function create(string $id = null): self
     {
         $myModel = new self();
         $myModel->id = $id ?? (string) Uuid::uuid4();
@@ -58,7 +58,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
     /**
      * @param array $data
      *
-     * @return ModelInterface
+     * @return self|ModelInterface
      */
     public static function fromPersistence(array $data): ModelInterface
     {
@@ -85,7 +85,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
      *
      * @return self
      */
-    public function setName(string $name): MyModel
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -105,7 +105,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
      *
      * @return self
      */
-    public function setCategory(string $category): MyModel
+    public function setCategory(string $category): self
     {
         $this->category = $category;
 
@@ -125,7 +125,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
      *
      * @return self
      */
-    public function setOneToOne(MyEmbeddedModel $oneToOne = null): MyModel
+    public function setOneToOne(MyEmbeddedModel $oneToOne = null): self
     {
         $this->oneToOne->setModel($oneToOne);
 
@@ -143,9 +143,9 @@ final class MyModel implements ModelInterface, \JsonSerializable
     /**
      * @param MyEmbeddedModel[]|array $oneToMany
      *
-     * @return $this
+     * @return self
      */
-    public function setOneToMany(array $oneToMany)
+    public function setOneToMany(array $oneToMany): self
     {
         $this->oneToMany->setModels($oneToMany);
 

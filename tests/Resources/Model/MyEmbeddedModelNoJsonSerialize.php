@@ -7,7 +7,7 @@ namespace MyProject\Model;
 use Chubbyphp\Model\ModelInterface;
 use Ramsey\Uuid\Uuid;
 
-final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
+final class MyEmbeddedModelNoJsonSerialize implements ModelInterface
 {
     /**
      * @var string
@@ -92,17 +92,6 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
         return [
             'id' => $this->id,
             'modelId' => $this->modelId,
-            'name' => $this->name,
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-        return [
-            'id' => $this->id,
             'name' => $this->name,
         ];
     }
