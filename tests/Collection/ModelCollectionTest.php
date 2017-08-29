@@ -236,7 +236,7 @@ final class ModelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testJsonSerializeWithModelsNotimplementingJsonSerialize()
     {
-        self::expectException(\LogicException::class);
+        self::expectException(\Exception::class);
         self::expectExceptionMessage('does not implement JsonSerializable');
 
         $model = MyEmbeddedModelNoJsonSerialize::create('id1');
