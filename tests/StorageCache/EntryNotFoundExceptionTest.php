@@ -3,7 +3,6 @@
 namespace Chubbyphp\Tests\Model\StorageCache;
 
 use Chubbyphp\Model\StorageCache\EntryNotFoundException;
-use Ramsey\Uuid\Uuid;
 
 final class EntryNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,7 +11,7 @@ final class EntryNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');
 
         $exception = EntryNotFoundException::fromId($id);
 

@@ -4,7 +4,6 @@ namespace Chubbyphp\Tests\Model\StorageCache;
 
 use Chubbyphp\Model\StorageCache\ArrayStorageCache;
 use Chubbyphp\Model\StorageCache\EntryNotFoundException;
-use Ramsey\Uuid\Uuid;
 
 final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +13,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetValue()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache();
 
@@ -27,7 +26,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasWithoutValue()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache();
 
@@ -40,7 +39,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasWithValue()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache();
         $cache->set($id, []);
@@ -56,7 +55,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
     {
         self::expectException(EntryNotFoundException::class);
 
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache();
         $cache->get($id);
@@ -68,7 +67,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetWithValue()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache([$id => ['key' => 'value']]);
 
@@ -81,7 +80,7 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemoveValue()
     {
-        $id = (string) Uuid::uuid4();
+        $id = uniqid('id');;
 
         $cache = new ArrayStorageCache([$id => ['key' => 'value']]);
         $cache->remove($id);
@@ -93,8 +92,8 @@ final class ArrayStorageCacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        $id1 = (string) Uuid::uuid4();
-        $id2 = (string) Uuid::uuid4();
+        $id1 = uniqid('id');;
+        $id2 = uniqid('id');;
 
         $cache = new ArrayStorageCache([$id1 => [], $id2 => []]);
 

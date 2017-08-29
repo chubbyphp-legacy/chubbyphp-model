@@ -7,7 +7,6 @@ namespace MyProject\Model;
 use Chubbyphp\Model\Collection\ModelCollection;
 use Chubbyphp\Model\ModelInterface;
 use Chubbyphp\Model\Reference\ModelReference;
-use Ramsey\Uuid\Uuid;
 
 final class MyModel implements ModelInterface, \JsonSerializable
 {
@@ -44,7 +43,7 @@ final class MyModel implements ModelInterface, \JsonSerializable
     public static function create(string $id = null): self
     {
         $myModel = new self();
-        $myModel->id = $id ?? (string) Uuid::uuid4();
+        $myModel->id = $id ?? uniqid('id');
         $myModel->oneToOne = new ModelReference();
         $myModel->oneToMany = new ModelCollection(MyEmbeddedModel::class, 'modelId', $myModel->id, ['name' => 'ASC']);
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MyProject\Model;
 
 use Chubbyphp\Model\ModelInterface;
-use Ramsey\Uuid\Uuid;
 
 final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
 {
@@ -32,7 +31,7 @@ final class MyEmbeddedModel implements ModelInterface, \JsonSerializable
     public static function create(string $id = null): self
     {
         $model = new self();
-        $model->id = $id ?? (string) Uuid::uuid4();
+        $model->id = $id ?? uniqid('id');
 
         return $model;
     }

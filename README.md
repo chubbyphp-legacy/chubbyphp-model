@@ -13,11 +13,12 @@ Model and repository made simple.
 ## Requirements
 
  * php: ~7.0
+ * psr/log: ~1.0
 
 ## Suggest
 
  * chubbyphp/chubbyphp-model-doctrine-dbal: ~1.0
- * container-interop/container-interop: ~1.1
+ * container-interop/container-interop: ~1.0
 
 ## Installation
 
