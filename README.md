@@ -1,10 +1,12 @@
 # chubbyphp-model
 
 [![Build Status](https://api.travis-ci.org/chubbyphp/chubbyphp-model.png?branch=master)](https://travis-ci.org/chubbyphp/chubbyphp-model)
-[![Total Downloads](https://poser.pugx.org/chubbyphp/chubbyphp-model/downloads.png)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
-[![Latest Stable Version](https://poser.pugx.org/chubbyphp/chubbyphp-model/v/stable.png)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/chubbyphp/chubbyphp-model/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/chubbyphp/chubbyphp-model/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/chubbyphp/chubbyphp-model/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/chubbyphp/chubbyphp-model/?branch=master)
+[![Total Downloads](https://poser.pugx.org/chubbyphp/chubbyphp-model/downloads.png)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
+[![Monthly Downloads](https://poser.pugx.org/chubbyphp/chubbyphp-model/d/monthly)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
+[![Latest Stable Version](https://poser.pugx.org/chubbyphp/chubbyphp-model/v/stable.png)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
+[![Latest Unstable Version](https://poser.pugx.org/chubbyphp/chubbyphp-model/v/unstable)](https://packagist.org/packages/chubbyphp/chubbyphp-model)
 
 ## Description
 
